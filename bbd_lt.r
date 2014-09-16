@@ -2,7 +2,7 @@
 ### Lam Ho
 ### Laplace transform of a birth/birth-death process
 
-bbd_lt <- function(s,a0,b0,brates1,brates2,drates2,A,B,a,b) {
+bbd_lt <- function(s,a0,b0,brates1,brates2,drates2,A,B) {
 	# initialize phi
 	phi = bbd_phi(s,a0,b0,brates1,brates2,drates2,A,B)
 	# phi[a,b,m]
@@ -12,7 +12,7 @@ bbd_lt <- function(s,a0,b0,brates1,brates2,drates2,A,B,a,b) {
 		f[a0+1,j+1] = phi[a0+1,j+1,b0+1]
 	}
 	for (i in (a0+1):A) {	
-		br1 = sapply(0:B,brates1)
+		br1 = sapply(0:B,brates1,a=i)
 		for (j in 0:B) {
 			v1 = as.vector(br1)
 			v2 = as.vector(f[i,])
@@ -20,7 +20,7 @@ bbd_lt <- function(s,a0,b0,brates1,brates2,drates2,A,B,a,b) {
 			f[i+1,j+1] = sum(v1*v2*v3)
 		}
 	}
-	return(f[a+1,b+1])
+	return(f)
 }
 
 bbd_phi <-function(s,a0,b0,brates1,brates2,drates2,A,B) {
@@ -62,30 +62,37 @@ bbd_phi <-function(s,a0,b0,brates1,brates2,drates2,A,B) {
 
 bbd_lt_invert = function(f,t,A=20) {
 	kmax = 5
-  	ig = sapply(complex(real=A, imaginary=2*pi*(1:kmax))/(2*t),f)
-  	psum = Re(f(A/(2*t))) / (2*t)
-  	s = rep(0,40)
-  	tol = 1e-12
-  	levin_init(20,tol) # initialize the levin acceleration method.
-  	term = 10e30
-  	sdiff = 10e30
-  	k = 1
-  	while((abs(sdiff) > 1e-16)||(abs(term) > 1e-3)) {
-    	term = (-1)^k * Re(ig[k]) / t
-    	psum = psum + term
-    	omega = k*term
-		s[k] = next_approx(psum,omega)
-	    if(is.na(s[k])) return(NA)
-	    if(k>1) {
-    		sdiff = s[k] - s[k-1]
-    		} else {sdiff = 10e30}
-    	k = k+1	
-	    if(k>kmax) {
-      		ig[(kmax+1):(kmax+20)] = sapply(complex(real=A,imaginary=2*pi*((kmax+1):(kmax+20)))/(2*t),f)
-	    	kmax = kmax + 20
-    		}
-  		}
-	return(s[k-1]*exp(A/2))
+  	ig = lapply(complex(real=A, imaginary=2*pi*(1:kmax))/(2*t),f)  	
+  	psum0 = Re(f(A/(2*t))) / (2*t)
+  	nr = nrow(ig[[1]])
+  	nc = ncol(ig[[1]])
+  	result = matrix(NA,nrow=nr,ncol=nc)
+  	
+  	for (i in 1:nr)
+  		for (j in 1:nc) {
+  			tol = 1e-12
+  			levin_init(20,tol) # initialize the levin acceleration method.
+  			term = 10e30
+  			sdiff = 10e30
+  			k = 1
+  			psum = psum0[i,j]
+  			while((abs(sdiff) > 1e-16)||(abs(term) > 1e-3)) {
+    			term = (-1)^k * Re(ig[[k]][i,j]) / t
+    			psum = psum + term
+    			omega = k*term
+				sk = next_approx(psum,omega)
+	    		if (is.na(sk)) return(NA)
+	    		if (k>1) {
+    				sdiff = sk - sk1
+    				} else {sdiff = 10e30}
+    			k = k+1	
+    			sk1 = sk
+	    		if (k>kmax) {
+      			ig[(kmax+1):(kmax+5)] = lapply(complex(real=A,imaginary=2*pi*((kmax+1):(kmax+5)))/(2*t),f)
+	    		kmax = kmax + 5
+    			}
+  			}
+		result[i,j] = sk1*exp(A/2)
+  		} 
+  	return(result)
 }
-
-
