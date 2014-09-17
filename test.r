@@ -12,11 +12,12 @@ N = 20
 gamma = 1
 beta = 1
 
-brates1=function(x,y){beta*x*y/N}
-brates2=function(x,y){beta*x*y/N}
+brates1=function(x,y){0}
+brates2=function(x,y){0}
+trans=function(x,y){beta*x*y/N}
 drates2=function(x,y){gamma*y}
 
-system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,A,B))
+system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B))
 
 bbd_phi(s=1,a0,b0,brates1,brates2,drates2,A,B)
   
