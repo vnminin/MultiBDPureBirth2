@@ -13,11 +13,14 @@ gamma = 1
 beta = 1
 
 brates1=function(x,y){0}
+drates1=function(x,y){0}
 brates2=function(x,y){0}
-trans=function(x,y){beta*x*y/N}
 drates2=function(x,y){gamma*y}
+trans=function(x,y){beta*x*y/N}
 
 system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B))
+
+system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
 
 bbd_phi(s=1,a0,b0,brates1,brates2,drates2,A,B)
   
@@ -26,6 +29,7 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,A,B)
   
   states = 0:50
   p1 = sapply(states, bd_prob, m=3, t=1, brates=function(k){0.5*k}, drates=function(k){0.3*k})
-  plot(states,p1)
   
-  p = sapply(states,bbd_prob,t=1,a0=0,b0=3,brates1=function(a,b){0.3*a+0.1},brates2=function(a,b){0.5*b},drates2=function(a,b){0.3*b},1,5,0) 
+  p = bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50)
+  
+  

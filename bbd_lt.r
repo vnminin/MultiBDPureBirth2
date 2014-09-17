@@ -11,20 +11,60 @@ bbd_lt <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	for (j in 0:B) {
 		f[a0+1,j+1] = phi[a0+1,j+1,b0+1]
 	}
-	for (i in (a0+1):A) {	
-		br1 = sapply(0:B,lambda1,a=i-1)
-		g = c(sapply(1:B,gamma,a=i-1),0)
-		for (j in 0:B) {
-			v1 = as.vector(br1)
-			v2 = as.vector(f[i,])
-			v3 = as.vector(phi[i+1,j+1,])
-			v4 = as.vector(g)
-			v5 = as.vector(c(f[i,2:(B+1)],0))
-			f[i+1,j+1] = sum((v1*v2+v4*v5)*v3)
+	if (a0 < A) {
+		for (i in (a0+1):A) {	
+			br1 = sapply(0:B,lambda1,a=i-1)
+			g = c(sapply(1:B,gamma,a=i-1),0)
+			for (j in 0:B) {
+				v1 = as.vector(br1)
+				v2 = as.vector(f[i,])
+				v3 = as.vector(phi[i+1,j+1,])
+				v4 = as.vector(g)
+				v5 = as.vector(c(f[i,2:(B+1)],0))
+				f[i+1,j+1] = sum((v1*v2+v4*v5)*v3)
+			}
 		}
 	}
 	return(f)
 }
+
+#bbd_phi <-function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
+#	if ((a0<0)||(b0<0)||(a0>A)||(b0>B)) return(0)
+#	phi = array(0,dim=c(A+1,B+1,B+1))
+	# phi[a,b,m]
+#	for (a in a0:A) {
+#		xf <- function(k){
+#					if (k<1) stop("error at xf")
+#					if (k==1) x = - 1/mu2(a,1)
+#					else x = - lambda2(a,k-2)/mu2(a,k) 	
+#					return(x)
+#				}
+#		yf <- function(k) {
+#					if (k<1) stop("error at yf")
+#					y = - (s + lambda1(a,k-1) + lambda2(a,k-1) + mu2(a,k-1) + gamma(a,k-1))/mu2(a,k)
+#					return(y)
+#				}
+#		lentz = sapply(1:(B+1),cf_lentz_m,xf,yf)
+#		for (b in 0:B) {
+#			for (m in 0:B) {				
+#					if(b<=m) {
+ #   					fac = (-1)^(m-b+1)/mu2(a,m+1)
+  #  					B1 = cf_BidBj(b,m,xf,yf)
+   # 					B2 = 1/cf_Bk1dBk(m+1,xf,yf)
+    #					v = fac * B1 / (B2 + lentz[m+1])
+    #					} else {
+    #						fac = -prod(sapply((m+2):(b+1),xf))/mu2(a,m+1)	
+    #						B1 = cf_BidBj(m,b,xf,yf)
+    #						B2 = 1/cf_Bk1dBk(b+1,xf,yf)
+    #						v = fac * B1 / (B2 + lentz[b+1]) 
+  	#						}
+  	#				phi[a+1,b+1,m+1] = v				
+	#			}
+	#		}
+	#	}
+#	return(phi)
+#}
+
 
 bbd_phi <-function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	if ((a0<0)||(b0<0)||(a0>A)||(b0>B)) return(0)
@@ -33,25 +73,25 @@ bbd_phi <-function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	for (a in a0:A) {
 		xf <- function(k){
 					if (k<1) stop("error at xf")
-					if (k==1) x = - 1/mu2(a,1)
-					else x = - lambda2(a,k-2)/mu2(a,k) 	
+					if (k==1) x = 1
+					else x = - lambda2(a,k-2)*mu2(a,k-1) 	
 					return(x)
 				}
 		yf <- function(k) {
 					if (k<1) stop("error at yf")
-					y = - (s + lambda1(a,k-1) + lambda2(a,k-1) + mu2(a,k-1) + gamma(a,k-1))/mu2(a,k)
+					y = s + lambda1(a,k-1) + lambda2(a,k-1) + mu2(a,k-1) + gamma(a,k-1)
 					return(y)
 				}
 		lentz = sapply(1:(B+1),cf_lentz_m,xf,yf)
 		for (b in 0:B) {
 			for (m in 0:B) {				
 					if(b<=m) {
-    					fac = (-1)^(m-b+1)/mu2(a,m+1)
+    					if (b==m) fac = 1 else fac = prod(sapply((b+1):m,mu2,a=a))
     					B1 = cf_BidBj(b,m,xf,yf)
     					B2 = 1/cf_Bk1dBk(m+1,xf,yf)
     					v = fac * B1 / (B2 + lentz[m+1])
     					} else {
-    						fac = -prod(sapply((m+2):(b+1),xf))/mu2(a,m+1)	
+    						fac = prod(sapply(m:(b-1),lambda2,a=a))	
     						B1 = cf_BidBj(m,b,xf,yf)
     						B2 = 1/cf_Bk1dBk(b+1,xf,yf)
     						v = fac * B1 / (B2 + lentz[b+1]) 
@@ -62,6 +102,7 @@ bbd_phi <-function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 		}
 	return(phi)
 }
+
 
 bbd_lt_invert = function(f,t,A=20) {
 	kmax = 5
