@@ -2,6 +2,7 @@
 ### Lam Ho
 ### Transition probability of a birth/birth-death process
 
+
 bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	l1 <- function(a,b){return(lambda1(a,b))}
 	l2 <- function(a,b){return(lambda2(a,b))}
@@ -11,7 +12,6 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	#if(any(is.na(res))) cat("bbd_prob(",a0,",",b0,",",t,") failed\n")		
 	return(res)
 }
-
 
 dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,B) {
 	l1 <- function(a,b){return(mu1(a0-a,B-b))}
