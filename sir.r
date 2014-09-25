@@ -6,51 +6,53 @@ sir <- function(t,n,a,f,mu){
 	p = matrix(0,nrow=n+1,ncol=n+a+1)
 	for (l in 0:a) {
 		if (l<a) tmp = (a-l)*log(mu)+sum(log((l+1):a)) else tmp = 0
-		spr = 0
+		bigs = 0
 		for (k in l:a){
 			pr = 1
 			for (kp in l:a){				
 				if (!(kp==k)) pr = pr/(mu*(kp-k)+f(n,kp)-f(n,k))
 			}
 			pr = pr/exp((mu*k+f(n,k))*t)
-			spr = spr+pr
+			bigs = bigs+pr
 		}
-		tmp = tmp + log(spr)		
+		tmp = tmp + log(bigs)		
 		p[n+1,l+1] = exp(tmp)
 	}
 	
 	for (i in 0:(n-1))
 		for (l in 0:(n+a-i)) {
-			if (l<a) tmp = (n+a-i-l)*log(mu)+sum(log((l+1):a)) else tmp = (n-i)*log(mu)
+			if (l<a) tmp = (n+a-i-l)*log(mu)+sum(log((l+1):a)) 
+			if (l==a) tmp = (n-i)*log(mu)
+			if (l>a) tmp = (n+a-i-l)*log(mu)-sum(log((a+1):l))
 			count = start_count(n-i,l,n+a-i)
-			spr = 0			
+			bigs = 0			
 			while (!(is.na(count[1]))) {
-				lc = rep(NA,n-i+2)
-				lc[1] = l
-				lc[n-i+2] = a+i
-				lc[2:(n-i+1)] = count				
-				for (w in 0:(n-i)) {
-					for (k in 0:(lc[w+2]-lc[w+1])) {
-						pr = 1
-						ff <- function(i,w,k) {
-							return(mu*(lc[w+1]-w+k)+f(i+w,lc[w+1]-w+k))
+				lw = rep(NA,n-i+2)
+				lw[1] = l
+				lw[n-i+2] = n+a-i
+				lw[2:(n-i+1)] = count					
+				ff <- function(i,w,k) {
+							return(mu*(lw[w+1]-w+k)+f(i+w,lw[w+1]-w+k))
 						}
+				smalls = 0			
+				for (w in 0:(n-i)) 
+					for (k in 0:(lw[w+2]-lw[w+1])) {
+						pr = 1						
 						for (wp in 0:(n-i))
-							for (kp in 0:(lc[w+2]-lc[w+1])) {
-								if ((abs(w-wp)>0)&&(abs(k-kp)>0)) 
+							for (kp in 0:(lw[wp+2]-lw[wp+1])) {
+								if ((abs(w-wp)+abs(k-kp))>0) {
+									if (abs(ff(i,wp,kp)-ff(i,w,k))==0) print("nooo")
 									pr = pr/(ff(i,wp,kp)-ff(i,w,k))
-							}
-						pr = pr/exp(ff(i,w,k)*t)
-						for (j in 1:(n-i)) {
-							pr = pr*(lc[j+1]-j+1)*f(i+j,lc[j+1]-j)
+								}
 						}
-						spr = spr+pr
-					}
-				}
-				count = add_count(count,n-i,l,n+a-i)
+						pr = pr/exp(ff(i,w,k)*t)
+						smalls = smalls + pr
+					}	
+				for (w in 1:(n-i)) smalls = smalls*(lw[w+1]-w+1)*f(i+w,lw[w+1]-w)
+				bigs = bigs + smalls
+				count = add_count(count,n-i,l,n+a-i)	
 			}
-			print(spr)
-			tmp = tmp + log(spr)
+			tmp = tmp + log(bigs)
 			p[i+1,l+1] = exp(tmp)
 		}
 	return(p)
@@ -61,7 +63,7 @@ start_count <- function(j,l,h) {
 	count[1] = max(l,2)
 	if (j>=2)
 		for (i in 2:j)
-			while ((count[i]<i)&&(count[i]<count[i-1])) count[i] = count[i]+1
+			while ((count[i]<=i)||(count[i]<count[i-1])) count[i] = count[i]+1
 	if (count[j]>h) return(NA)		
 	return(count)
 }

@@ -3,11 +3,12 @@ source("bbd_lt.r")
 source("bd_series_accel.r")
 source("contfr.r")
 
-a0 = 2
-b0 = 1
-A = 3
-B = 3
-N = 3
+a0 = 3
+A = 5
+B = 5
+N = 5
+b0 = N-a0
+
 gamma = 1
 beta = 1
 
@@ -21,7 +22,7 @@ trans=function(x,y){beta*x*y/N}
 system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
 
 source("sir.r")
-p0=sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma)
+system.time(p0<-sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma))
 
 
 bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
@@ -40,6 +41,15 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   	system.time(phi<-bbd_phi(s=1,3,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=20,B=20))
 
 	system.time(phi0<-bbd_phi0(s=1,3,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=20,B=20))
+	
+j = 5
+l = 3
+h =	10
+	count = start_count(j,l,h)
+	while (!(is.na(count[1]))) {
+		print(count)
+		count = add_count(count,j,l,h)
+	}
 
   
   
