@@ -14,7 +14,19 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	l2 = matrix(mapply(lambda2,grid[,1],grid[,2]),ncol=B+1+maxdepth)
 	m2 = matrix(mapply(mu2,grid[,1],grid[,2]),ncol=B+1+maxdepth)
 	g = matrix(mapply(gamma,grid[,1],grid[,2]),ncol=B+1+maxdepth)
-	res = bbd_lt_invert(t,f=function(s){return(bbd_lt(s,a0,b0,l1,l2,m2,g,A,B))})
+	xf <- function(a,b){
+		if (b==0) x = 1
+			else x = - l2[a-a0+1,b]*m2[a-a0+1,b+1] 	
+		return(x)
+	}
+	x = matrix(mapply(xf,grid[,1],grid[,2]),ncol=B+1+maxdepth)
+	yf <- function(a,b) {
+		y = l1[a-a0+1,b+1] + l2[a-a0+1,b+1] + m2[a-a0+1,b+1] + g[a-a0+1,b+1]
+		return(y)
+	}
+	y = matrix(mapply(yf,grid[,1],grid[,2]),ncol=B+1+maxdepth)			
+				
+	res = bbd_lt_invert(t,f=function(s){return(bbd_lt(s,a0,b0,l1,l2,m2,g,x,y,A,B))})
 	#if(any(is.na(res))) cat("bbd_prob(",a0,",",b0,",",t,") failed\n")	
 	
 	return(res)

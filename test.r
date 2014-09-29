@@ -4,10 +4,10 @@ source("bd_series_accel.r")
 source("contfr.r")
 library(parallel)
 
-a0 =10
-A = 20
-B = 20
-N = 20
+a0 =20
+A = 40
+B = 40
+N = 40
 b0 = N-a0
 
 gamma = 1
@@ -47,7 +47,7 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   source("bd_prob.r")
   source("bd_lt.r")
   
-  states = 0:100
+  states = 0:50
   Rprof("func.out",memory.profiling=T)
   system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){0.5*k}, drates=function(k){0.3*k}))
   Rprof(NULL)

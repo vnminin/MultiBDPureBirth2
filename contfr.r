@@ -3,7 +3,7 @@
 ### Computation with continued fraction
 ### Adapted from Forrest's code
 
-cf_lentz_m = function(m,xf,yf,maxdepth=400) {
+cf_lentz_m <- function(m,xvec,yvec,maxdepth=400) {
 	tiny = 1e-30
 	eps = 1e-8
 	j = m
@@ -17,8 +17,8 @@ cf_lentz_m = function(m,xf,yf,maxdepth=400) {
 	jbound = 1
 	
 	while(any(jbound > eps)) {
-		aj = xf(j+1)
-		bj = yf(j+1)
+		aj = xvec[j+1]
+		bj = yvec[j+1]
     	Dj = bj + aj*Dj1 
     	if (Dj == 0) Dj = tiny 
     	Cj = bj + aj/Cj1
@@ -47,21 +47,21 @@ cf_lentz_m = function(m,xf,yf,maxdepth=400) {
   	return(fj)
 }
 
-cf_BidBj = function(i,j,xf,yf) {
+cf_BidBj <- function(i,j,xvec,yvec) {
 	if(i==j) return(1)
 	a = min(i,j)
 	b = max(i,j)
-	if(b==(a+1)) return(cf_Bk1dBk(b,xf,yf))
+	if(b==(a+1)) return(cf_Bk1dBk(b,xvec,yvec))
 	
 	ans = rep(0,b+1)
 	ans[1] = 1 # Ba/Ba
-	ans[2] = 1/cf_Bk1dBk(a+1,xf,yf) # Ba+1/Ba
+	ans[2] = 1/cf_Bk1dBk(a+1,xvec,yvec) # Ba+1/Ba
 	
 	idx = 3
 	k = a + 2
 	while(k<=b) {
-		ak = xf(k)
-    	bk = yf(k)
+		ak = xvec[k]
+    	bk = yvec[k]
     	ans[idx] = bk*ans[idx-1] + ak*ans[idx-2]
 
     	idx = idx + 1
@@ -71,7 +71,7 @@ cf_BidBj = function(i,j,xf,yf) {
   	return(1/ans[idx-1])
 }
 
-cf_Bk1dBk = function(k,xf,yf) {
+cf_Bk1dBk <- function(k,xvec,yvec) {
 	if(k==0) {cat("k=0 not allowed!\n"); return(NA)}
   
   	tiny = 1e-30
@@ -80,8 +80,8 @@ cf_Bk1dBk = function(k,xf,yf) {
   	Dj1 = 0
 	
 	while(j<k) {
-    	aj = xf(j+1)
-    	bj = yf(j+1)
+    	aj = xvec[j+1]
+    	bj = yvec[j+1]
 
     	Dj = bj + aj*Dj1 
     	if (Dj==0) Dj = tiny 
