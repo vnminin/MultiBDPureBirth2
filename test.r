@@ -2,27 +2,40 @@ source("bbd_prob.r")
 source("bbd_lt.r")
 source("bd_series_accel.r")
 source("contfr.r")
+library(parallel)
 
-a0 = 3
-A = 5
-B = 5
-N = 5
+a0 =5
+A = 10
+B = 10
+N = 10
 b0 = N-a0
 
 gamma = 1
-beta = 1
+beta = pi
 
-brates1=function(x,y){0}
-drates1=function(x,y){0}
-brates2=function(x,y){0}
-drates2=function(x,y){gamma*y}
-trans=function(x,y){beta*x*y/N}
+brates1=function(a,b){0}
+drates1=function(a,b){0}
+brates2=function(a,b){0}
+drates2=function(a,b){gamma*b}
+trans=function(a,b){beta*a*b/N}
 
-# system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B))#
+# system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B))
 system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
 
+#source("bbd_prob0.r")
+#source("bbd_lt0.r")
+#source("contfr0.r")
+
+#fun <-function(x,y) {return(dbd_prob0(t=1,a0,b0,drates1,brates2,drates2,trans,x,y,B))}
+#grid = expand.grid(0:a0,0:B)
+#system.time(p0 <- matrix(mapply(fun,grid[,1],grid[,2]),ncol=B+1))
+
 source("sir.r")
-system.time(p0<-sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma))
+#sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma,0,0)
+
+funsir <- function(x,y) {return(sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma,x,y))}
+grid = expand.grid(0:a0,0:N)
+system.time(p1 <- matrix(mapply(funsir,grid[,1],grid[,2]),nrow = a0+1))
 
 
 bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
@@ -33,17 +46,23 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   states = 0:50
   system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){0.5*k}, drates=function(k){0.3*k}))
   
- system.time(p <- bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
-  
- system.time(p0 <- bbd_prob0(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
+ #system.time(p <- bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
  
+ source("bbd_prob0.r")
+ source("bbd_lt0.r")
+ source("contfr0.r")
+ 
+ fun <-function(x,y) {return(bbd_prob0(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},x,y,B=50))}
+ grid = expand.grid(0,0:50)
+ system.time(p0 <- mapply(fun,grid[,1],grid[,2]))
+
  
   	system.time(phi<-bbd_phi(s=1,3,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=20,B=20))
 
 	system.time(phi0<-bbd_phi0(s=1,3,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=20,B=20))
 	
 j = 5
-l = 3
+l = 0
 h =	10
 	count = start_count(j,l,h)
 	while (!(is.na(count[1]))) {

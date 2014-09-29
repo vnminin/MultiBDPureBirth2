@@ -245,6 +245,8 @@ lt_invert = function(f,t,A=20) {
   #cat("lt_invert(f,",t,"\n")
   kmax = 5
   ig = f(complex(real=A, imaginary=2*pi*(1:kmax))/(2*t))
+  #ig = sapply(complex(real=A, imaginary=2*pi*(1:kmax))/(2*t),f)
+
       #vals = complex(real=A,im=2*pi*(1:kmax))/(2*t)
   #cat("ig =", ig, "\n")
   psum = Re(f(A/(2*t))) / (2*t)
@@ -286,6 +288,7 @@ lt_invert = function(f,t,A=20) {
       #vals = complex(real=A,im=2*pi*((kmax+1):(kmax+20)))
       #cat("************\n\n\nvals =", vals, "\n")
       ig[(kmax+1):(kmax+20)] = f(complex(real=A,imaginary=2*pi*((kmax+1):(kmax+20)))/(2*t))
+      #ig[(kmax+1):(kmax+20)] = sapply(complex(real=A,imaginary=2*pi*((kmax+1):(kmax+20)))/(2*t),f)
       kmax = kmax + 20
     }
   }

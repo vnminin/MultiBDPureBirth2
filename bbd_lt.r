@@ -64,8 +64,10 @@ bbd_phi <-function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 }
 
 bbd_lt_invert = function(f,t,A=20) {
-	kmax = 5
-  	ig = lapply(complex(real=A, imaginary=2*pi*(1:kmax))/(2*t),f)  	
+	cores = 5
+	kmax = cores
+  	ig = lapply(complex(real=A, imaginary=2*pi*(1:kmax))/(2*t),f) 	
+  	#ig = mclapply(complex(real=A, imaginary=2*pi*(1:kmax))/(2*t),f,mc.cores = kmax)  	
   	psum0 = Re(f(A/(2*t))) / (2*t)
   	nr = nrow(ig[[1]])
   	nc = ncol(ig[[1]])
@@ -91,10 +93,13 @@ bbd_lt_invert = function(f,t,A=20) {
     			k = k+1	
     			sk1 = sk
 	    		if (k>kmax) {
-      			ig[(kmax+1):(kmax+5)] = lapply(complex(real=A,imaginary=2*pi*((kmax+1):(kmax+5)))/(2*t),f)
-	    		kmax = kmax + 5
-    			}
+      			ig[(kmax+1):(kmax+cores)] = lapply(complex(real=A,imaginary=2*pi*((kmax+1):(kmax+cores)))/(2*t),f)
+      			#ig[(kmax+1):(kmax+cores)] = mclapply(complex(real=A,imaginary=2*pi*((kmax+1):(kmax+cores)))/(2*t),f,mc.cores = cores)
+	    		kmax = kmax + cores
+	    		#print(c(i,j,kmax))
+    			}   		
   			}
+  		print(c(i,j,k))
 		result[i,j] = sk1*exp(A/2)
   		} 
   	return(result)
