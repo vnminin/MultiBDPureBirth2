@@ -11,8 +11,10 @@ bbd_lt <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	f[a0+1,] = phi[a0+1,,b0+1]
 	if (a0 < A) {
 		for (i in (a0+1):A) {	
-			br1 = sapply(0:B,lambda1,a=i-1)
-			g = c(sapply(1:B,gamma,a=i-1),0)
+			#br1 = sapply(0:B,lambda1,a=i-1)
+			br1 = lambda1[i-a0,1:(B+1)]
+			#g = c(sapply(1:B,gamma,a=i-1),0)
+			g = c(gamma[i-a0,2:(B+1)],0)
 			for (j in 0:B) {
 				v1 = as.vector(br1)
 				v2 = as.vector(f[i,])
@@ -26,7 +28,7 @@ bbd_lt <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	return(f)
 }
 
-bbd_phi <-function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
+bbd_phi <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	if ((a0<0)||(b0<0)||(a0>A)||(b0>B)) return(0)
 	phi = array(0,dim=c(A+1,B+1,B+1))
 	# phi[a,b,m]
@@ -34,24 +36,28 @@ bbd_phi <-function(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 		xf <- function(k){
 					if (k<1) stop("error at xf")
 					if (k==1) x = 1
-					else x = - lambda2(a,k-2)*mu2(a,k-1) 	
+						#else x = - lambda2(a,k-2)*mu2(a,k-1) 	
+						else x = - lambda2[a-a0+1,k-1]*mu2[a-a0+1,k] 	
 					return(x)
 				}
 		yf <- function(k) {
 					if (k<1) stop("error at yf")
-					y = s + lambda1(a,k-1) + lambda2(a,k-1) + mu2(a,k-1) + gamma(a,k-1)
+					#y = s + lambda1(a,k-1) + lambda2(a,k-1) + mu2(a,k-1) + gamma(a,k-1)
+					y = s + lambda1[a-a0+1,k] + lambda2[a-a0+1,k] + mu2[a-a0+1,k] + gamma[a-a0+1,k]
 					return(y)
 				}
 		lentz = sapply(1:(B+1),cf_lentz_m,xf,yf)
 		for (b in 0:B) {
 			for (m in 0:B) {				
-					if(b<=m) {
-    					if (b==m) fac = 1 else fac = prod(sapply((b+1):m,mu2,a=a))
+					if(b<=m) {						
+    					#if (b==m) fac = 1 else fac = prod(sapply((b+1):m,mu2,a=a))
+    					if (b==m) fac = 1 else fac = prod(as.vector(mu2[a-a0+1,(b+2):(m+1)]))
     					B1 = cf_BidBj(b,m,xf,yf)
     					B2 = 1/cf_Bk1dBk(m+1,xf,yf)
     					v = fac * B1 / (B2 + lentz[m+1])
     					} else {
-    						fac = prod(sapply(m:(b-1),lambda2,a=a))	
+    						#fac = prod(sapply(m:(b-1),lambda2,a=a))	
+    						fac = prod(as.vector(lambda2[a-a0+1,(m+1):b]))	
     						B1 = cf_BidBj(m,b,xf,yf)
     						B2 = 1/cf_Bk1dBk(b+1,xf,yf)
     						v = fac * B1 / (B2 + lentz[b+1]) 
@@ -99,7 +105,6 @@ bbd_lt_invert = function(f,t,A=20) {
 	    		#print(c(i,j,kmax))
     			}   		
   			}
-  		print(c(i,j,k))
 		result[i,j] = sk1*exp(A/2)
   		} 
   	return(result)

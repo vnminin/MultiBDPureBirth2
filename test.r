@@ -4,10 +4,10 @@ source("bd_series_accel.r")
 source("contfr.r")
 library(parallel)
 
-a0 =5
-A = 10
-B = 10
-N = 10
+a0 =10
+A = 20
+B = 20
+N = 20
 b0 = N-a0
 
 gamma = 1
@@ -20,7 +20,11 @@ drates2=function(a,b){gamma*b}
 trans=function(a,b){beta*a*b/N}
 
 # system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B))
-system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
+Rprof("func.out",memory.profiling=T)
+#system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
+p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B)
+Rprof(NULL)
+summaryRprof("func.out",memory="both")
 
 #source("bbd_prob0.r")
 #source("bbd_lt0.r")
@@ -43,10 +47,17 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   source("bd_prob.r")
   source("bd_lt.r")
   
-  states = 0:50
+  states = 0:100
+  Rprof("func.out",memory.profiling=T)
   system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){0.5*k}, drates=function(k){0.3*k}))
-  
- #system.time(p <- bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
+  Rprof(NULL)
+summaryRprof("func.out",memory="both")
+
+ Rprof("func.out",memory.profiling=T)
+ system.time(p <- bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
+ Rprof(NULL)
+summaryRprof("func.out",memory="both")
+
  
  source("bbd_prob0.r")
  source("bbd_lt0.r")
