@@ -36,19 +36,19 @@ bbd_phi <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B) {
 		xvec = x[a-a0+1,]
 		yvec = s+ y[a-a0+1,]
 		lentz = sapply(1:(B+1),cf_lentz_m,xvec,yvec)
+		Bk1dBk = cf_Bk1dBk(B,xvec,yvec)
+		BidBj = cf_BidBj(B,xvec,yvec)
 		for (b in 0:B) {
 			for (m in 0:B) {				
 					if(b<=m) {						
-    					#if (b==m) fac = 1 else fac = prod(sapply((b+1):m,mu2,a=a))
     					if (b==m) fac = 1 else fac = prod(as.vector(mu2[a-a0+1,(b+2):(m+1)]))
-    					B1 = cf_BidBj(b,m,xvec,yvec)
-    					B2 = 1/cf_Bk1dBk(m+1,xvec,yvec)
+    					B1 = BidBj[b+1,m+1]
+    					B2 = 1/Bk1dBk[m+1]
     					v = fac * B1 / (B2 + lentz[m+1])
     					} else {
-    						#fac = prod(sapply(m:(b-1),lambda2,a=a))	
     						fac = prod(as.vector(lambda2[a-a0+1,(m+1):b]))	
-    						B1 = cf_BidBj(m,b,xvec,yvec)
-    						B2 = 1/cf_Bk1dBk(b+1,xvec,yvec)
+    						B1 = BidBj[m+1,b+1]
+      						B2 = 1/Bk1dBk[b+1]
     						v = fac * B1 / (B2 + lentz[b+1]) 
   							}
   					phi[a+1,b+1,m+1] = v				

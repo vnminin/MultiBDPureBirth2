@@ -4,10 +4,10 @@ source("bd_series_accel.r")
 source("contfr.r")
 library(parallel)
 
-a0 =0
-A = 20
-B = 20
-N = 20
+a0 = 30
+A = 50
+B = 50
+N = 50
 b0 = N-a0
 
 gamma = 1

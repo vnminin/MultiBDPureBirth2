@@ -50,7 +50,6 @@ sir <- function(t,n,a,f,mu,i,l){
 		for (w in 1:(n-i)) 
 			smalls = smalls*(lw[w+1]-w+1)*f(i+w,lw[w+1]-w)
 		bigs = bigs + smalls
-		print(lw)
 		count = add_count(count,n-i,l,n+a-i)	
 	}
 	tmp = tmp + log(bigs)
