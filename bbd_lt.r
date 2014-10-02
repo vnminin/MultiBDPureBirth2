@@ -16,11 +16,16 @@ bbd_lt <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B) {
 			#g = c(sapply(1:B,gamma,a=i-1),0)
 			g = c(gamma[i-a0,2:(B+1)],0)
 			for (j in 0:B) {
-				v1 = as.vector(br1)
-				v2 = as.vector(f[i,])
-				v3 = as.vector(phi[i+1,j+1,])
-				v4 = as.vector(g)
-				v5 = as.vector(c(f[i,2:(B+1)],0))
+				#v1 = as.vector(br1)
+				v1 = br1
+				#v2 = as.vector(f[i,])
+				v2 = f[i,]
+				#v3 = as.vector(phi[i+1,j+1,])
+				v3 = phi[i+1,j+1,]
+				#v4 = as.vector(g)
+				v4 = g
+				#v5 = as.vector(c(f[i,2:(B+1)],0))
+				v5 = c(f[i,2:(B+1)],0)
 				f[i+1,j+1] = sum((v1*v2+v4*v5)*v3)
 			}
 		}
@@ -34,19 +39,27 @@ bbd_phi <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B) {
 	# phi[a,b,m]
 	for (a in a0:A) {
 		xvec = x[a-a0+1,]
-		yvec = s+ y[a-a0+1,]
+		yvec = s+y[a-a0+1,]
 		lentz = sapply(1:(B+1),cf_lentz_m,xvec,yvec)
 		Bk1dBk = cf_Bk1dBk(B,xvec,yvec)
-		BidBj = cf_BidBj(B,xvec,yvec)
+		BidBj = cf_BidBj(B,xvec,yvec,Bk1dBk)
+		prod_mu2 = prod_vec(a-a0+1,B,mu2)
+		prod_lambda2 = prod_vec(a-a0+1,B,lambda2)
 		for (b in 0:B) {
 			for (m in 0:B) {				
 					if(b<=m) {						
-    					if (b==m) fac = 1 else fac = prod(as.vector(mu2[a-a0+1,(b+2):(m+1)]))
+    					if (b==m) fac = 1 else {
+    						#fac = prod(as.vector(mu2[a-a0+1,(b+2):(m+1)]))
+    						#fac = prod(mu2[a-a0+1,(b+2):(m+1)])
+    						fac = prod_mu2[b+2,m+1]
+    					}						
     					B1 = BidBj[b+1,m+1]
     					B2 = 1/Bk1dBk[m+1]
     					v = fac * B1 / (B2 + lentz[m+1])
     					} else {
-    						fac = prod(as.vector(lambda2[a-a0+1,(m+1):b]))	
+    						#fac = prod(as.vector(lambda2[a-a0+1,(m+1):b]))	
+    						#fac = prod(lambda2[a-a0+1,(m+1):b])
+    						fac = prod_lambda2[m+1,b]
     						B1 = BidBj[m+1,b+1]
       						B2 = 1/Bk1dBk[b+1]
     						v = fac * B1 / (B2 + lentz[b+1]) 

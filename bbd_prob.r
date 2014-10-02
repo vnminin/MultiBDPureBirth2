@@ -5,6 +5,8 @@
 
 bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 	maxdepth = 400
+	dyn.load("cf_BidBj.so")
+	dyn.load("prod_vec.so")
 	#l1 <- function(a,b){return(lambda1(a,b))}
 	#l2 <- function(a,b){return(lambda2(a,b))}
 	#m2 <- function(a,b){return(mu2(a,b))}

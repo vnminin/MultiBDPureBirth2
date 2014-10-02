@@ -2,12 +2,38 @@ source("bbd_prob.r")
 source("bbd_lt.r")
 source("bd_series_accel.r")
 source("contfr.r")
+source("support.r")
 library(parallel)
 
-a0 =0
-A = 20
-B = 20
-N = 20
+### Within-host macroparasite population
+a0 = 30
+b0 = 0
+A = a0
+B = a0
+
+muL = 1
+muM = 1
+eta = 1
+gamma = 1
+
+drates1=function(a,b){muL*a+eta*a^2}
+brates2=function(a,b){0}
+drates2=function(a,b){muM*b}
+trans=function(a,b){gamma*a} # a -> b
+
+Rprof("func.out",memory.profiling=T)
+#system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
+p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B)
+Rprof(NULL)
+summaryRprof("func.out",memory="both")
+
+
+### SIR
+
+a0 = 30
+A = 50
+B = 50
+N = 50
 b0 = N-a0
 
 gamma = 1
