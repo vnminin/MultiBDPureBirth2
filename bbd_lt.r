@@ -45,28 +45,26 @@ bbd_phi <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B) {
 		BidBj = cf_BidBj(B,xvec,yvec,Bk1dBk)
 		prod_mu2 = prod_vec(a-a0+1,B,mu2)
 		prod_lambda2 = prod_vec(a-a0+1,B,lambda2)
-		for (b in 0:B) {
-			for (m in 0:B) {				
-					if(b<=m) {						
-    					if (b==m) fac = 1 else {
-    						#fac = prod(as.vector(mu2[a-a0+1,(b+2):(m+1)]))
-    						#fac = prod(mu2[a-a0+1,(b+2):(m+1)])
-    						fac = prod_mu2[b+2,m+1]
-    					}						
-    					B1 = BidBj[b+1,m+1]
-    					B2 = 1/Bk1dBk[m+1]
-    					v = fac * B1 / (B2 + lentz[m+1])
-    					} else {
-    						#fac = prod(as.vector(lambda2[a-a0+1,(m+1):b]))	
-    						#fac = prod(lambda2[a-a0+1,(m+1):b])
-    						fac = prod_lambda2[m+1,b]
-    						B1 = BidBj[m+1,b+1]
-      						B2 = 1/Bk1dBk[b+1]
-    						v = fac * B1 / (B2 + lentz[b+1]) 
-  							}
-  					phi[a+1,b+1,m+1] = v				
-				}
-			}
+		#for (b in 0:B) {
+		#	for (m in 0:B) {				
+		#			if(b<=m) {						
+    	#				if (b==m) fac = 1 else {
+    	#					fac = prod_mu2[b+2,m+1]
+    	#				}						
+    	#				B1 = BidBj[b+1,m+1]
+    	#				B2 = 1/Bk1dBk[m+1]
+    	#				v = fac * B1 / (B2 + lentz[m+1])
+    	#				} else {
+    	#					fac = prod_lambda2[m+1,b]
+    	#					B1 = BidBj[m+1,b+1]
+      	#					B2 = 1/Bk1dBk[b+1]
+    	#					v = fac * B1 / (B2 + lentz[b+1]) 
+  		#					}
+  		#			phi[a+1,b+1,m+1] = v				
+		#		}
+		#	}
+		tmp = .C("phi_routine", as.integer(B), as.double(as.vector(prod_mu2)), as.double(as.vector(prod_lambda2)), as.complex(Bk1dBk), as.complex(as.vector(BidBj)), as.complex(lentz), as.complex(as.vector(phi[a+1,,])))
+		phi[a+1,,] = matrix(tmp[[7]], nrow=B+1, byrow=T)
 		}
 	return(phi)
 }

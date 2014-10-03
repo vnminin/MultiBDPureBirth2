@@ -4,17 +4,18 @@ source("bd_series_accel.r")
 source("contfr.r")
 source("support.r")
 library(parallel)
+library(compiler)
 
 ### Within-host macroparasite population
-a0 = 30
+a0 = 100
 b0 = 0
 A = a0
 B = a0
 
-muL = 1
-muM = 1
-eta = 1
-gamma = 1
+muL = runif(1,0,1)
+muM = 0.0015
+eta = runif(1,0,1)
+gamma = 0.04
 
 drates1=function(a,b){muL*a+eta*a^2}
 brates2=function(a,b){0}
@@ -23,9 +24,11 @@ trans=function(a,b){gamma*a} # a -> b
 
 Rprof("func.out",memory.profiling=T)
 #system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
-p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B)
+p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,B)
 Rprof(NULL)
 summaryRprof("func.out",memory="both")
+sum(p)
+print(c(muL,muM))
 
 
 ### SIR

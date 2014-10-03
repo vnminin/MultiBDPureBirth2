@@ -1,4 +1,4 @@
-#prod_vec <- function(a,B,mat) {
+#prod_vec0 <- function(a,B,mat) {
 #	v = mat[a,]
 #	res = matrix(NA,nrow=(B+1),ncol=B+1)
 #	for (i in 1:(B+1))
