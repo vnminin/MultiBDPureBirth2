@@ -9,7 +9,7 @@ library(compiler)
 ### Within-host macroparasite population
 a0 = 100
 b0 = 0
-A = a0
+A = 0
 B = a0
 
 muL = runif(1,0,1)
@@ -22,21 +22,21 @@ brates2=function(a,b){0}
 drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> b
 
-Rprof("func.out",memory.profiling=T)
-#system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
-p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,B)
-Rprof(NULL)
-summaryRprof("func.out",memory="both")
+#Rprof("func.out",memory.profiling=T)
+system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+#p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+#Rprof(NULL)
+#summaryRprof("func.out",memory="both")
 sum(p)
 print(c(muL,muM))
 
 
 ### SIR
 
-a0 = 30
-A = 50
-B = 50
-N = 50
+a0 = 1
+A = 0
+B = 3
+N = 3
 b0 = N-a0
 
 gamma = 1
@@ -51,7 +51,7 @@ trans=function(a,b){beta*a*b/N}
 # system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B))
 Rprof("func.out",memory.profiling=T)
 #system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
-p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B)
+p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 Rprof(NULL)
 summaryRprof("func.out",memory="both")
 
@@ -77,15 +77,15 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   source("bd_lt.r")
   
   states = 0:50
-  Rprof("func.out",memory.profiling=T)
+  #Rprof("func.out",memory.profiling=T)
   system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){0.5*k}, drates=function(k){0.3*k}))
-  Rprof(NULL)
-summaryRprof("func.out",memory="both")
+  #Rprof(NULL)
+#summaryRprof("func.out",memory="both")
 
- Rprof("func.out",memory.profiling=T)
+ #Rprof("func.out",memory.profiling=T)
  system.time(p <- bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
- Rprof(NULL)
-summaryRprof("func.out",memory="both")
+ #Rprof(NULL)
+#summaryRprof("func.out",memory="both")
 
  
  source("bbd_prob0.r")
@@ -110,5 +110,55 @@ h =	10
 		count = add_count(count,j,l,h)
 	}
 
-  
+###########################################
+
+# Data: Spread of Smallpox in a Nigerian Village (Yip 1989 - Theoretical Pop Bio)
+# This data is not appropriate for SIR model
+
+t=0:83
+i = c(rep(1,23),rep(2,3),5,6,5,5,4,5,5,2,1,1,2,2,1,2,2,4,
+	4,5,5,5,4,4,3,3,1,2,3,3,3,2,4,5,5,5,5,7,8,6,5,4,3,5,3,2,
+	2,2,3,3,1,1,1,2,2,1,1,1,1,1)
+s = c(119,rep(118,7),117,117,116,116,116,113,rep(112,4),rep(111,5),
+	110,110,110,109,109,107,107,rep(105,5),104,104,104,103,rep(102,4),
+	100,99,98,97,97,95,rep(94,5),rep(92,5),rep(91,5),rep(90,20))
+	
+N = 120
+
+gamma = 10
+beta =  10
+brates1=function(a,b){0}
+drates1=function(a,b){0}
+brates2=function(a,b){0}
+drates2=function(a,b){beta*b}
+trans=function(a,b){alpha*a*b}
+
+loglik <- function(i,s,drates1,brates2,drates2,trans) {
+	loglik = 0
+	n = length(i)
+	for (k in 1:(n-1)) {
+		p = dbd_prob(t=1,a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
+			a=s[k+1],B=s[k]+i[k]-s[k+1])
+		loglik = loglik + log(p[s[k]-s[k+1]+1,i[k+1]])	
+		print(c(loglik,s[k],i[k]))
+	}
+	return(loglik)
+}
+
+loglik(i,s,drates1,brates2,drates2,trans)
+
+
+lik = matrix(NA,nrow=10,ncol=10)
+for (x in 1:10)
+for (y in 1:10){
+	alpha = x/10
+	beta =  y/10
+	brates1=function(a,b){0}
+	drates1=function(a,b){0}
+	brates2=function(a,b){0}
+	drates2=function(a,b){beta*b}
+	trans=function(a,b){alpha*a*b}
+	lik[x,y] = loglik(N,i,s,drates1,brates2,drates2,trans)
+	print(c(x,y))
+}  
   

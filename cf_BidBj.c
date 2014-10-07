@@ -12,6 +12,7 @@ void cf_BidBj(int *B,double *xvec, double complex *yvec, double complex *Bk1dBk,
 			}
 				else ans[j] = yvec[j-1]*ans[j-1] + xvec[j-1]*ans[j-2];
 			res[i*(B[0]+1) + j] = 1/ans[j];
+			if (res[i*(B[0]+1) + j]==0) break;
 		}
 	}
 }
