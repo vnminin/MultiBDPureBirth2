@@ -1,8 +1,8 @@
-source("bbd_prob.r")
-source("bbd_lt.r")
-source("bd_series_accel.r")
-source("contfr.r")
-source("support.r")
+source("R/bbd_prob.r")
+source("R/bbd_lt.r")
+source("R/bd_series_accel.r")
+source("R/contfr.r")
+source("R/support.r")
 library(parallel)
 library(compiler)
 

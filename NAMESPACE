@@ -1,0 +1,3 @@
+useDynLib(BirthDeathBirth)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
