@@ -3,9 +3,9 @@
 ### Transition probability of a birth/birth-death process
 
 
-bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
+bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT = TRUE) {
 	maxdepth = 400
-	enableJIT(1)
+  if (doJIT) enableJIT(1)
 # 	dyn.load("cf_BidBj.so")
 # 	dyn.load("prod_vec.so")
 # 	dyn.load("phi_routine.so")
@@ -46,16 +46,16 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
 		})
 	#if(any(is.na(res))) cat("bbd_prob(",a0,",",b0,",",t,") failed\n")	
 	
-	enableJIT(0)
+	if (doJIT) enableJIT(0)
 	return(abs(res))
 }
 
-dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B) {
+dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,doJIT=TRUE) {
 	l1 <- function(a,b){return(mu1(a0-a,B-b))}
 	l2 <- function(a,b){return(mu2(a0-a,B-b))}
 	m2 <- function(a,b){return(lambda2(a0-a,B-b))}
 	g <- function(a,b){return(gamma(a0-a,B-b))}
 	res = matrix(NA,nrow=a0-a+1,ncol=B+1)
-	res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B)
+	res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,doJIT)
 	return(res)
 }
