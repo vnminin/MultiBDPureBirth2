@@ -51,9 +51,9 @@ cf_BidBj <- function(B,xvec,yvec,Bk1dBk) {
 	res = matrix(0,nrow=B+1,ncol=B+1)
 	ans = rep(1,(B+1))
 	
-	tmp = .C("cf_BidBj",as.integer(B),as.double(xvec),as.complex(yvec),
+    tmp = .C("cf_BidBj",as.integer(B),as.double(xvec),as.complex(yvec),
 		as.complex(Bk1dBk),as.complex(res),as.complex(ans))
-	res = matrix(tmp[[5]], nrow = B+1, byrow = T)
+    res = matrix(tmp[[5]], nrow = B+1, byrow = T)
 	return(res)
 }
 

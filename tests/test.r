@@ -1,13 +1,16 @@
-source("R/bbd_prob.r")
-source("R/bbd_lt.r")
-source("R/bd_series_accel.r")
-source("R/contfr.r")
-source("R/support.r")
+#source("../R/bbd_prob.R")
+#source("../R/bbd_lt.R")
+#source("../R/bd_series_accel.R")
+#source("../R/contfr.R")
+#source("../R/support.R")
+library(BirthDeathBirth)
 library(parallel)
 library(compiler)
+library(Rcpp)
 
 ### Within-host macroparasite population
-a0 = 100
+
+a0 = 30
 b0 = 0
 A = 0
 B = a0
@@ -28,7 +31,7 @@ system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 sum(p)
-print(c(muL,muM))
+#print(c(muL,muM))
 
 
 ### SIR
@@ -161,4 +164,40 @@ for (y in 1:10){
 	lik[x,y] = loglik(N,i,s,drates1,brates2,drates2,trans)
 	print(c(x,y))
 }  
-  
+
+#########################################################
+
+t = c(0,1.5,2,2.5,3,3.5,4,4.5)*30
+s = c(254,235,201,154,121,108,97,83)
+i = c(7,15,22,29,21,8,8,0)
+
+loglik <- function(s,i,t,drates1,brates2,drates2,trans) {
+	n = length(i)
+  fun <- function(k){return(log(dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
+                                     a=s[k+1],B=s[k]+i[k]-s[k+1]))[1,i[k+1]+1])}
+  tmp = sapply(1:(n-1),fun)
+  print(tmp)
+  loglik = sum(tmp)
+	# for (k in 1:(n-1)) {
+		# p = dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
+		#	 a=s[k+1],B=s[k]+i[k]-s[k+1])
+		# loglik = loglik + log(p[1,i[k+1]+1])	
+		# print(c(ncol(p),nrow(p)))
+	# }
+	return(loglik)
+}
+
+alpha = runif(1,0,1)
+beta =  runif(1,0,1)
+#alpha = 0.01
+#beta = 0.01
+brates1=function(a,b){0}
+drates1=function(a,b){0}
+brates2=function(a,b){0}
+drates2=function(a,b){beta*b}
+trans=function(a,b){alpha*a*b}
+
+system.time(l<-loglik(s,i,t,drates1,brates2,drates2,trans))
+print(c(l,alpha,beta))
+
+#dbd_prob(t=15,a0=97,b0=8,drates1,brates2,drates2,trans,a=83,B=22)[1,]
