@@ -5,11 +5,18 @@
 
 bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT = TRUE) {
 	maxdepth = 400
+<<<<<<< HEAD
 	if (doJIT) enableJIT(1)
     #dyn.load("../src/cf_BidBj.so")
     #dyn.load("../src/prod_vec.so")
     #dyn.load("../src/phi_routine.so")
     #sourceCpp("../src/bbd.cpp")
+=======
+  if (doJIT) enableJIT(1)
+# 	dyn.load("cf_BidBj.so")
+# 	dyn.load("prod_vec.so")
+# 	dyn.load("phi_routine.so")
+>>>>>>> 277fb17194e1cc08f5bba9c307f86df526d44e02
 	#l1 <- function(a,b){return(lambda1(a,b))}
 	#l2 <- function(a,b){return(lambda2(a,b))}
 	#m2 <- function(a,b){return(mu2(a,b))}
@@ -60,7 +67,10 @@ dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,doJIT=TRUE) {
 	g <- function(a,b){return(gamma(a0-a,B-b))}
 	res = matrix(NA,nrow=a0-a+1,ncol=B+1)
 	res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,doJIT)
+<<<<<<< HEAD
     colnames(res) = 0:B
     rownames(res) = a:a0
+=======
+>>>>>>> 277fb17194e1cc08f5bba9c307f86df526d44e02
 	return(res)
 }
