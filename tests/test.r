@@ -1,16 +1,8 @@
-<<<<<<< HEAD
 #source("../R/bbd_prob.R")
 #source("../R/bbd_lt.R")
 #source("../R/bd_series_accel.R")
 #source("../R/contfr.R")
 #source("../R/support.R")
-=======
-# source("R/bbd_prob.r")
-# source("R/bbd_lt.r")
-# source("R/bd_series_accel.r")
-# source("R/contfr.r")
-# source("R/support.r")
->>>>>>> 277fb17194e1cc08f5bba9c307f86df526d44e02
 library(BirthDeathBirth)
 library(parallel)
 library(compiler)
