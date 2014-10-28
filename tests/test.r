@@ -26,8 +26,8 @@ drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> b
 
 #Rprof("func.out",memory.profiling=T)
-#system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
-p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+#p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 sum(p)
@@ -166,38 +166,90 @@ for (y in 1:10){
 }  
 
 #########################################################
+# The Great Plague in Eyam 
+# Mathemetical Epidemiology (2008) - Fred Brauer et al.
 
-t = c(0,1.5,2,2.5,3,3.5,4,4.5)*30
-s = c(254,235,201,154,121,108,97,83)
-i = c(7,15,22,29,21,8,8,0)
+#t = c(0,1.5,2,2.5,3,3.5,4,4.5)*30
+#s = c(254,235,201,154,121,108,97,83)
+#i = c(7,15,22,29,21,8,8,0)
 
-loglik <- function(s,i,t,drates1,brates2,drates2,trans) {
+ t = c(0,16,17,16,17,32)
+ s = c(201,154,121,108,97,83)
+ i = c(22,29,21,8,8,0)
+
+
+### Likelihood
+loglik <- function(param) {
+
+  alpha = param[1]
+  beta = param[2]
+  
+  brates1=function(a,b){0}
+  drates1=function(a,b){0}
+  brates2=function(a,b){0}
+  drates2=function(a,b){alpha*b}
+  trans=function(a,b){beta*a*b}
+  
+  
 	n = length(i)
   fun <- function(k){return(log(dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
                                      a=s[k+1],B=s[k]+i[k]-s[k+1]))[1,i[k+1]+1])}
-  tmp = sapply(1:(n-1),fun)
-  print(tmp)
-  loglik = sum(tmp)
-	# for (k in 1:(n-1)) {
-		# p = dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
-		#	 a=s[k+1],B=s[k]+i[k]-s[k+1])
-		# loglik = loglik + log(p[1,i[k+1]+1])	
-		# print(c(ncol(p),nrow(p)))
-	# }
+  tmp = mclapply(1:(n-1),fun,mc.cores=3)
+  loglik = sum(unlist(tmp))
 	return(loglik)
 }
 
-alpha = runif(1,0,1)
-beta =  runif(1,0,1)
-#alpha = 0.01
-#beta = 0.01
-brates1=function(a,b){0}
-drates1=function(a,b){0}
-brates2=function(a,b){0}
-drates2=function(a,b){beta*b}
-trans=function(a,b){alpha*a*b}
+#alpha = runif(1,0,5)
+#beta =  runif(1,0,1)
+#alpha = 2.73
+#beta = 0.0178
+#brates1=function(a,b){0}
+#drates1=function(a,b){0}
+#brates2=function(a,b){0}
+#drates2=function(a,b){alpha*b}
+#trans=function(a,b){beta*a*b}
+#system.time(l<-loglik(c(0.5,0.5)))
+# print(c(l,alpha,beta))
 
-system.time(l<-loglik(s,i,t,drates1,brates2,drates2,trans))
-print(c(l,alpha,beta))
 
-#dbd_prob(t=15,a0=97,b0=8,drates1,brates2,drates2,trans,a=83,B=22)[1,]
+### Prior
+logprior <- function(param){
+  alpha = param[1]
+  beta = param[2]
+  aprior = dunif(alpha, min=0, max=5, log = T)
+  bprior = dunif(beta, min=0, max=1, log = T)
+  return(aprior+bprior)
+}
+
+posterior <- function(param){
+  return (loglik(param) + logprior(param))
+}
+
+######## Metropolis algorithm ################
+
+proposalfunction <- function(param){
+  return(rnorm(2,mean = param, sd= c(0.5,0.5)))
+}
+
+run_metropolis_MCMC <- function(startvalue, iterations){
+  chain = array(dim = c(iterations+1,length(startvalue)))
+  chain[1,] = startvalue
+  for (i in 1:iterations){
+    proposal = proposalfunction(chain[i,])
+    
+    probab = exp(posterior(proposal) - posterior(chain[i,]))
+    if (runif(1) < probab){
+      chain[i+1,] = proposal
+    }else{
+      chain[i+1,] = chain[i,]
+    }
+    print(i)
+  }
+  return(chain)
+}
+
+startvalue = c(0.5,0.5)
+system.time(chain <- run_metropolis_MCMC(startvalue, 20))
+
+burnIn = 5
+acceptance = 1-mean(duplicated(chain[-(1:burnIn),]))

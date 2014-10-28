@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::vector< std::complex<double> > bbd_lt_Cpp(std::complex<double> s, int a0, int b0, std::vector<double> lambda1, std::vector<double> lambda2, std::vector<double> mu2, std::vector<double> gamma, std::vector<double> x, std::vector<double> y, int A, int B) {
+std::vector< std::complex<double> > bbd_lt_Cpp(const std::complex<double> & s, const int & a0, const int & b0, const std::vector<double> & lambda1, const std::vector<double> & lambda2, const std::vector<double> & mu2, const std::vector<double> & gamma, const std::vector<double> & x, const std::vector<double> & y, const int & A, const int & B) {
   
   std::vector< std::complex<double> > f((A+1-a0)*(B+1)), phi((A+1-a0)*(B+1)*(B+1));
   const std::complex<double> zero(0,0);

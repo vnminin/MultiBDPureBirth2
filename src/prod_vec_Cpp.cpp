@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::vector<double> prod_vec_Cpp(int a, int B, std::vector<double> mat) {
+std::vector<double> prod_vec_Cpp(const int & a, const int & B, const std::vector<double> & mat) {
   std::vector<double> res((B+1)*(B+1));
   for (int i=0; i<=B; i++)
   	for (int j=0; j<=B; j++) {

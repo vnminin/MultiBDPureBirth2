@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::vector< std::complex<double> > lentz_Cpp(int B, std::vector<double> xvec, std::vector< std::complex<double> > yvec) {
+std::vector< std::complex<double> > lentz_Cpp(const int & B, const std::vector<double> & xvec, const std::vector< std::complex<double> > & yvec) {
   
   const double eps = 1e-8;
   const std::complex<double> one(1,0), two(2,0), zero(0,0), tiny(1e-16,0);
