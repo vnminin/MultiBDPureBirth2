@@ -2,26 +2,17 @@
 #include "bbd.h"
 using namespace Rcpp;
 
-inline std::complex<double> reciprocal( std::complex<double>& x) {
-                const double denominator = x.real() * x.real() + x.imag() * x.imag();
-                return {
-                        x.real() / denominator,
-                        - x.imag() / denominator
-                };
-              }
-
 // [[Rcpp::export]]
 std::vector<std::complex<double>> phi_Cpp (int flag, const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B) {  
   
   std::vector<std::complex<double>> phi((A+1-a0)*(B+1)*(B+1));
-  const int dim = B+1+400;
-  std::complex<double> fac,B1,B2,v;
-  const std::complex<double> one(1.0,0.0), zero(0,0);
-  std::vector<double> xvec(dim), prod_mu2((B+1)*(B+1)), prod_lambda2((B+1)*(B+1));
-  std::vector<std::complex<double>> yvec(dim), lentz(B+1), Bk1dBk(B+1), BidBj((B+1)*(B+1));
+  // std::complex<double> fac,B1,B2,v;
+   const std::complex<double> one(1.0,0.0);
+  std::vector<double> xvec(B+401), prod_mu2((B+1)*(B+1)), prod_lambda2((B+1)*(B+1));
+  std::vector<std::complex<double>> yvec(B+401), lentz(B+1), Bk1dBk(B+1), BidBj((B+1)*(B+1));
         
       for (int a=0; a<=(A-a0); a++) {        
-        for (int i=0; i<dim; i++) {
+        for (int i=0; i<(B+401); i++) {
             xvec[i] = x[a+i*(A-a0+1)];
             yvec[i] = s+ y[a+i*(A-a0+1)];
         }
@@ -35,27 +26,27 @@ std::vector<std::complex<double>> phi_Cpp (int flag, const std::complex<double> 
         for (int i=0; i<=B; i++) 
         	for (int j=0; j<=B; j++) {
 			      if (i<=j) {
-				      if (i==j) {
-					      fac = one;
-				      } else {
-					      fac = prod_mu2[(i+1)*(B+1)+j];
-				      }               
-				      B1 = BidBj[i*(B+1)+j];
-              
+              std::complex<double> B2;
               // micobenchmark    
               if (flag == 0) B2 = one/Bk1dBk[j];
               if (flag == 1) B2 = std::complex<double>(1.0, 0.0)/Bk1dBk[j];
               if (flag == 2) B2 = reciprocal(Bk1dBk[j]);
               
-				      v = fac*B1/(B2+lentz[j]);
+				      if (i==j) {
+                phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = BidBj[i*(B+1)+j]/(B2+lentz[j]);
+				      } else {
+					      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_mu2[(i+1)*(B+1)+j]*BidBj[i*(B+1)+j]/(B2+lentz[j]);
+				      } 
 			      } else {
-				      fac = prod_lambda2[j*(B+1)+i-1];
-				      B1 = BidBj[j*(B+1)+i];
-				      B2 = one/Bk1dBk[i];
-				      v = fac*B1/(B2+lentz[i]);
-			      }   
-      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = v;
-		}
+              std::complex<double> B2;
+              // micobenchmark    
+              if (flag == 0) B2 = one/Bk1dBk[i];
+              if (flag == 1) B2 = std::complex<double>(1.0, 0.0)/Bk1dBk[i];
+              if (flag == 2) B2 = reciprocal(Bk1dBk[i]);
+              
+				      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_lambda2[j*(B+1)+i-1]*BidBj[j*(B+1)+i]/(B2+lentz[i]);
+			      }  
+		    }
   }
   return(phi);
 }

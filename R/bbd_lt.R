@@ -4,9 +4,8 @@
 
 bbd_lt <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B) {
 	# initialize phi
-	phi = bbd_phi(s,a0,b0,lambda2,mu2,x,y,A,B) 
-  #phi_ = array(phi_Cpp(s,a0,b0,lambda2,mu2,x,y,A,B),dim=c(A-a0+1,B+1,B+1))
-  #print(sum(abs(phi-phi_)))
+	#phi = bbd_phi(s,a0,b0,lambda2,mu2,x,y,A,B) 
+  phi = array(phi_Cpp(2,s,a0,b0,lambda2,mu2,x,y,A,B),dim=c(A-a0+1,B+1,B+1))
 	# phi[a,b,m]
 	f = matrix(0,nrow=A+1-a0,ncol=B+1)
 	# f[a,b]

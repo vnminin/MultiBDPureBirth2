@@ -26,7 +26,7 @@ drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> b
 
 #Rprof("func.out",memory.profiling=T)
-system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
 #p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
@@ -169,13 +169,13 @@ for (y in 1:10){
 # The Great Plague in Eyam 
 # Mathemetical Epidemiology (2008) - Fred Brauer et al.
 
-#t = c(0,1.5,2,2.5,3,3.5,4,4.5)*30
-#s = c(254,235,201,154,121,108,97,83)
-#i = c(7,15,22,29,21,8,8,0)
+t = c(0,1.5,2,2.5,3,3.5,4,4.5)*30
+s = c(254,235,201,154,121,108,97,83)
+i = c(7,15,22,29,21,8,8,0)
 
- t = c(0,16,17,16,17,32)
- s = c(201,154,121,108,97,83)
- i = c(22,29,21,8,8,0)
+# t = c(0,16,17,16,17,32)
+# s = c(201,154,121,108,97,83)
+# i = c(22,29,21,8,8,0)
 
 
 ### Likelihood
@@ -195,7 +195,7 @@ loglik <- function(param) {
   fun <- function(k){return(log(dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
                                      a=s[k+1],B=s[k]+i[k]-s[k+1]))[1,i[k+1]+1])}
   #tmp = mclapply(1:(n-1),fun,mc.cores=3)
-  tmp = slapply(1:(n-1),fun)
+  tmp = sapply(1:(n-1),fun)
   #loglik = sum(unlist(tmp))
   loglik = sum(tmp)
 	return(loglik)
@@ -203,15 +203,15 @@ loglik <- function(param) {
 
 #alpha = runif(1,0,5)
 #beta =  runif(1,0,1)
-#alpha = 2.73
-#beta = 0.0178
-#brates1=function(a,b){0}
-#drates1=function(a,b){0}
-#brates2=function(a,b){0}
-#drates2=function(a,b){alpha*b}
-#trans=function(a,b){beta*a*b}
-#system.time(l<-loglik(c(0.5,0.5)))
-# print(c(l,alpha,beta))
+alpha = 2.73
+beta = 0.0178
+brates1=function(a,b){0}
+drates1=function(a,b){0}
+brates2=function(a,b){0}
+drates2=function(a,b){alpha*b}
+trans=function(a,b){beta*a*b}
+system.time(l<-loglik(c(0.5,0.5)))
+print(c(l,alpha,beta))
 
 
 ### Prior

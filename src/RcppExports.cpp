@@ -6,24 +6,24 @@
 using namespace Rcpp;
 
 // bbd_lt_Cpp
-std::vector< std::complex<double> > bbd_lt_Cpp(const std::complex<double>& s, const int& a0, const int& b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int& A, const int& B);
+std::vector<std::complex<double>> bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B);
 RcppExport SEXP BirthDeathBirth_bbd_lt_Cpp(SEXP sSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP gammaSEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP BSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const std::complex<double>& >::type s(sSEXP );
-        Rcpp::traits::input_parameter< const int& >::type a0(a0SEXP );
-        Rcpp::traits::input_parameter< const int& >::type b0(b0SEXP );
+        Rcpp::traits::input_parameter< const std::complex<double> >::type s(sSEXP );
+        Rcpp::traits::input_parameter< const int >::type a0(a0SEXP );
+        Rcpp::traits::input_parameter< const int >::type b0(b0SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type lambda1(lambda1SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type lambda2(lambda2SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type mu2(mu2SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type gamma(gammaSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type x(xSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type y(ySEXP );
-        Rcpp::traits::input_parameter< const int& >::type A(ASEXP );
-        Rcpp::traits::input_parameter< const int& >::type B(BSEXP );
-        std::vector< std::complex<double> > __result = bbd_lt_Cpp(s, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B);
+        Rcpp::traits::input_parameter< const int >::type A(ASEXP );
+        Rcpp::traits::input_parameter< const int >::type B(BSEXP );
+        std::vector<std::complex<double>> __result = bbd_lt_Cpp(s, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
