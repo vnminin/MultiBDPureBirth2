@@ -41,8 +41,8 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT = TRUE) {
 	#}		
 				
 	res = bbd_lt_invert(t,f=function(s) {
-		#return(bbd_lt(s,a0,b0,l1,l2,m2,g,x,y,A,B))
-		return(matrix(bbd_lt_Cpp(s,a0,b0,l1,l2,m2,g,x,y,A,B),nrow=(A-a0+1),byrow=T))
+		return(bbd_lt(s,a0,b0,l1,l2,m2,g,x,y,A,B))
+		#return(matrix(bbd_lt_Cpp(s,a0,b0,l1,l2,m2,g,x,y,A,B),nrow=(A-a0+1),byrow=T))
 		})
 	#if(any(is.na(res))) cat("bbd_prob(",a0,",",b0,",",t,") failed\n")
     colnames(res) = 0:B

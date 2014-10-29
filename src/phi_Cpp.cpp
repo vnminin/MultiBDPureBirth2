@@ -2,17 +2,23 @@
 #include "bbd.h"
 using namespace Rcpp;
 
-using RealType = double;
+inline std::complex<double> reciprocal( std::complex<double>& x) {
+                const double denominator = x.real() * x.real() + x.imag() * x.imag();
+                return {
+                        x.real() / denominator,
+                        - x.imag() / denominator
+                };
+              }
 
 // [[Rcpp::export]]
-std::vector< std::complex<double> > phi_Cpp (const std::complex<double> & s, const int & a0, const int & b0, const std::vector<double> & lambda2, const std::vector<double> & mu2, const std::vector<double> & x, const std::vector<double>  & y, const int & A, const int & B) {  
+std::vector<std::complex<double>> phi_Cpp (int flag, const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B) {  
   
-  std::vector< std::complex<double> > phi((A+1-a0)*(B+1)*(B+1));
+  std::vector<std::complex<double>> phi((A+1-a0)*(B+1)*(B+1));
   const int dim = B+1+400;
   std::complex<double> fac,B1,B2,v;
   const std::complex<double> one(1.0,0.0), zero(0,0);
   std::vector<double> xvec(dim), prod_mu2((B+1)*(B+1)), prod_lambda2((B+1)*(B+1));
-  std::vector< std::complex<double> > yvec(dim), lentz(B+1), Bk1dBk(B+1), BidBj((B+1)*(B+1));
+  std::vector<std::complex<double>> yvec(dim), lentz(B+1), Bk1dBk(B+1), BidBj((B+1)*(B+1));
         
       for (int a=0; a<=(A-a0); a++) {        
         for (int i=0; i<dim; i++) {
@@ -33,9 +39,14 @@ std::vector< std::complex<double> > phi_Cpp (const std::complex<double> & s, con
 					      fac = one;
 				      } else {
 					      fac = prod_mu2[(i+1)*(B+1)+j];
-				      } 
+				      }               
 				      B1 = BidBj[i*(B+1)+j];
-				      B2 = one/Bk1dBk[j];
+              
+              // micobenchmark    
+              if (flag == 0) B2 = one/Bk1dBk[j];
+              if (flag == 1) B2 = std::complex<double>(1.0, 0.0)/Bk1dBk[j];
+              if (flag == 2) B2 = reciprocal(Bk1dBk[j]);
+              
 				      v = fac*B1/(B2+lentz[j]);
 			      } else {
 				      fac = prod_lambda2[j*(B+1)+i-1];

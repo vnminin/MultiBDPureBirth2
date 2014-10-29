@@ -194,8 +194,10 @@ loglik <- function(param) {
 	n = length(i)
   fun <- function(k){return(log(dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
                                      a=s[k+1],B=s[k]+i[k]-s[k+1]))[1,i[k+1]+1])}
-  tmp = mclapply(1:(n-1),fun,mc.cores=3)
-  loglik = sum(unlist(tmp))
+  #tmp = mclapply(1:(n-1),fun,mc.cores=3)
+  tmp = slapply(1:(n-1),fun)
+  #loglik = sum(unlist(tmp))
+  loglik = sum(tmp)
 	return(loglik)
 }
 

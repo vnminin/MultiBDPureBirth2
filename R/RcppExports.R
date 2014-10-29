@@ -17,8 +17,8 @@ lentz_Cpp <- function(B, xvec, yvec) {
     .Call('BirthDeathBirth_lentz_Cpp', PACKAGE = 'BirthDeathBirth', B, xvec, yvec)
 }
 
-phi_Cpp <- function(s, a0, b0, lambda2, mu2, x, y, A, B) {
-    .Call('BirthDeathBirth_phi_Cpp', PACKAGE = 'BirthDeathBirth', s, a0, b0, lambda2, mu2, x, y, A, B)
+phi_Cpp <- function(flag, s, a0, b0, lambda2, mu2, x, y, A, B) {
+    .Call('BirthDeathBirth_phi_Cpp', PACKAGE = 'BirthDeathBirth', flag, s, a0, b0, lambda2, mu2, x, y, A, B)
 }
 
 phi_routine_Cpp <- function(B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz) {

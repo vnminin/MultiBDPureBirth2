@@ -2,9 +2,9 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::vector< std::complex<double> > BidBj_Cpp(const int & B, const std::vector<double> & xvec, const std::vector< std::complex<double> > & yvec, const std::vector< std::complex<double> > & Bk1dBk) {
+std::vector<std::complex<double>> BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& Bk1dBk) {
   
-  std::vector< std::complex<double> > res((B+1)*(B+1)),ans(B+1);
+  std::vector<std::complex<double>> res((B+1)*(B+1)),ans(B+1);
   const std::complex<double> one(1,0), zero(0,0);
   
   for (int i=0; i<=B; i++) {

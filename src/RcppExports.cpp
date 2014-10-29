@@ -31,17 +31,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // BidBj_Cpp
-std::vector< std::complex<double> > BidBj_Cpp(const int& B, const std::vector<double>& xvec, const std::vector< std::complex<double> >& yvec, const std::vector< std::complex<double> >& Bk1dBk);
+std::vector<std::complex<double>> BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& Bk1dBk);
 RcppExport SEXP BirthDeathBirth_BidBj_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP, SEXP Bk1dBkSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const int& >::type B(BSEXP );
+        Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type xvec(xvecSEXP );
-        Rcpp::traits::input_parameter< const std::vector< std::complex<double> >& >::type yvec(yvecSEXP );
-        Rcpp::traits::input_parameter< const std::vector< std::complex<double> >& >::type Bk1dBk(Bk1dBkSEXP );
-        std::vector< std::complex<double> > __result = BidBj_Cpp(B, xvec, yvec, Bk1dBk);
+        Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
+        Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type Bk1dBk(Bk1dBkSEXP );
+        std::vector<std::complex<double>> __result = BidBj_Cpp(B, xvec, yvec, Bk1dBk);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -49,16 +49,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // Bk1dBk_Cpp
-std::vector< std::complex<double> > Bk1dBk_Cpp(const int& B, const std::vector<double>& xvec, const std::vector< std::complex<double> >& yvec);
+std::vector<std::complex<double>> Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
 RcppExport SEXP BirthDeathBirth_Bk1dBk_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const int& >::type B(BSEXP );
+        Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type xvec(xvecSEXP );
-        Rcpp::traits::input_parameter< const std::vector< std::complex<double> >& >::type yvec(yvecSEXP );
-        std::vector< std::complex<double> > __result = Bk1dBk_Cpp(B, xvec, yvec);
+        Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
+        std::vector<std::complex<double>> __result = Bk1dBk_Cpp(B, xvec, yvec);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -66,16 +66,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // lentz_Cpp
-std::vector< std::complex<double> > lentz_Cpp(const int& B, const std::vector<double>& xvec, const std::vector< std::complex<double> >& yvec);
+std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
 RcppExport SEXP BirthDeathBirth_lentz_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const int& >::type B(BSEXP );
+        Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type xvec(xvecSEXP );
-        Rcpp::traits::input_parameter< const std::vector< std::complex<double> >& >::type yvec(yvecSEXP );
-        std::vector< std::complex<double> > __result = lentz_Cpp(B, xvec, yvec);
+        Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
+        std::vector<std::complex<double>> __result = lentz_Cpp(B, xvec, yvec);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -83,22 +83,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // phi_Cpp
-std::vector< std::complex<double> > phi_Cpp(const std::complex<double>& s, const int& a0, const int& b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int& A, const int& B);
-RcppExport SEXP BirthDeathBirth_phi_Cpp(SEXP sSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP BSEXP) {
+std::vector<std::complex<double>> phi_Cpp(int flag, const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B);
+RcppExport SEXP BirthDeathBirth_phi_Cpp(SEXP flagSEXP, SEXP sSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP BSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const std::complex<double>& >::type s(sSEXP );
-        Rcpp::traits::input_parameter< const int& >::type a0(a0SEXP );
-        Rcpp::traits::input_parameter< const int& >::type b0(b0SEXP );
+        Rcpp::traits::input_parameter< int >::type flag(flagSEXP );
+        Rcpp::traits::input_parameter< const std::complex<double> >::type s(sSEXP );
+        Rcpp::traits::input_parameter< const int >::type a0(a0SEXP );
+        Rcpp::traits::input_parameter< const int >::type b0(b0SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type lambda2(lambda2SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type mu2(mu2SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type x(xSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type y(ySEXP );
-        Rcpp::traits::input_parameter< const int& >::type A(ASEXP );
-        Rcpp::traits::input_parameter< const int& >::type B(BSEXP );
-        std::vector< std::complex<double> > __result = phi_Cpp(s, a0, b0, lambda2, mu2, x, y, A, B);
+        Rcpp::traits::input_parameter< const int >::type A(ASEXP );
+        Rcpp::traits::input_parameter< const int >::type B(BSEXP );
+        std::vector<std::complex<double>> __result = phi_Cpp(flag, s, a0, b0, lambda2, mu2, x, y, A, B);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -126,14 +127,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // prod_vec_Cpp
-std::vector<double> prod_vec_Cpp(const int& a, const int& B, const std::vector<double>& mat);
+std::vector<double> prod_vec_Cpp(const int a, const int B, const std::vector<double>& mat);
 RcppExport SEXP BirthDeathBirth_prod_vec_Cpp(SEXP aSEXP, SEXP BSEXP, SEXP matSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const int& >::type a(aSEXP );
-        Rcpp::traits::input_parameter< const int& >::type B(BSEXP );
+        Rcpp::traits::input_parameter< const int >::type a(aSEXP );
+        Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type mat(matSEXP );
         std::vector<double> __result = prod_vec_Cpp(a, B, mat);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
