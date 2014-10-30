@@ -37,8 +37,22 @@ yf <- function(a,b) {
 }
 y = matrix(mapply(yf,grid[,1],grid[,2]),ncol=B+1+maxdepth)	
 ################
+microbenchmark(phi_Cpp(complex(real=1, imaginary=1),a0,b0,l2,m2,x,y,A,B),times = 2000)
 
-microbenchmark(phi_Cpp(0,complex(real=1, imaginary=1),a0,b0,l2,m2,x,y,A,B),
-               phi_Cpp(1,complex(real=1, imaginary=1),a0,b0,l2,m2,x,y,A,B),
-               phi_Cpp(2,complex(real=1, imaginary=1),a0,b0,l2,m2,x,y,A,B),
-               times = 1000)
+###### Results from benchmark
+
+### Removing code duplication in phi_Cpp slows down the function.
+## no code duplication: 
+# min       lq     mean   median      uq      max neval
+# 4.903648 5.036701 5.610665 5.212402 6.00686 39.28769  2000
+## code duplication:
+# min      lq     mean   median       uq      max neval 
+# 4.21585 4.24143 4.759771 4.443558 5.073127 37.68972  2000
+
+### reciprocal(complex) and one/complex are the same
+## one/complex:
+# min       lq     mean  median       uq      max neval
+# 4.230024 4.273974 4.777658 4.46344 5.088186 36.86331  2000
+## reciprocal:
+# min       lq     mean   median       uq      max neval
+# 4.211236 4.241655 4.829227 4.476201 5.128305 37.92462  2000
