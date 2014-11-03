@@ -20,8 +20,8 @@ std::vector<std::complex<double>> phi_Cpp (const std::complex<double> s, const i
         lentz = lentz_Cpp(B,xvec,yvec);
         Bk1dBk = Bk1dBk_Cpp(B,xvec,yvec);
         BidBj = BidBj_Cpp(B,xvec,yvec,Bk1dBk);
-        prod_mu2 = prod_vec_Cpp(a-a0+1,B,mu2);
-        prod_lambda2 = prod_vec_Cpp(a-a0+1,B,lambda2);
+        prod_mu2 = prod_vec_Cpp(a-a0+1,A-a0,B,mu2);
+        prod_lambda2 = prod_vec_Cpp(a-a0+1,A-a0,B,lambda2);
         
         for (int i=0; i<=B; i++) 
         	for (int j=0; j<=B; j++) {
@@ -40,30 +40,31 @@ std::vector<std::complex<double>> phi_Cpp (const std::complex<double> s, const i
 //            if (i>j) tmp *= prod_lambda2[j*(B+1)+i-1];
 //            phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = tmp;
 
-            if (i<=j) {
-              std::complex<double> B2 = one/Bk1dBk[j];
-  			      if (i==j) {
-                phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = BidBj[i*(B+1)+j]/(B2+lentz[j]);
-				      } else {
-					      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_mu2[(i+1)*(B+1)+j]*BidBj[i*(B+1)+j]/(B2+lentz[j]);
-				      } 
-			      } else {
-              std::complex<double> B2 = reciprocal(Bk1dBk[i]);
-              
-				      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_lambda2[j*(B+1)+i-1]*BidBj[j*(B+1)+i]/(B2+lentz[i]);
-			      }
+//////// Using reciprocal
+//            if (i<=j) {
+//              std::complex<double> B2 = reciprocal(Bk1dBk[j]);
+//  			      if (i==j) {
+//                phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = BidBj[i*(B+1)+j]/(B2+lentz[j]);
+//				      } else {
+//					      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_mu2[(i+1)*(B+1)+j]*BidBj[i*(B+1)+j]/(B2+lentz[j]);
+//				      } 
+//			      } else {
+//              std::complex<double> B2 = reciprocal(Bk1dBk[i]);
+//              
+//				      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_lambda2[j*(B+1)+i-1]*BidBj[j*(B+1)+i]/(B2+lentz[i]);
+//			      }
 
 #else
 
   		      if (i<=j) {
-              std::complex<double> B2 = reciprocal(Bk1dBk[j]);
+              std::complex<double> B2 = one/Bk1dBk[j];
 				      if (i==j) {
                 phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = BidBj[i*(B+1)+j]/(B2+lentz[j]);
 				      } else {
 					      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_mu2[(i+1)*(B+1)+j]*BidBj[i*(B+1)+j]/(B2+lentz[j]);
 				      } 
 			      } else {
-              std::complex<double> B2 = reciprocal(Bk1dBk[i]);
+              std::complex<double> B2 = one/Bk1dBk[i];
               
 				      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_lambda2[j*(B+1)+i-1]*BidBj[j*(B+1)+i]/(B2+lentz[i]);
 			      }  

@@ -1,8 +1,3 @@
-#source("../R/bbd_prob.R")
-#source("../R/bbd_lt.R")
-#source("../R/bd_series_accel.R")
-#source("../R/contfr.R")
-#source("../R/support.R")
 library(BirthDeathBirth)
 library(parallel)
 library(compiler)
@@ -10,7 +5,7 @@ library(Rcpp)
 
 ### Within-host macroparasite population
 
-a0 = 100
+a0 = 50
 b0 = 0
 A = 0
 B = a0
@@ -79,9 +74,9 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   source("bd_prob.r")
   source("bd_lt.r")
   
-  states = 0:50
+  states = 0:5
   #Rprof("func.out",memory.profiling=T)
-  system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){0.5*k}, drates=function(k){0.3*k}))
+  system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){return(0.5*k)}, drates=function(k){0.3*k}))
   #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 
@@ -95,7 +90,7 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
  source("bbd_lt0.r")
  source("contfr0.r")
  
- fun <-function(x,y) {return(bbd_prob0(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},x,y,B=50))}
+ fun <-function(x,y) {return(bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},x,y,B=50))}
  grid = expand.grid(0,0:50)
  system.time(p0 <- mapply(fun,grid[,1],grid[,2]))
 
@@ -190,12 +185,12 @@ loglik <- function(param) {
   drates2=function(a,b){alpha*b}
   trans=function(a,b){beta*a*b}
   
-  
 	n = length(i)
   fun <- function(k){return(log(dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
                                      a=s[k+1],B=s[k]+i[k]-s[k+1]))[1,i[k+1]+1])}
   #tmp = mclapply(1:(n-1),fun,mc.cores=3)
   tmp = sapply(1:(n-1),fun)
+  
   #loglik = sum(unlist(tmp))
   loglik = sum(tmp)
 	return(loglik)
@@ -210,8 +205,16 @@ drates1=function(a,b){0}
 brates2=function(a,b){0}
 drates2=function(a,b){alpha*b}
 trans=function(a,b){beta*a*b}
-system.time(l<-loglik(c(0.5,0.5)))
-print(c(l,alpha,beta))
+
+Rprof("func.out",memory.profiling=T)
+#p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
+p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
+#sum(p)
+Rprof(NULL)
+summaryRprof("func.out",memory="both")
+
+#system.time(l<-loglik(c(alpha,beta)))
+#print(c(l,alpha,beta))
 
 
 ### Prior

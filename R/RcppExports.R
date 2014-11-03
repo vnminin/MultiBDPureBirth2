@@ -25,8 +25,8 @@ phi_routine_Cpp <- function(B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz) {
     .Call('BirthDeathBirth_phi_routine_Cpp', PACKAGE = 'BirthDeathBirth', B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz)
 }
 
-prod_vec_Cpp <- function(a, B, mat) {
-    .Call('BirthDeathBirth_prod_vec_Cpp', PACKAGE = 'BirthDeathBirth', a, B, mat)
+prod_vec_Cpp <- function(a, A, B, mat) {
+    .Call('BirthDeathBirth_prod_vec_Cpp', PACKAGE = 'BirthDeathBirth', a, A, B, mat)
 }
 
 rcpp_hello_world <- function() {

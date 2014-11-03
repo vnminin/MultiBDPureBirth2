@@ -13,12 +13,12 @@ std::vector<std::complex<double>> BidBj_Cpp(const int B, const std::vector<doubl
 			if (j==i) {
 				ans[j] = one;	
 			} else if (j==(i+1)) {
-        std::complex<double> tmp = reciprocal(Bk1dBk[j-1]);
-				ans[j] = reciprocal(Bk1dBk[j-1]);	
+        std::complex<double> tmp = one/Bk1dBk[j-1];
+				ans[j] = one/Bk1dBk[j-1];	
 			}
 				else ans[j] = yvec[j-1]*ans[j-1] + xvec[j-1]*ans[j-2];
-			res[i*(B+1) + j] = reciprocal(ans[j]);
-			if (res[i*(B+1) + j]==zero) break;
+			res[i*(B+1) + j] = one/ans[j];
+			// if (res[i*(B+1) + j]==zero) break;
 		}
 	}
   return(res);

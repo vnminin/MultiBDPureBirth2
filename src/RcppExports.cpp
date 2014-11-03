@@ -126,16 +126,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // prod_vec_Cpp
-std::vector<double> prod_vec_Cpp(const int a, const int B, const std::vector<double>& mat);
-RcppExport SEXP BirthDeathBirth_prod_vec_Cpp(SEXP aSEXP, SEXP BSEXP, SEXP matSEXP) {
+std::vector<double> prod_vec_Cpp(const int a, const int A, const int B, const std::vector<double>& mat);
+RcppExport SEXP BirthDeathBirth_prod_vec_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP BSEXP, SEXP matSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const int >::type a(aSEXP );
+        Rcpp::traits::input_parameter< const int >::type A(ASEXP );
         Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type mat(matSEXP );
-        std::vector<double> __result = prod_vec_Cpp(a, B, mat);
+        std::vector<double> __result = prod_vec_Cpp(a, A, B, mat);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

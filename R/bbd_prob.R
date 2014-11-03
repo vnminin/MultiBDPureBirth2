@@ -6,13 +6,11 @@
 bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT = TRUE) {
 	maxdepth = 400
 	if (doJIT) enableJIT(1)
-  #dyn.load("../src/cf_BidBj.so")
-  #dyn.load("../src/prod_vec.so")
-  #dyn.load("../src/phi_routine.so")
-	#l1 <- function(a,b){return(lambda1(a,b))}
-	#l2 <- function(a,b){return(lambda2(a,b))}
-	#m2 <- function(a,b){return(mu2(a,b))}
-	#g <- function(a,b){return(gamma(a,b))}
+  
+  ## R-C interface
+#   dyn.load("src/cf_BidBj.so")
+#   dyn.load("src/prod_vec.so")
+#   dyn.load("src/phi_routine.so")
 	
 	grid  = expand.grid(a0:A,0:(B+maxdepth))
 	l1 = matrix(mapply(lambda1,grid[,1],grid[,2]),ncol=B+1+maxdepth)
@@ -32,31 +30,42 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT = TRUE) {
 		return(y)
 	}
 	y = matrix(mapply(yf,grid[,1],grid[,2]),ncol=B+1+maxdepth)	
-	
-	#pmu2 = array(0,dim=c(A-a0+1,B+1,B+1))
-	#pl2 = array(0,dim=c(A-a0+1,B+1,B+1))
-	#for (a in a0:A) {
-	#	pmu2[a-a0+1,,] = prod_vec(a-a0+1,B,m2)
-	#	pl2[a-a0+1,,] = prod_vec(a-a0+1,B,l2)
-	#}		
-				
+					
 	res = bbd_lt_invert(t,f=function(s) {
+    ## R
 		#return(bbd_lt(s,a0,b0,l1,l2,m2,g,x,y,A,B))
+    
+    ## Rcpp
 		return(matrix(bbd_lt_Cpp(s,a0,b0,l1,l2,m2,g,x,y,A,B),nrow=(A-a0+1),byrow=T))
 		})
-	#if(any(is.na(res))) cat("bbd_prob(",a0,",",b0,",",t,") failed\n")
-    colnames(res) = 0:B
-    rownames(res) = a0:A
+	  
+  #if(any(is.na(res))) cat("bbd_prob(",a0,",",b0,",",t,") failed\n")
+  colnames(res) = 0:B
+  rownames(res) = a0:A
 	
 	if (doJIT) enableJIT(0)
 	return(abs(res))
 }
 
 dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,doJIT=TRUE) {
-	l1 <- function(a,b){return(mu1(a0-a,B-b))}
-	l2 <- function(a,b){return(mu2(a0-a,B-b))}
-	m2 <- function(a,b){return(lambda2(a0-a,B-b))}
-	g <- function(a,b){return(gamma(a0-a,B-b))}
+  ## a>=0, a<=a0, B >=a0+b0-a 
+  B = a0+b0-a
+	l1 <- function(u,v){
+    if (v>B) return(0)
+    return(mu1(a0-u,B-v))
+	}
+	l2 <- function(u,v){
+	  if (v>B) return(0)
+    return(mu2(a0-u,B-v))
+	}
+	m2 <- function(u,v){
+	  if (v>B) return(0)
+    return(lambda2(a0-u,B-v))
+	}
+	g <- function(u,v){
+	  if (v>B) return(0)
+    return(gamma(a0-u,B-v))
+	}
 	res = matrix(NA,nrow=a0-a+1,ncol=B+1)
 	res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,doJIT)
 

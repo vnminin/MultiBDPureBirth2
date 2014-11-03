@@ -7,15 +7,16 @@ std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<doubl
   typedef std::complex<double> Complex;
 
   const double eps = 1e-8;
-  const Complex one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0);
-  Complex fj = zero, fj1 = tiny, Cj = zero, Cj1 = tiny, Dj = zero, Dj1 = zero, jdiff = two;
-  double truncerr, jbound = 1;
+  const Complex one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-30,0.0);
   std::vector<Complex> res(B+1);
   
   for (int m=1; m<=(B+1); m++) {
     int j = m;
+    Complex fj, fj1 = tiny, Cj = zero, Cj1 = tiny, Dj, Dj1 = zero, jdiff = two;
+    double truncerr, jbound = 1.0;
+    
     while (jbound > eps) {
-      Complex aj(xvec[j],0), bj(xvec[j],0);
+      Complex aj(xvec[j],0.0), bj = yvec[j];
       Dj = bj + aj*Dj1;
       if (Dj==zero) Dj = tiny;
       Cj = bj + aj/Cj1;

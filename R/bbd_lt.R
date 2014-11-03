@@ -4,11 +4,15 @@
 
 bbd_lt <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B) {
 	# initialize phi
-	#phi = bbd_phi(s,a0,b0,lambda2,mu2,x,y,A,B) 
-  phi = array(phi_Cpp(2,s,a0,b0,lambda2,mu2,x,y,A,B),dim=c(A-a0+1,B+1,B+1))
-	# phi[a,b,m]
-	f = matrix(0,nrow=A+1-a0,ncol=B+1)
+  # phi[a,b,m]
+  ## R
+	phi = bbd_phi(s,a0,b0,lambda2,mu2,x,y,A,B) 
+  
+  ## Rcpp
+  #phi = array(phi_Cpp(s,a0,b0,lambda2,mu2,x,y,A,B),dim=c(A-a0+1,B+1,B+1))
+	
 	# f[a,b]
+	f = matrix(0,nrow=A+1-a0,ncol=B+1)
 	f[1,] = phi[1,,b0+1]
 	if (a0 < A) {
 		for (i in (a0+1):A) {
@@ -21,7 +25,6 @@ bbd_lt <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B) {
 				v4 = g
 				v5 = c(f[i-a0,2:(B+1)],0)
 				f[i+1-a0,j+1] = sum((v1*v2+v4*v5)*v3)
-			  #f[i+1-a0,j+1] =sum((lambda1[i-a0,1:(B+1)]*f[i,]+c(gamma[i-a0,2:(B+1)]*f[i,2:(B+1)],0))*phi[i+1,j+1,])
 			}
 		}
 	}
@@ -30,23 +33,28 @@ bbd_lt <- function(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B) {
 
 bbd_phi <- function(s,a0,b0,lambda2,mu2,x,y,A,B) {
   # if ((a0<0)||(b0<0)||(a0>A)||(b0>B)) return(0)
+  # phi[a,b,m]
 	phi = array(0,dim=c(A+1-a0,B+1,B+1))
-	# phi[a,b,m]
+	
 	for (a in a0:A) {
 		yvec = s+y[a-a0+1,]
-		#lentz = sapply(1:(B+1),cf_lentz_m,xvec = x[a-a0+1,],yvec)
-		lentz = lentz_Cpp(B,xvec = x[a-a0+1,],yvec)
-		#Bk1dBk = cf_Bk1dBk(B,xvec,yvec)
-		Bk1dBk = Bk1dBk_Cpp(B,xvec = x[a-a0+1,],yvec)
-		#BidBj = cf_BidBj(B,xvec,yvec,Bk1dBk)
-		BidBj = matrix(BidBj_Cpp(B,xvec = x[a-a0+1,],yvec,Bk1dBk),nrow=(B+1),byrow=T)
-    #prod_mu2 = prod_vec(a-a0+1,B,mu2)
-    #prod_lambda2 = prod_vec(a-a0+1,B,lambda2)
-    prod_mu2 = matrix(prod_vec_Cpp(a-a0+1,B,mu2),nrow=(B+1),byrow=T)
-    prod_lambda2 = matrix(prod_vec_Cpp(a-a0+1,B,lambda2),nrow=(B+1),byrow=T)
-		#tmp = .C("phi_routine", as.integer(B), as.double(prod_mu2), as.double(prod_lambda2), as.complex(Bk1dBk), as.complex(BidBj), as.complex(lentz), as.complex(phi[a+1,,]))
-		#phi[a+1-a0,,] = matrix(tmp[[7]], nrow=B+1, byrow=T)
-		phi[a+1-a0,,] = matrix(phi_routine_Cpp(B,prod_mu2,prod_lambda2,Bk1dBk,BidBj,lentz), nrow=B+1, byrow=T)
+    
+    ## R-C interface
+		lentz = sapply(1:(B+1),cf_lentz_m,xvec = x[a-a0+1,],yvec)
+		Bk1dBk = cf_Bk1dBk(B,xvec = x[a-a0+1,],yvec)
+		BidBj = cf_BidBj(B,xvec = x[a-a0+1,],yvec,Bk1dBk)
+		prod_mu2 = prod_vec(a-a0+1,B,mu2)
+		prod_lambda2 = prod_vec(a-a0+1,B,lambda2)
+		tmp = .C("phi_routine", as.integer(B), as.double(prod_mu2), as.double(prod_lambda2), as.complex(Bk1dBk), as.complex(BidBj), as.complex(lentz), as.complex(phi[a+1,,]))
+		phi[a+1-a0,,] = matrix(tmp[[7]], nrow=B+1, byrow=T)
+		 
+    ##Rcpp
+# 		lentz = lentz_Cpp(B,xvec = x[a-a0+1,],yvec)
+# 		Bk1dBk = Bk1dBk_Cpp(B,xvec = x[a-a0+1,],yvec)
+# 		BidBj = matrix(BidBj_Cpp(B,xvec = x[a-a0+1,],yvec,Bk1dBk),nrow=(B+1),byrow=T)
+#     prod_mu2 = matrix(prod_vec_Cpp(a-a0+1,A-a0,B,mu2),nrow=(B+1),byrow=T)
+#     prod_lambda2 = matrix(prod_vec_Cpp(a-a0+1,A-a0,B,lambda2),nrow=(B+1),byrow=T)
+# 		phi[a+1-a0,,] = matrix(phi_routine_Cpp(B,prod_mu2,prod_lambda2,Bk1dBk,BidBj,lentz), nrow=B+1, byrow=T)
 		}
 	return(phi)
 }
@@ -73,7 +81,7 @@ bbd_lt_invert = function(f,t,A=20) {
     			term = (-1)^k * Re(ig[[k]][i,j]) / t
     			psum = psum + term
     			omega = k*term
-				sk = next_approx(psum,omega)
+				  sk = next_approx(psum,omega)
 	    		if (is.na(sk)) return(NA)
 	    		if (k>1) {
     				sdiff = sk - sk1
@@ -86,7 +94,7 @@ bbd_lt_invert = function(f,t,A=20) {
 	    		kmax = kmax + cores
     			}   		
   			}
-		result[i,j] = sk1*exp(A/2)
-  		} 
-  	return(result)
+		  result[i,j] = sk1*exp(A/2)
+  	} 
+  return(result)
 }

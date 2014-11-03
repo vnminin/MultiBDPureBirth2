@@ -11,7 +11,7 @@ std::vector<std::complex<double>> Bk1dBk_Cpp(const int B, const std::vector<doub
     for (int j=0; j<=B; j++) {
         Dj = yvec[j] + xvec[j]*Dj1;
         if (Dj == zero) Dj = tiny;
-        Dj1 = reciprocal(Dj);
+        Dj1 = one/Dj;
         res[j] = Dj1;
     }
     return(res);

@@ -49,10 +49,12 @@ microbenchmark(phi_Cpp(complex(real=1, imaginary=1),a0,b0,l2,m2,x,y,A,B),times =
 # min      lq     mean   median       uq      max neval 
 # 4.21585 4.24143 4.759771 4.443558 5.073127 37.68972  2000
 
-### reciprocal(complex) and one/complex are the same
-## one/complex:
+### reciprocal(complex) and one/complex (newly defined) are the same
+### reason: the reciprocal and the newly defined operater / are about the same
+## one/complex (newly defined):
 # min       lq     mean  median       uq      max neval
 # 4.230024 4.273974 4.777658 4.46344 5.088186 36.86331  2000
 ## reciprocal:
 # min       lq     mean   median       uq      max neval
 # 4.211236 4.241655 4.829227 4.476201 5.128305 37.92462  2000
+
