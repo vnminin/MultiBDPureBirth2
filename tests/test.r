@@ -74,7 +74,7 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   source("bd_prob.r")
   source("bd_lt.r")
   
-  states = 0:5
+  states = 0:50
   #Rprof("func.out",memory.profiling=T)
   system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){return(0.5*k)}, drates=function(k){0.3*k}))
   #Rprof(NULL)
@@ -82,6 +82,7 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
 
  #Rprof("func.out",memory.profiling=T)
  system.time(p <- bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
+  sum(p)
  #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 
@@ -207,8 +208,8 @@ drates2=function(a,b){alpha*b}
 trans=function(a,b){beta*a*b}
 
 Rprof("func.out",memory.profiling=T)
-#p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
-p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
+p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
+#p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
 #sum(p)
 Rprof(NULL)
 summaryRprof("func.out",memory="both")

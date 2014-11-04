@@ -31,7 +31,7 @@ cf_lentz_m <- function(m,xvec,yvec,maxdepth=400) {
     	if (truncerr==0) truncerr = tiny
     	jbound = ( abs(1/Dj)/abs(Im(1/Dj)) ) * truncerr
     	if (Im(Dj)==0) jbound = abs(jdiff-1)
-
+    
 	    j = j + 1	
     	fj1 = fj 
     	Dj1 = Dj

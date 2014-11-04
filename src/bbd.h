@@ -8,20 +8,20 @@
 //                };
 //              }
               
-//inline std::complex<double> operator*(const std::complex<double>& x, const std::complex<double>& y) {
-//                return {
-//                        x.real()*y.real() - x.imag()*y.imag(),
-//                        x.real()*y.imag() + x.imag()*y.real()
-//                };
-//              }
+inline std::complex<double> operator*(const std::complex<double>& x, const std::complex<double>& y) {
+                return {
+                        x.real()*y.real() - x.imag()*y.imag(),
+                        x.real()*y.imag() + x.imag()*y.real()
+                };
+              }
               
-//inline std::complex<double> operator/(const std::complex<double>& x, const std::complex<double>& y) {
-//                const double denominator = y.real() * y.real() + y.imag() * y.imag();
-//                return {
-//                        (x.real()*y.real() + x.imag()*y.imag())/denominator,
-//                        (-x.real()*y.imag() + x.imag()*y.real())/denominator
-//                };
-//              }
+inline std::complex<double> operator/(const std::complex<double>& x, const std::complex<double>& y) {
+                const double denominator = y.real() * y.real() + y.imag() * y.imag();
+                return {
+                        (x.real()*y.real() + x.imag()*y.imag())/denominator,
+                        (-x.real()*y.imag() + x.imag()*y.real())/denominator
+                };
+              }
 
 std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
 std::vector<std::complex<double>> Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
