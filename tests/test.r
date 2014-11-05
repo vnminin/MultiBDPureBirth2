@@ -197,8 +197,7 @@ loglik <- function(param) {
 	return(loglik)
 }
 
-#alpha = runif(1,0,5)
-#beta =  runif(1,0,1)
+
 alpha = 2.73
 beta = 0.0178
 brates1=function(a,b){0}
@@ -214,8 +213,8 @@ p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)
 Rprof(NULL)
 summaryRprof("func.out",memory="both")
 
-#system.time(l<-loglik(c(alpha,beta)))
-#print(c(l,alpha,beta))
+system.time(l<-loglik(c(alpha,beta)))
+print(c(l,alpha,beta))
 
 
 ### Prior
@@ -254,8 +253,14 @@ run_metropolis_MCMC <- function(startvalue, iterations){
   return(chain)
 }
 
-startvalue = c(0.5,0.5)
+alpha = runif(1,0,5)
+beta =  runif(1,0,1)
+Rprof("func.out",memory.profiling=T)
+startvalue = c(alpha,beta)
 system.time(chain <- run_metropolis_MCMC(startvalue, 20))
+Rprof(NULL)
+summaryRprof("func.out",memory="both")
+
 
 burnIn = 5
 acceptance = 1-mean(duplicated(chain[-(1:burnIn),]))

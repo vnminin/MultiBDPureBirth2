@@ -81,6 +81,7 @@ bbd_lt_invert = function(f,t,A=20) {
     			term = (-1)^k * Re(ig[[k]][i,j]) / t
     			psum = psum + term
     			omega = k*term
+          #if ((i==3)&&(j==4)) print(c(k, psum,omega))
 				  sk = next_approx(psum,omega)
 	    		if (is.na(sk)) return(NA)
 	    		if (k>1) {

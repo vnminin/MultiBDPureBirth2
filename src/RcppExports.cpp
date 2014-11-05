@@ -30,6 +30,31 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// bbd_lt_invert_Cpp
+std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B);
+RcppExport SEXP BirthDeathBirth_bbd_lt_invert_Cpp(SEXP tSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP gammaSEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< double >::type t(tSEXP );
+        Rcpp::traits::input_parameter< const int >::type a0(a0SEXP );
+        Rcpp::traits::input_parameter< const int >::type b0(b0SEXP );
+        Rcpp::traits::input_parameter< const std::vector<double>& >::type lambda1(lambda1SEXP );
+        Rcpp::traits::input_parameter< const std::vector<double>& >::type lambda2(lambda2SEXP );
+        Rcpp::traits::input_parameter< const std::vector<double>& >::type mu2(mu2SEXP );
+        Rcpp::traits::input_parameter< const std::vector<double>& >::type gamma(gammaSEXP );
+        Rcpp::traits::input_parameter< const std::vector<double>& >::type x(xSEXP );
+        Rcpp::traits::input_parameter< const std::vector<double>& >::type y(ySEXP );
+        Rcpp::traits::input_parameter< const int >::type A(ASEXP );
+        Rcpp::traits::input_parameter< const int >::type B(BSEXP );
+        std::vector<std::complex<double>> __result = bbd_lt_invert_Cpp(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // BidBj_Cpp
 std::vector<std::complex<double>> BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& Bk1dBk);
 RcppExport SEXP BirthDeathBirth_BidBj_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP, SEXP Bk1dBkSEXP) {

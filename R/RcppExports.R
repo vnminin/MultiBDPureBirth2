@@ -5,6 +5,10 @@ bbd_lt_Cpp <- function(s, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B) {
     .Call('BirthDeathBirth_bbd_lt_Cpp', PACKAGE = 'BirthDeathBirth', s, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B)
 }
 
+bbd_lt_invert_Cpp <- function(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B) {
+    .Call('BirthDeathBirth_bbd_lt_invert_Cpp', PACKAGE = 'BirthDeathBirth', t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B)
+}
+
 BidBj_Cpp <- function(B, xvec, yvec, Bk1dBk) {
     .Call('BirthDeathBirth_BidBj_Cpp', PACKAGE = 'BirthDeathBirth', B, xvec, yvec, Bk1dBk)
 }
