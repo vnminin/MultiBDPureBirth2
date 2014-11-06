@@ -165,13 +165,13 @@ for (y in 1:10){
 # The Great Plague in Eyam 
 # Mathemetical Epidemiology (2008) - Fred Brauer et al.
 
-t = c(0,1.5,2,2.5,3,3.5,4,4.5)*30
-s = c(254,235,201,154,121,108,97,83)
-i = c(7,15,22,29,21,8,8,0)
+# t = c(0,1.5,2,2.5,3,3.5,4,4.5)*30
+# s = c(254,235,201,154,121,108,97,83)
+# i = c(7,15,22,29,21,8,8,0)
 
-# t = c(0,16,17,16,17,32)
-# s = c(201,154,121,108,97,83)
-# i = c(22,29,21,8,8,0)
+t = c(0,16,17,16,17,32)
+s = c(201,154,121,108,97,83)
+i = c(22,29,21,8,8,0)
 
 
 ### Likelihood
@@ -221,8 +221,8 @@ print(c(l,alpha,beta))
 logprior <- function(param){
   alpha = param[1]
   beta = param[2]
-  aprior = dunif(alpha, min=0, max=5, log = T)
-  bprior = dunif(beta, min=0, max=1, log = T)
+  aprior = dunif(alpha, min=1, max=2, log = T)
+  bprior = dunif(beta, min=0, max=0.2, log = T)
   return(aprior+bprior)
 }
 
@@ -233,7 +233,8 @@ posterior <- function(param){
 ######## Metropolis algorithm ################
 
 proposalfunction <- function(param){
-  return(rnorm(2,mean = param, sd= c(0.5,0.5)))
+  return(rnorm(2,mean = param, sd= c(0.1,0.01)))
+  # small sd, more acceptance
 }
 
 run_metropolis_MCMC <- function(startvalue, iterations){
@@ -243,6 +244,7 @@ run_metropolis_MCMC <- function(startvalue, iterations){
     proposal = proposalfunction(chain[i,])
     
     probab = exp(posterior(proposal) - posterior(chain[i,]))
+    print(probab)
     if (runif(1) < probab){
       chain[i+1,] = proposal
     }else{
@@ -253,14 +255,20 @@ run_metropolis_MCMC <- function(startvalue, iterations){
   return(chain)
 }
 
-alpha = runif(1,0,5)
-beta =  runif(1,0,1)
-Rprof("func.out",memory.profiling=T)
+#alpha = runif(1,1,2)
+#beta =  runif(1,0,0.2)
+
+alpha = 1.942482
+beta = 0.00492645
 startvalue = c(alpha,beta)
-system.time(chain <- run_metropolis_MCMC(startvalue, 20))
-Rprof(NULL)
-summaryRprof("func.out",memory="both")
 
+#Rprof("func.out",memory.profiling=T)
+chain <- run_metropolis_MCMC(startvalue, 10)
+#Rprof(NULL)
+#summaryRprof("func.out",memory="both")
 
-burnIn = 5
+burnIn = 20
 acceptance = 1-mean(duplicated(chain[-(1:burnIn),]))
+acceptance
+plot(chain[,1],type="l")
+plot(chain[,2],type="l")

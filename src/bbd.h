@@ -22,37 +22,30 @@ inline std::complex<double> operator/(const std::complex<double>& x, const std::
 struct Levin {
     
     std::vector<double> numer,denom;
-    int n, ncv, size, step;
+    int n, ncv;
     bool cnvgd;
     double small;
     double eps, lastval, lasteps;
     
-    Levin(int nmax, double epss) : numer(nmax), denom(nmax) {
+    Levin(double epss) {
         n = 0;
         ncv = 0;
         cnvgd = 0;
         eps = epss;
         lastval = 0.0;
         small = 1e-8;
-        size = nmax;
-        step = nmax;
     }
     
     double next(double sum, double omega, double beta) {
         
         double fact,ratio,term,val;
         if ((sum==0)&&(omega==0)) return(0);
-        if (n >= size) {
-          size += step;
-          numer.resize(size);
-          denom.resize(size);
-        }
         term = 1.0/(beta+n);
-        denom[n] = term/omega;
-        numer[n] = sum*denom[n];
+        denom.push_back(term/omega);
+        numer.push_back(sum*denom[n]);
         if (n > 0) {
             ratio = (beta+n)*term;
-            for (int j=1; j<=(n+1); j++) {
+            for (int j=1; j<=n; j++) {
                 fact = (n-j+beta)*term;
                 numer[n-j] = numer[n-j+1]-fact*numer[n-j];
                 denom[n-j] = denom[n-j+1]-fact*denom[n-j];
