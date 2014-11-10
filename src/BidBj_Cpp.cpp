@@ -18,7 +18,7 @@ std::vector<std::complex<double>> BidBj_Cpp(const int B, const std::vector<doubl
 			}
 				else ans[j] = yvec[j-1]*ans[j-1] + xvec[j-1]*ans[j-2];
 			res[i*(B+1) + j] = one/ans[j];
-			// if (res[i*(B+1) + j]==zero) break;
+		  if (res[i*(B+1) + j]==zero) break;
 		}
 	}
   return(res);

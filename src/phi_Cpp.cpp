@@ -5,11 +5,12 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 std::vector<std::complex<double>> phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B) {  
   
-  std::vector<std::complex<double>> phi((A+1-a0)*(B+1)*(B+1));
+  const int dim = B+1, dimsq = (B+1)*(B+1);
+  std::vector<std::complex<double>> phi((A+1-a0)*dimsq);
   // std::complex<double> fac,B1,B2,v;
    const std::complex<double> one(1.0,0.0);
-  std::vector<double> xvec(B+401), prod_mu2((B+1)*(B+1)), prod_lambda2((B+1)*(B+1));
-  std::vector<std::complex<double>> yvec(B+401), lentz(B+1), Bk1dBk(B+1), BidBj((B+1)*(B+1));
+  std::vector<double> xvec(B+401), prod_mu2(dimsq), prod_lambda2(dimsq);
+  std::vector<std::complex<double>> yvec(B+401), lentz(dim), Bk1dBk(dim), BidBj(dimsq);
         
       for (int a=0; a<=(A-a0); a++) {        
         for (int i=0; i<(B+401); i++) {
@@ -59,14 +60,22 @@ std::vector<std::complex<double>> phi_Cpp (const std::complex<double> s, const i
   		      if (i<=j) {
               std::complex<double> B2 = one/Bk1dBk[j];
 				      if (i==j) {
-                phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = BidBj[i*(B+1)+j]/(B2+lentz[j]);
+                // R-compatible
+                // phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = BidBj[i*(B+1)+j]/(B2+lentz[j]);
+                // Cpp convenience
+                phi[a*dimsq + i*dim + j] = BidBj[i*dim + j]/(B2+lentz[j]);
 				      } else {
-					      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_mu2[(i+1)*(B+1)+j]*BidBj[i*(B+1)+j]/(B2+lentz[j]);
+                // R-compatible
+					      // phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_mu2[(i+1)*(B+1)+j]*BidBj[i*(B+1)+j]/(B2+lentz[j]);
+                // Cpp convenience
+                phi[a*dimsq + i*dim + j] = prod_mu2[(i+1)*dim + j]*BidBj[i*dim + j]/(B2+lentz[j]);
 				      } 
 			      } else {
               std::complex<double> B2 = one/Bk1dBk[i];
-              
-				      phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_lambda2[j*(B+1)+i-1]*BidBj[j*(B+1)+i]/(B2+lentz[i]);
+              // R-compatible
+				      // phi[a+i*(A-a0+1)+j*(A-a0+1)*(B+1)] = prod_lambda2[j*(B+1)+i-1]*BidBj[j*(B+1)+i]/(B2+lentz[i]);
+              // Cpp convenience
+              phi[a*dimsq + i*dim + j] = prod_lambda2[j*dim + i-1]*BidBj[j*dim + i]/(B2+lentz[i]);
 			      }  
 #endif
 

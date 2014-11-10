@@ -5,7 +5,7 @@ library(Rcpp)
 
 ### Within-host macroparasite population
 
-a0 = 50
+a0 = 100
 b0 = 0
 A = 0
 B = a0
@@ -173,12 +173,26 @@ t = c(0,16,17,16,17,32)
 s = c(201,154,121,108,97,83)
 i = c(22,29,21,8,8,0)
 
+## Independence sorce
+## Date - S - I
+## June 18 - 254 - 7
+## July 3/4 - 235 - 14.5
+## July 19 - 201 - 22
+## August 3/4 - 153.5 - 29
+## August 19 - 121 - 20
+## Sep 3/4 - 110 - 8
+## Sep 19 - 97 - 8
+## Oct 4/5 - Unknown - Unknown
+## Oct 20 - 83 - 0
+
 
 ### Likelihood
 loglik <- function(param) {
 
   alpha = param[1]
   beta = param[2]
+  
+  if ((alpha<0)||(beta<0)) return(-Inf)
   
   brates1=function(a,b){0}
   drates1=function(a,b){0}
@@ -221,8 +235,8 @@ print(c(l,alpha,beta))
 logprior <- function(param){
   alpha = param[1]
   beta = param[2]
-  aprior = dunif(alpha, min=1, max=2, log = T)
-  bprior = dunif(beta, min=0, max=0.2, log = T)
+  aprior = dgamma(alpha, shape = 2.73, log = T)
+  bprior = dgamma(beta, shape = 0.0178, log = T)
   return(aprior+bprior)
 }
 
@@ -233,7 +247,7 @@ posterior <- function(param){
 ######## Metropolis algorithm ################
 
 proposalfunction <- function(param){
-  return(rnorm(2,mean = param, sd= c(0.1,0.01)))
+  return(rnorm(2,mean = param, sd= c(0.01,0.01)))
   # small sd, more acceptance
 }
 
@@ -245,6 +259,10 @@ run_metropolis_MCMC <- function(startvalue, iterations){
     
     probab = exp(posterior(proposal) - posterior(chain[i,]))
     print(probab)
+    print("--")
+    print(chain[i,])
+    print(proposal)
+    print("--")
     if (runif(1) < probab){
       chain[i+1,] = proposal
     }else{
@@ -255,15 +273,15 @@ run_metropolis_MCMC <- function(startvalue, iterations){
   return(chain)
 }
 
-#alpha = runif(1,1,2)
-#beta =  runif(1,0,0.2)
+alpha = 2.73
+beta =  0.0178
 
-alpha = 1.942482
-beta = 0.00492645
+#alpha = 1.942482
+#beta = 0.00492645
 startvalue = c(alpha,beta)
 
 #Rprof("func.out",memory.profiling=T)
-chain <- run_metropolis_MCMC(startvalue, 10)
+chain <- run_metropolis_MCMC(startvalue, 200)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 
@@ -272,3 +290,8 @@ acceptance = 1-mean(duplicated(chain[-(1:burnIn),]))
 acceptance
 plot(chain[,1],type="l")
 plot(chain[,2],type="l")
+hist(chain[,1],breaks=10)
+hist(chain[,2],breaks=10)
+
+minus.loglik <- function(parameter){return(-loglik(parameter))}
+optim(c(2.73,0.0178), minus.loglik, method="L-BFGS-B", lower=c(2,0.01), upper=c(3,0.03))
