@@ -3,12 +3,10 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::vector<std::complex<double>> phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B) {  
+void phi_Cpp (std::vector<std::complex<double>>& phi, const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B) {  
   
   const int dim = B+1, dimsq = (B+1)*(B+1);
-  std::vector<std::complex<double>> phi((A+1-a0)*dimsq);
-  // std::complex<double> fac,B1,B2,v;
-   const std::complex<double> one(1.0,0.0);
+  const std::complex<double> one(1.0,0.0);
   std::vector<double> xvec(B+401), prod_mu2(dimsq), prod_lambda2(dimsq);
   std::vector<std::complex<double>> yvec(B+401), lentz(dim), Bk1dBk(dim), BidBj(dimsq);
         
@@ -81,7 +79,6 @@ std::vector<std::complex<double>> phi_Cpp (const std::complex<double> s, const i
 
 		    }
   }
-  return(phi);
 }
 
 

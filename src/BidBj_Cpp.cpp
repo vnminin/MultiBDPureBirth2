@@ -8,8 +8,8 @@ std::vector<std::complex<double>> BidBj_Cpp(const int B, const std::vector<doubl
   std::vector<std::complex<double>> res((B+1)*(B+1)),ans(B+1);
   const std::complex<double> one(1.0,0.0), zero(0.0,0.0);
   
-  for (int i=0; i<=B; i++) {
-  	for (int j=i; j<=B; j++) {
+  for (int i=0; i<=B; ++i) {
+  	for (int j=i; j<=B; ++j) {
 			if (j==i) {
 				ans[j] = one;	
 			} else if (j==(i+1)) {

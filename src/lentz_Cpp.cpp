@@ -10,7 +10,7 @@ std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<doubl
   const Complex one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0);
   std::vector<Complex> res(B+1);
   
-  for (int m=1; m<=(B+1); m++) {
+  for (int m=1; m<=(B+1); ++m) {
     int j = m;
     Complex fj, fj1 = tiny, Cj = zero, Cj1 = tiny, Dj = zero, Dj1 = zero, jdiff = two;
     double truncerr, jbound = 1.0;
@@ -31,7 +31,7 @@ std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<doubl
       jbound = std::abs((abs(one/Dj)/imag(one/Dj))*truncerr);
       if (imag(Dj)==0) jbound = abs(jdiff-one);
         
-      j++;
+      ++j;
       fj1 = fj;
       Dj1 = Dj;
       Cj1 = Cj;

@@ -3,13 +3,13 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::vector<std::complex<double>> bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B) {
+std::vector<std::complex<double>> bbd_lt_Cpp(std::vector<std::complex<double>>& phi, const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B) {
   
   const int dim = B+1, dimsq = (B+1)*(B+1);
-  std::vector<std::complex<double>> f((A+1-a0)*dim), phi((A+1-a0)*dimsq);
+  std::vector<std::complex<double>> f((A+1-a0)*dim);
   const std::complex<double> zero(0.0,0.0);
   
-  phi = phi_Cpp(s,a0,b0,lambda2,mu2,x,y,A,B);
+  phi_Cpp(phi,s,a0,b0,lambda2,mu2,x,y,A,B);
   // R compatible
   // for (int i=0; i<(B+1); i++) f[i] = phi[i*(A-a0+1)+b0*(A-a0+1)*(B+1)];
   // Cpp convenience

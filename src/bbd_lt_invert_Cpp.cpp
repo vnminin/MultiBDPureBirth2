@@ -8,17 +8,19 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
   
   const double double_PI  = 3.141592653589793238463, tol = 1e-12, AA = 20.0;
   const int nblocks = 5;
+  const int dim = B+1, dimsq = (B+1)*(B+1);
   int kmax = 5;
   std::deque<std::vector<std::complex<double>>> ig;
   std::vector<std::complex<double>> res((A+1-a0)*(B+1));
+  std::vector<std::complex<double>> phi((A+1-a0)*dimsq);
 
   for (int w=1; w<=kmax; w++) {
     std::complex<double> s(AA/(2*t),double_PI*w/t);
-    ig.push_back(bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B));
+    ig.push_back(bbd_lt_Cpp(phi,s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B));
   }
   
   std::complex<double> s(AA/(2*t),0);
-  std::vector<std::complex<double>> psum0 = bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B);
+  std::vector<std::complex<double>> psum0 = bbd_lt_Cpp(phi,s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B);
   
   for (int i=0;i<=(A-a0);i++)
     for(int j=0;j<=B;j++) {
@@ -39,7 +41,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
         if (k > kmax) {
           for (int w=(kmax+1); w<=(kmax+nblocks); w++) {
             std::complex<double> s(AA/(2*t),double_PI*w/t);
-            ig.push_back(bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B));
+            ig.push_back(bbd_lt_Cpp(phi,s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B));
           }
           kmax += nblocks;
         }

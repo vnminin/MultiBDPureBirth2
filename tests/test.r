@@ -21,7 +21,7 @@ drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> b
 
 #Rprof("func.out",memory.profiling=T)
-system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+system.time(p <- dbd_prob(t=10,a0,b0,drates1,brates2,drates2,trans,a=A,B))
 #p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
