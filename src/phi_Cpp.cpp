@@ -10,8 +10,8 @@ void phi_Cpp (std::vector<std::complex<double>>& phi, const std::complex<double>
   std::vector<double> xvec(B+401), prod_mu2(dimsq), prod_lambda2(dimsq);
   std::vector<std::complex<double>> yvec(B+401), lentz(dim), Bk1dBk(dim), BidBj(dimsq);
         
-      for (int a=0; a<=(A-a0); a++) {        
-        for (int i=0; i<(B+401); i++) {
+      for (int a=0; a<=(A-a0); ++a) {        
+        for (int i=0; i<(B+401); ++i) {
             xvec[i] = x[a+i*(A-a0+1)];
             yvec[i] = s+ y[a+i*(A-a0+1)];
         }
@@ -22,8 +22,8 @@ void phi_Cpp (std::vector<std::complex<double>>& phi, const std::complex<double>
         prod_mu2 = prod_vec_Cpp(a-a0+1,A-a0,B,mu2);
         prod_lambda2 = prod_vec_Cpp(a-a0+1,A-a0,B,lambda2);
         
-        for (int i=0; i<=B; i++) 
-        	for (int j=0; j<=B; j++) {
+        for (int i=0; i<=B; ++i) 
+        	for (int j=0; j<=B; ++j) {
             
 #if 0
 

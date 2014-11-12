@@ -15,10 +15,10 @@ std::vector<std::complex<double>> bbd_lt_Cpp(std::vector<std::complex<double>>& 
   // Cpp convenience
   for (int i=0; i<dim; i++) f[i] = phi[i*dim + b0];
   if (a0<A) {
-    for (int i=1; i<=(A-a0); i++) 
-      for (int j=0; j<=B; j++) {
+    for (int i=1; i<=(A-a0); ++i) 
+      for (int j=0; j<=B; ++j) {
         std::complex<double> sum = zero;
-        for (int k=0; k<=B; k++) {
+        for (int k=0; k<=B; ++k) {
           // R compatible
           // sum += lambda1[i-1+k*(A-a0+1)]*f[(i-1)*(B+1)+k]*phi[i+j*(A-a0+1)+k*(A-a0+1)*(B+1)];
           // Cpp convenience

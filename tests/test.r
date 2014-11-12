@@ -21,7 +21,7 @@ drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> b
 
 #Rprof("func.out",memory.profiling=T)
-system.time(p <- dbd_prob(t=10,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
 #p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
@@ -212,23 +212,23 @@ loglik <- function(param) {
 }
 
 
-alpha = 2.73
-beta = 0.0178
-brates1=function(a,b){0}
-drates1=function(a,b){0}
-brates2=function(a,b){0}
-drates2=function(a,b){alpha*b}
-trans=function(a,b){beta*a*b}
+# alpha = 2.73
+# beta = 0.0178
+# brates1=function(a,b){0}
+# drates1=function(a,b){0}
+# brates2=function(a,b){0}
+# drates2=function(a,b){alpha*b}
+# trans=function(a,b){beta*a*b}
+# 
+# Rprof("func.out",memory.profiling=T)
+# p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
+# #p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
+# #sum(p)
+# Rprof(NULL)
+# summaryRprof("func.out",memory="both")
 
-Rprof("func.out",memory.profiling=T)
-p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
-#p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
-#sum(p)
-Rprof(NULL)
-summaryRprof("func.out",memory="both")
-
-system.time(l<-loglik(c(alpha,beta)))
-print(c(l,alpha,beta))
+# system.time(l<-loglik(c(alpha,beta)))
+# print(c(l,alpha,beta))
 
 
 ### Prior
@@ -247,7 +247,7 @@ posterior <- function(param){
 ######## Metropolis algorithm ################
 
 proposalfunction <- function(param){
-  return(rnorm(2,mean = param, sd= c(0.01,0.01)))
+  return(rnorm(2,mean = param, sd= c(0.05,0.005)))
   # small sd, more acceptance
 }
 
@@ -273,11 +273,11 @@ run_metropolis_MCMC <- function(startvalue, iterations){
   return(chain)
 }
 
-alpha = 2.73
-beta =  0.0178
+#alpha = 2.73
+#beta =  0.0178
 
-#alpha = 1.942482
-#beta = 0.00492645
+alpha = 2.89132285799277
+beta = 0.0179452709698411
 startvalue = c(alpha,beta)
 
 #Rprof("func.out",memory.profiling=T)
@@ -290,8 +290,16 @@ acceptance = 1-mean(duplicated(chain[-(1:burnIn),]))
 acceptance
 plot(chain[,1],type="l")
 plot(chain[,2],type="l")
-hist(chain[,1],breaks=10)
-hist(chain[,2],breaks=10)
+hist(chain[,1],breaks=20)
+hist(chain[,2],breaks=20)
+
+write.table(chain, "tests/chain.txt", col.names=F, row.names=F, append = T)
 
 minus.loglik <- function(parameter){return(-loglik(parameter))}
 optim(c(2.73,0.0178), minus.loglik, method="L-BFGS-B", lower=c(2,0.01), upper=c(3,0.03))
+
+dat = read.table("tests/chain.txt",header=F)
+plot(dat[,1],type="l")
+plot(dat[,2],type="l")
+hist(dat[,1],breaks=20)
+hist(dat[,2],breaks=20)
