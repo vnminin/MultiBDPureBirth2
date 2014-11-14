@@ -87,28 +87,6 @@ bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
 #summaryRprof("func.out",memory="both")
 
  
- source("bbd_prob0.r")
- source("bbd_lt0.r")
- source("contfr0.r")
- 
- fun <-function(x,y) {return(bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},x,y,B=50))}
- grid = expand.grid(0,0:50)
- system.time(p0 <- mapply(fun,grid[,1],grid[,2]))
-
- 
-  	system.time(phi<-bbd_phi(s=1,3,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=20,B=20))
-
-	system.time(phi0<-bbd_phi0(s=1,3,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=20,B=20))
-	
-j = 5
-l = 0
-h =	10
-	count = start_count(j,l,h)
-	while (!(is.na(count[1]))) {
-		print(count)
-		count = add_count(count,j,l,h)
-	}
-
 ###########################################
 
 # Data: Spread of Smallpox in a Nigerian Village (Yip 1989 - Theoretical Pop Bio)
@@ -212,20 +190,20 @@ loglik <- function(param) {
 }
 
 
-# alpha = 2.73
-# beta = 0.0178
-# brates1=function(a,b){0}
-# drates1=function(a,b){0}
-# brates2=function(a,b){0}
-# drates2=function(a,b){alpha*b}
-# trans=function(a,b){beta*a*b}
-# 
-# Rprof("func.out",memory.profiling=T)
-# p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
-# #p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
-# #sum(p)
-# Rprof(NULL)
-# summaryRprof("func.out",memory="both")
+alpha = 2.73
+beta = 0.0178
+brates1=function(a,b){0}
+drates1=function(a,b){0}
+brates2=function(a,b){0}
+drates2=function(a,b){alpha*b}
+trans=function(a,b){beta*a*b}
+
+Rprof("func.out",memory.profiling=T)
+p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
+#p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
+#sum(p)
+Rprof(NULL)
+summaryRprof("func.out",memory="both")
 
 # system.time(l<-loglik(c(alpha,beta)))
 # print(c(l,alpha,beta))
@@ -276,8 +254,8 @@ run_metropolis_MCMC <- function(startvalue, iterations){
 #alpha = 2.73
 #beta =  0.0178
 
-alpha = 2.89132285799277
-beta = 0.0179452709698411
+alpha = 2.93516604664236
+beta = 0.0174758550488344
 startvalue = c(alpha,beta)
 
 #Rprof("func.out",memory.profiling=T)
@@ -295,8 +273,8 @@ hist(chain[,2],breaks=20)
 
 write.table(chain, "tests/chain.txt", col.names=F, row.names=F, append = T)
 
-minus.loglik <- function(parameter){return(-loglik(parameter))}
-optim(c(2.73,0.0178), minus.loglik, method="L-BFGS-B", lower=c(2,0.01), upper=c(3,0.03))
+# minus.loglik <- function(parameter){return(-loglik(parameter))}
+# optim(c(2.73,0.0178), minus.loglik, method="L-BFGS-B", lower=c(2,0.01), upper=c(3,0.03))
 
 dat = read.table("tests/chain.txt",header=F)
 plot(dat[,1],type="l")
