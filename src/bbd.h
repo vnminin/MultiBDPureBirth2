@@ -1,5 +1,7 @@
 #include <Rcpp.h>
 
+const std::complex<double> one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0), huge(1e16,0.0);
+
 ///// Inline opertators  for complex number
 
 inline std::complex<double> operator*(const std::complex<double>& x, const std::complex<double>& y) {
@@ -66,11 +68,11 @@ struct Levin {
 
 ///// Declare functions
 
-std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
-std::vector<std::complex<double>> inv_Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
-std::vector<std::complex<double>> BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector< std::complex<double>>& yvec, const std::vector< std::complex<double>>& inv_Bk1dBk);
+void lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz);
+void inv_Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& inv_Bk1dBk);
+void BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj);
 std::vector<double> prod_vec_Cpp(const int a, const int A, const int B, const std::vector<double>& mat);
-void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2);
-std::vector<std::complex<double>> bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2);
+void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj);
+void bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj, std::vector<std::complex<double>>& f);
 std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int maxdepth);
 

@@ -22,13 +22,13 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT=TRUE,maxdepth=4
 			else x = - l2[a-a0+1,b]*m2[a-a0+1,b+1] 	
 		return(x)
 	}
-	x = matrix(mapply(xf,grid[,1],grid[,2]),ncol=B+1+maxdepth)
+	x = matrix(mapply(xf,grid[,1],grid[,2]),nrow=B+1+maxdepth,byrow=TRUE)
 	
 	yf <- function(a,b) {
 		y = l1[a-a0+1,b+1] + l2[a-a0+1,b+1] + m2[a-a0+1,b+1] + g[a-a0+1,b+1]
 		return(y)
 	}
-	y = matrix(mapply(yf,grid[,1],grid[,2]),ncol=B+1+maxdepth)	
+	y = matrix(mapply(yf,grid[,1],grid[,2]),nrow=B+1+maxdepth,byrow=TRUE)	
 					
 # 	res = bbd_lt_invert(t,f=function(s) {
 #     ## R

@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include "boost/iterator/counting_iterator.hpp"
 #include "bbd.h"
 
 using namespace Rcpp;
@@ -10,21 +11,42 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
   const int nblocks = 20, dim = B+1, dimsq = (B+1)*(B+1);
   int kmax = nblocks;
   std::deque<std::vector<std::complex<double>>> ig;
-  std::deque<std::vector<double>> prod_mu2, prod_lambda2;
-  std::vector<std::complex<double>> res((A+1-a0)*dim), phi((A+1-a0)*dimsq);
+  std::deque<std::vector<double>> prod_mu2, prod_lambda2, xvec, yvec_minus_s;
+  std::vector<std::complex<double>> res((A+1-a0)*dim), phi((A+1-a0)*dimsq), f((A+1-a0)*dim), yvec(dim + maxdepth), lentz(dim), inv_Bk1dBk(dim), BidBj(dimsq);
   
   for (int a=0; a<=(A-a0); ++a) {
     prod_mu2.push_back(prod_vec_Cpp(a-a0+1,A-a0,B,mu2));
     prod_lambda2.push_back(prod_vec_Cpp(a-a0+1,A-a0,B,lambda2));
+    std::vector<double> tmpx(dim + maxdepth), tmpy(dim + maxdepth);
+//    for (int i=0; i<(dim + maxdepth); ++i) {           
+//            tmpx[i] = x[a*(dim + maxdepth)+i];
+//            tmpy[i] = y[a*(dim + maxdepth)+i];            
+//        }
+    std::copy_n(&x[a*(dim + maxdepth)],dim + maxdepth,tmpx.begin());
+    std::copy_n(&y[a*(dim + maxdepth)],dim + maxdepth,tmpy.begin());
+    xvec.push_back(tmpx);
+    yvec_minus_s.push_back(tmpy);
   }
 
-  for (int w=1; w<=kmax; ++w) {
-    std::complex<double> s(AA/(2*t),double_PI*w/t);
-    ig.push_back(bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B,maxdepth,phi,prod_mu2,prod_lambda2));
-  }
+//  for (int w=1; w<=kmax; ++w) {
+//    std::complex<double> s(AA/(2*t),double_PI*w/t);
+//    bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi,prod_mu2,prod_lambda2,xvec,yvec_minus_s,yvec,lentz,inv_Bk1dBk,BidBj,f);
+//    ig.push_back(f);
+//  }
+  
+  // Rewrite in terms of STL algorithm; std::transform;  std::for_each
+
+  std::for_each( boost::make_counting_iterator(0), boost::make_counting_iterator(kmax),
+    [&](int w) {
+      std::complex<double> s(AA/(2*t),double_PI*(w+1)/t);
+      bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi,prod_mu2,prod_lambda2,xvec,yvec_minus_s,yvec,lentz,inv_Bk1dBk,BidBj,f);
+      ig.push_back(f);
+    }
+  );
   
   std::complex<double> s(AA/(2*t),0);
-  std::vector<std::complex<double>> psum0 = bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B,maxdepth,phi,prod_mu2,prod_lambda2);
+  bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi,prod_mu2,prod_lambda2,xvec,yvec_minus_s,yvec,lentz,inv_Bk1dBk,BidBj,f);
+  std::vector<std::complex<double>> psum0 = f;
   
   for (int i=0;i<=(A-a0);++i)
     for(int j=0;j<=B;++j) {
@@ -45,7 +67,8 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
         if (k > kmax) {
           for (int w=(kmax+1); w<=(kmax+nblocks); ++w) {
             std::complex<double> s(AA/(2*t),double_PI*w/t);
-            ig.push_back(bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,x,y,A,B,maxdepth,phi,prod_mu2,prod_lambda2));
+            bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi,prod_mu2,prod_lambda2,xvec,yvec_minus_s,yvec,lentz,inv_Bk1dBk,BidBj,f);
+            ig.push_back(f);
           }
           kmax += nblocks;
         }

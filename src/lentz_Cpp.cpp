@@ -1,14 +1,13 @@
 #include <Rcpp.h>
+#include "bbd.h"
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec) {
+void lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz) {
 
   typedef std::complex<double> Complex;
 
   const double eps = 1e-8;
-  const Complex one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0);
-  std::vector<Complex> res(B+1);
   
   for (int m=1; m<=(B+1); ++m) {
     int j = m;
@@ -36,9 +35,8 @@ std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<doubl
       Dj1 = Dj;
       Cj1 = Cj;
     }
-    res[m-1] = fj;
+    lentz[m-1] = fj;
   }
-  return(res);
 }
 
 

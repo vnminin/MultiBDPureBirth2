@@ -6,10 +6,9 @@
 using namespace Rcpp;
 
 // bbd_lt_Cpp
-std::vector<std::complex<double>> bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2);
-RcppExport SEXP BirthDeathBirth_bbd_lt_Cpp(SEXP sSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP gammaSEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP BSEXP, SEXP maxdepthSEXP, SEXP phiSEXP, SEXP prod_mu2SEXP, SEXP prod_lambda2SEXP) {
+void bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj, std::vector<std::complex<double>>& f);
+RcppExport SEXP BirthDeathBirth_bbd_lt_Cpp(SEXP sSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP gammaSEXP, SEXP ASEXP, SEXP BSEXP, SEXP maxdepthSEXP, SEXP phiSEXP, SEXP prod_mu2SEXP, SEXP prod_lambda2SEXP, SEXP xvecSEXP, SEXP yvec_minus_sSEXP, SEXP yvecSEXP, SEXP lentzSEXP, SEXP inv_Bk1dBkSEXP, SEXP BidBjSEXP, SEXP fSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const std::complex<double> >::type s(sSEXP );
@@ -19,19 +18,22 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const std::vector<double>& >::type lambda2(lambda2SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type mu2(mu2SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type gamma(gammaSEXP );
-        Rcpp::traits::input_parameter< const std::vector<double>& >::type x(xSEXP );
-        Rcpp::traits::input_parameter< const std::vector<double>& >::type y(ySEXP );
         Rcpp::traits::input_parameter< const int >::type A(ASEXP );
         Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const int >::type maxdepth(maxdepthSEXP );
         Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type phi(phiSEXP );
         Rcpp::traits::input_parameter< const std::deque<std::vector<double>>& >::type prod_mu2(prod_mu2SEXP );
         Rcpp::traits::input_parameter< const std::deque<std::vector<double>>& >::type prod_lambda2(prod_lambda2SEXP );
-        std::vector<std::complex<double>> __result = bbd_lt_Cpp(s, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, maxdepth, phi, prod_mu2, prod_lambda2);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
+        Rcpp::traits::input_parameter< const std::deque<std::vector<double>>& >::type xvec(xvecSEXP );
+        Rcpp::traits::input_parameter< const std::deque<std::vector<double>>& >::type yvec_minus_s(yvec_minus_sSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type lentz(lentzSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type inv_Bk1dBk(inv_Bk1dBkSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type BidBj(BidBjSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type f(fSEXP );
+        bbd_lt_Cpp(s, a0, b0, lambda1, lambda2, mu2, gamma, A, B, maxdepth, phi, prod_mu2, prod_lambda2, xvec, yvec_minus_s, yvec, lentz, inv_Bk1dBk, BidBj, f);
     }
-    UNPROTECT(1);
-    return __sexp_result;
+    return R_NilValue;
 END_RCPP
 }
 // bbd_lt_invert_Cpp
@@ -61,21 +63,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // BidBj_Cpp
-std::vector<std::complex<double>> BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& inv_Bk1dBk);
-RcppExport SEXP BirthDeathBirth_BidBj_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP, SEXP inv_Bk1dBkSEXP) {
+void BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj);
+RcppExport SEXP BirthDeathBirth_BidBj_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP, SEXP inv_Bk1dBkSEXP, SEXP BidBjSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type xvec(xvecSEXP );
         Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
         Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type inv_Bk1dBk(inv_Bk1dBkSEXP );
-        std::vector<std::complex<double>> __result = BidBj_Cpp(B, xvec, yvec, inv_Bk1dBk);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type BidBj(BidBjSEXP );
+        BidBj_Cpp(B, xvec, yvec, inv_Bk1dBk, BidBj);
     }
-    UNPROTECT(1);
-    return __sexp_result;
+    return R_NilValue;
 END_RCPP
 }
 // Bk1dBk_Cpp
@@ -96,42 +96,38 @@ BEGIN_RCPP
 END_RCPP
 }
 // inv_Bk1dBk_Cpp
-std::vector<std::complex<double>> inv_Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
-RcppExport SEXP BirthDeathBirth_inv_Bk1dBk_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP) {
+void inv_Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& inv_Bk1dBk);
+RcppExport SEXP BirthDeathBirth_inv_Bk1dBk_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP, SEXP inv_Bk1dBkSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type xvec(xvecSEXP );
         Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
-        std::vector<std::complex<double>> __result = inv_Bk1dBk_Cpp(B, xvec, yvec);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type inv_Bk1dBk(inv_Bk1dBkSEXP );
+        inv_Bk1dBk_Cpp(B, xvec, yvec, inv_Bk1dBk);
     }
-    UNPROTECT(1);
-    return __sexp_result;
+    return R_NilValue;
 END_RCPP
 }
 // lentz_Cpp
-std::vector<std::complex<double>> lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
-RcppExport SEXP BirthDeathBirth_lentz_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP) {
+void lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz);
+RcppExport SEXP BirthDeathBirth_lentz_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP, SEXP lentzSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type xvec(xvecSEXP );
         Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
-        std::vector<std::complex<double>> __result = lentz_Cpp(B, xvec, yvec);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type lentz(lentzSEXP );
+        lentz_Cpp(B, xvec, yvec, lentz);
     }
-    UNPROTECT(1);
-    return __sexp_result;
+    return R_NilValue;
 END_RCPP
 }
 // phi_Cpp
-void phi_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2);
-RcppExport SEXP BirthDeathBirth_phi_Cpp(SEXP sSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP BSEXP, SEXP maxdepthSEXP, SEXP phiSEXP, SEXP prod_mu2SEXP, SEXP prod_lambda2SEXP) {
+void phi_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj);
+RcppExport SEXP BirthDeathBirth_phi_Cpp(SEXP sSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP ASEXP, SEXP BSEXP, SEXP maxdepthSEXP, SEXP phiSEXP, SEXP prod_mu2SEXP, SEXP prod_lambda2SEXP, SEXP xvecSEXP, SEXP yvec_minus_sSEXP, SEXP yvecSEXP, SEXP lentzSEXP, SEXP inv_Bk1dBkSEXP, SEXP BidBjSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
@@ -140,15 +136,19 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const int >::type b0(b0SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type lambda2(lambda2SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type mu2(mu2SEXP );
-        Rcpp::traits::input_parameter< const std::vector<double>& >::type x(xSEXP );
-        Rcpp::traits::input_parameter< const std::vector<double>& >::type y(ySEXP );
         Rcpp::traits::input_parameter< const int >::type A(ASEXP );
         Rcpp::traits::input_parameter< const int >::type B(BSEXP );
         Rcpp::traits::input_parameter< const int >::type maxdepth(maxdepthSEXP );
         Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type phi(phiSEXP );
         Rcpp::traits::input_parameter< const std::deque<std::vector<double>>& >::type prod_mu2(prod_mu2SEXP );
         Rcpp::traits::input_parameter< const std::deque<std::vector<double>>& >::type prod_lambda2(prod_lambda2SEXP );
-        phi_Cpp(s, a0, b0, lambda2, mu2, x, y, A, B, maxdepth, phi, prod_mu2, prod_lambda2);
+        Rcpp::traits::input_parameter< const std::deque<std::vector<double>>& >::type xvec(xvecSEXP );
+        Rcpp::traits::input_parameter< const std::deque<std::vector<double>>& >::type yvec_minus_s(yvec_minus_sSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type lentz(lentzSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type inv_Bk1dBk(inv_Bk1dBkSEXP );
+        Rcpp::traits::input_parameter< std::vector<std::complex<double>>& >::type BidBj(BidBjSEXP );
+        phi_Cpp(s, a0, b0, lambda2, mu2, A, B, maxdepth, phi, prod_mu2, prod_lambda2, xvec, yvec_minus_s, yvec, lentz, inv_Bk1dBk, BidBj);
     }
     return R_NilValue;
 END_RCPP
