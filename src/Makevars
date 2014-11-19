@@ -1,4 +1,4 @@
-#CXX_STD = CXX11
+CXX_STD = CXX11
 
 PKG_CPPFLAGS += -O3 -g -pg
 PKG_CXXFLAGS = -std=c++11 -I ~/Library/boost_1_57_0
