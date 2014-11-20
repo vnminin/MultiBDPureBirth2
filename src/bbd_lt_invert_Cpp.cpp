@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "boost/iterator/counting_iterator.hpp"
+//#include "boost/iterator/counting_iterator.hpp"
 #include "bbd.h"
 
 using namespace Rcpp;
