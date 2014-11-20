@@ -4,11 +4,17 @@
 
 using namespace Rcpp;
 
-// [[Rcpp::export]]
-std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int maxdepth) {
+template <class ParallelizationScheme>
+std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0, const int b0, 
+    const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
+    const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
+    const int A, const int B, const int maxdepth, 
+    const int nblocks, const double tol, const double AA,
+    const ParallelizationScheme& scheme) {
   
-  const double double_PI  = 3.141592653589793238463, tol = 1e-12, AA = 20.0;
-  const int nblocks = 200, dim = B+1, dimsq = (B+1)*(B+1);
+  const double double_PI  = 3.141592653589793238463;//, tol = 1e-12, AA = 20.0;
+//  const int nblocks = 200, 
+  const int dim = B+1, dimsq = (B+1)*(B+1);
   int kmax = nblocks;
 //  std::deque<std::vector<std::complex<double>>> ig;
   std::vector<std::vector<std::complex<double>>> ig;
@@ -17,9 +23,9 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
   
   typedef std::vector<std::complex<double>> ComplexVector;
   
-  const int nThreads = 4;
-  std::vector<ComplexVector> phi(nThreads), yvec(nThreads), lentz(nThreads), inv_Bk1dBk(nThreads), BidBj(nThreads);
-  for (int i = 0; i < nThreads; ++i) {
+  const size_t size = scheme.private_size();
+  std::vector<ComplexVector> phi(size), yvec(size), lentz(size), inv_Bk1dBk(size), BidBj(size);
+  for (int i = 0; i < size; ++i) {
     phi[i].resize((A+1-a0)*dimsq);
     yvec[i].resize(dim + maxdepth);
     lentz[i].resize(dim);
@@ -49,23 +55,20 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
   
   // Rewrite in terms of STL algorithm; std::transform;  std::for_each
   
-//  auto type = loops::STL();
-  auto type = loops::C11Threads(nThreads, kmax);
-//  auto type = loops::Reverse();
   ig.resize(kmax);
   
   auto start = std::chrono::steady_clock::now();  
 
-  loops::for_each( boost::make_counting_iterator(0), boost::make_counting_iterator(kmax),
+  scheme.for_each( boost::make_counting_iterator(0), boost::make_counting_iterator(kmax),
     [&](int w) {
       std::complex<double> s(AA/(2*t),double_PI*(w+1)/t);
       ig[w].resize((A+1-a0)*dim);
-      bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi[type.id(w)],prod_mu2,prod_lambda2,xvec,yvec_minus_s,
-          yvec[type.id(w)],lentz[type.id(w)],inv_Bk1dBk[type.id(w)],BidBj[type.id(w)],ig[w]);
+      bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi[scheme.id(w)],prod_mu2,prod_lambda2,xvec,yvec_minus_s,
+          yvec[scheme.id(w)],lentz[scheme.id(w)],inv_Bk1dBk[scheme.id(w)],BidBj[scheme.id(w)],ig[w]);
           // phi, yvec, lentz, inv_, BidBj           
 //      ig.push_back(f);
 //      ig[w] = f; // TODO Check that this is a move (and NOT a copy)
-    }, type);
+    });
     
   auto end = std::chrono::steady_clock::now();	
   
@@ -113,7 +116,29 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
 
   Rcpp::Rcout << "Time: " << std::chrono::duration_cast<TimingUnits>(end2 - start2).count() << std::endl;    
   
-  return(res);
+  return(std::move(res));
+}
+
+// [[Rcpp::export]]
+std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
+    const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
+    const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
+    const int A, const int B, const int maxdepth) {
+      
+    const double tol = 1e-12, AA = 20.0; // TODO Pass from R, no magic numbers
+    const int nblocks = 200; // TODO Pass from R        
+      
+    const int computeMode = 1; // TODO Pass from R
+    const int nThreads = 4; // TODO Pass from R
+    
+    switch(computeMode) {  // Run-time selection on compute_mode    
+      case 1:
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, 
+                    maxdepth, nblocks, tol, AA, loops::C11Threads(nThreads, nblocks));      
+      default:            
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, 
+                    maxdepth, nblocks, tol, AA, loops::STL());        
+    }
 }
 
 
