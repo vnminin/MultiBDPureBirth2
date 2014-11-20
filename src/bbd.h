@@ -1,4 +1,6 @@
 #include <Rcpp.h>
+#include <thread>
+#include <iostream>
 
 const std::complex<double> one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0), huge(1e16,0.0);
 
@@ -75,4 +77,104 @@ std::vector<double> prod_vec_Cpp(const int a, const int A, const int B, const st
 void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj);
 void bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj, std::vector<std::complex<double>>& f);
 std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int maxdepth);
+
+///// Generic loops
+
+#define DEBUG
+
+namespace loops {
+  
+    struct STL {        	
+    	size_t id(size_t t) {
+    		return 0;
+    	}    
+    };
+    
+    struct C11Threads {
+    	
+    	C11Threads(int t, int w) : nThreads(t), chunkSize(w / t) { }
+    	
+    	size_t id(size_t w) {
+    		return w / chunkSize;
+    	}
+    	
+    	const int nThreads;
+    	const int chunkSize;
+    };
+    
+    struct Reverse {
+    	size_t id(size_t t) {
+    		return 0;
+    	}
+    };
+  
+    namespace impl {
+      template <class InputIt, class UnaryFunction, class Specifics>
+      inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Specifics) {
+#ifdef DEBUG      
+      	Rcpp::Rcout << "Thread: " << *first << " to " << *last << std::endl;
+#endif      	
+          return std::for_each(first, last, f);    
+      }
+      
+      
+      template <class InputIt, class UnaryFunction>
+      inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Reverse) {
+#ifdef DEBUG      
+      	Rcpp::Rcout << "Thread: " << *last << " to " << *first << std::endl;
+#endif       	
+      	--last;
+      	for ( ; last != first; --last) {
+      		f(*last);
+      		Rcpp::Rcout << *last << std::endl;
+      	}
+      	f(*first);
+      	Rcpp::Rcout << *first << std::endl;
+      	
+      	return f;
+      }      
+      
+      template <class InputIt, class UnaryFunction>
+      inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function, C11Threads& info) {
+      
+//       	const int nThreads = 2;
+		const int nThreads = info.nThreads;
+      	const int minSize = 0;
+      
+  		if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
+			std::vector<std::thread> workers(nThreads - 1);
+			size_t chunkSize = std::distance(begin, end) / nThreads;
+			size_t start = 0;
+			for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
+				workers[i] = std::thread(
+					std::for_each<InputIt, UnaryFunction>,
+					begin + start, 
+					begin + start + chunkSize, 
+					function);
+#ifdef DEBUG
+				Rcpp::Rcout << "Thread #" << i << ": " << *(begin + start) << " to " << *(begin + start + chunkSize) << std::endl;
+#endif					
+			}
+#ifdef DEBUG
+				Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
+#endif				
+			auto rtn = std::for_each(begin + start, end, function);
+			for (int i = 0; i < nThreads - 1; ++i) {
+				workers[i].join();
+			}
+			return rtn;
+		} else {				
+			return std::for_each(begin, end, function);
+		}                  
+      }      
+      
+      
+    } // namespace impl
+    
+    template <class InputIt, class UnaryFunction, class Specifics>
+    inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Specifics& x) {
+        return impl::for_each(first, last, f, x);
+    }    
+    
+} // namespace loops
 
