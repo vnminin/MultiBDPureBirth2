@@ -84,97 +84,160 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
 
 namespace loops {
   
-    struct STL {        	
-    	size_t id(size_t t) {
+    struct STL {  
+    
+    	template <class InputIt, class UnaryFunction>
+    	UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f) const {
+#ifdef DEBUG      
+      		Rcpp::Rcout << "Thread: " << *first << " to " << *last << std::endl;
+#endif      	
+			return std::for_each(first, last, f);        		
+    	}   
+    	   	
+    	inline size_t id(size_t t) const {
     		return 0;
-    	}    
+    	} 
+    	
+    	inline size_t private_size() const {
+    		return 1;
+    	}
     };
     
-    struct C11Threads {
+    struct AbstractC11Thread {
+    
+    	AbstractC11Thread(int t, int w) : nThreads(t), chunkSize(w / t) { }
     	
-    	C11Threads(int t, int w) : nThreads(t), chunkSize(w / t) { }
-    	
-    	size_t id(size_t w) {
+    	inline size_t id(size_t w) const {
     		return w / chunkSize;
+    	}
+    	
+    	inline size_t private_size() const {
+    		return nThreads;
     	}
     	
     	const int nThreads;
     	const int chunkSize;
     };
     
-    struct Reverse {
-    	size_t id(size_t t) {
-    		return 0;
-    	}
-    };
-  
-    namespace impl {
-      template <class InputIt, class UnaryFunction, class Specifics>
-      inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Specifics) {
-#ifdef DEBUG      
-      	Rcpp::Rcout << "Thread: " << *first << " to " << *last << std::endl;
-#endif      	
-          return std::for_each(first, last, f);    
-      }
-      
-      
-      template <class InputIt, class UnaryFunction>
-      inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Reverse) {
-#ifdef DEBUG      
-      	Rcpp::Rcout << "Thread: " << *last << " to " << *first << std::endl;
-#endif       	
-      	--last;
-      	for ( ; last != first; --last) {
-      		f(*last);
-      		Rcpp::Rcout << *last << std::endl;
-      	}
-      	f(*first);
-      	Rcpp::Rcout << *first << std::endl;
-      	
-      	return f;
-      }      
-      
-      template <class InputIt, class UnaryFunction>
-      inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function, C11Threads& info) {
-      
-//       	const int nThreads = 2;
-		const int nThreads = info.nThreads;
-      	const int minSize = 0;
-      
-  		if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
-			std::vector<std::thread> workers(nThreads - 1);
-			size_t chunkSize = std::distance(begin, end) / nThreads;
-			size_t start = 0;
-			for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
-				workers[i] = std::thread(
-					std::for_each<InputIt, UnaryFunction>,
-					begin + start, 
-					begin + start + chunkSize, 
-					function);
+    struct C11Threads : public AbstractC11Thread {
+    	
+    	using AbstractC11Thread::AbstractC11Thread; // inherit constructor
+    	
+		template <class InputIt, class UnaryFunction>
+		inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) const {
+	
+			const int minSize = 0;
+
+			if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
+				std::vector<std::thread> workers(nThreads - 1);
+				size_t chunkSize = std::distance(begin, end) / nThreads;
+				size_t start = 0;
+				for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
+					workers[i] = std::thread(
+						std::for_each<InputIt, UnaryFunction>,
+						begin + start, 
+						begin + start + chunkSize, 
+						function);
 #ifdef DEBUG
-				Rcpp::Rcout << "Thread #" << i << ": " << *(begin + start) << " to " << *(begin + start + chunkSize) << std::endl;
+					Rcpp::Rcout << "Thread #" << i << ": " << *(begin + start) << " to " << *(begin + start + chunkSize) << std::endl;
 #endif					
-			}
+				}
 #ifdef DEBUG
-				Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
+					Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
 #endif				
-			auto rtn = std::for_each(begin + start, end, function);
-			for (int i = 0; i < nThreads - 1; ++i) {
-				workers[i].join();
-			}
-			return rtn;
-		} else {				
-			return std::for_each(begin, end, function);
-		}                  
-      }      
-      
-      
-    } // namespace impl
+				auto rtn = std::for_each(begin + start, end, function);
+				for (int i = 0; i < nThreads - 1; ++i) {
+					workers[i].join();
+				}
+				return rtn;
+			} else {				
+				return std::for_each(begin, end, function);
+			}                  
+		}         
+    };
     
-    template <class InputIt, class UnaryFunction, class Specifics>
-    inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Specifics& x) {
-        return impl::for_each(first, last, f, x);
-    }    
+    struct C11ThreadPool : public AbstractC11Thread {
+	
+		using AbstractC11Thread::AbstractC11Thread; // inherit constructor
+		
+		// TODO To be written; creates a thread pool once, then reuses the pool for all 
+		// calls to for_each		
+    };
+    
+//     struct Reverse {
+// 
+//     	inline size_t id(size_t t) {
+//     		return 0;
+//     	}
+//     };
+  
+//     namespace impl {
+//       template <class InputIt, class UnaryFunction, class Specifics>
+//       inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Specifics) {
+// #ifdef DEBUG      
+//       	Rcpp::Rcout << "Thread: " << *first << " to " << *last << std::endl;
+// #endif      	
+//           return std::for_each(first, last, f);    
+//       }
+//       
+//       
+//       template <class InputIt, class UnaryFunction>
+//       inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Reverse) {
+// #ifdef DEBUG      
+//       	Rcpp::Rcout << "Thread: " << *last << " to " << *first << std::endl;
+// #endif       	
+//       	--last;
+//       	for ( ; last != first; --last) {
+//       		f(*last);
+//       		Rcpp::Rcout << *last << std::endl;
+//       	}
+//       	f(*first);
+//       	Rcpp::Rcout << *first << std::endl;
+//       	
+//       	return f;
+//       }      
+//       
+//       template <class InputIt, class UnaryFunction>
+//       inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function, C11Threads& info) {
+//       
+// //       	const int nThreads = 2;
+// 		const int nThreads = info.nThreads;
+//       	const int minSize = 0;
+//       
+//   		if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
+// 			std::vector<std::thread> workers(nThreads - 1);
+// 			size_t chunkSize = std::distance(begin, end) / nThreads;
+// 			size_t start = 0;
+// 			for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
+// 				workers[i] = std::thread(
+// 					std::for_each<InputIt, UnaryFunction>,
+// 					begin + start, 
+// 					begin + start + chunkSize, 
+// 					function);
+// #ifdef DEBUG
+// 				Rcpp::Rcout << "Thread #" << i << ": " << *(begin + start) << " to " << *(begin + start + chunkSize) << std::endl;
+// #endif					
+// 			}
+// #ifdef DEBUG
+// 				Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
+// #endif				
+// 			auto rtn = std::for_each(begin + start, end, function);
+// 			for (int i = 0; i < nThreads - 1; ++i) {
+// 				workers[i].join();
+// 			}
+// 			return rtn;
+// 		} else {				
+// 			return std::for_each(begin, end, function);
+// 		}                  
+//       }      
+//       
+//       
+//     } // namespace impl
+//     
+//     template <class InputIt, class UnaryFunction, class Specifics>
+//     inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Specifics& x) {
+//         return impl::for_each(first, last, f, x);
+//     }    
     
 } // namespace loops
 
