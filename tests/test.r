@@ -5,7 +5,7 @@ library(Rcpp)
 
 ### Within-host macroparasite population
 
-a0 = 100
+a0 = 20
 b0 = 0
 A = 0
 B = a0
@@ -22,6 +22,7 @@ trans=function(a,b){gamma*a} # a -> b
 
 #Rprof("func.out",memory.profiling=T)
 system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+p[1:10,1:5]
 #p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
