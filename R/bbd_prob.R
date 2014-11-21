@@ -3,7 +3,9 @@
 ### Transition probability of a birth/birth-death process
 
 
-bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT=TRUE,maxdepth=400) {
+bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
+                     nblocks=200,tol=1e-12,computeMode=0,nThreads=4,
+                     doJIT=TRUE,maxdepth=400) {
 	if (doJIT) enableJIT(1)
   
   ## R-C interface
@@ -39,7 +41,9 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT=TRUE,maxdepth=4
 # 		})
 
   ## Rcpp
-  res = matrix(bbd_lt_invert_Cpp(t,a0,b0,l1,l2,m2,g,x,y,A,B,maxdepth),nrow=(A-a0+1),byrow=T)
+  res = matrix(bbd_lt_invert_Cpp(t,a0,b0,l1,l2,m2,g,x,y,A,B,
+                                 nblocks,tol,computeMode,nThreads,maxdepth),
+               nrow=(A-a0+1),byrow=T)
 	  
   #if(any(is.na(res))) cat("bbd_prob(",a0,",",b0,",",t,") failed\n")
   colnames(res) = 0:B
@@ -49,7 +53,9 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,doJIT=TRUE,maxdepth=4
 	return(abs(res))
 }
 
-dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,doJIT=TRUE,maxdepth=400) {
+dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,
+                    nblocks=200,tol=1e-12,computeMode=0,nThreads=4,
+                    doJIT=TRUE,maxdepth=400) {
   ## a>=0, a<=a0, B >=a0+b0-a 
   B = a0+b0-a
 	l1 <- function(u,v){
@@ -69,7 +75,9 @@ dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,doJIT=TRUE,maxdepth=400) {
     return(gamma(a0-u,B-v))
 	}
 	res = matrix(NA,nrow=a0-a+1,ncol=B+1)
-	res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,doJIT,maxdepth)
+	res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,
+	                                   nblocks,tol,computeMode,nThreads,
+                                     doJIT,maxdepth)
 
   colnames(res) = 0:B
   rownames(res) = a:a0

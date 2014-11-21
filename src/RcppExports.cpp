@@ -37,8 +37,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // bbd_lt_invert_Cpp
-std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int maxdepth);
-RcppExport SEXP BirthDeathBirth_bbd_lt_invert_Cpp(SEXP tSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP gammaSEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP BSEXP, SEXP maxdepthSEXP) {
+std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int B, const int nblocks, const double tol, const int computeMode, const int nThreads, const int maxdepth);
+RcppExport SEXP BirthDeathBirth_bbd_lt_invert_Cpp(SEXP tSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP gammaSEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP BSEXP, SEXP nblocksSEXP, SEXP tolSEXP, SEXP computeModeSEXP, SEXP nThreadsSEXP, SEXP maxdepthSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -54,8 +54,12 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const std::vector<double>& >::type y(ySEXP );
         Rcpp::traits::input_parameter< const int >::type A(ASEXP );
         Rcpp::traits::input_parameter< const int >::type B(BSEXP );
+        Rcpp::traits::input_parameter< const int >::type nblocks(nblocksSEXP );
+        Rcpp::traits::input_parameter< const double >::type tol(tolSEXP );
+        Rcpp::traits::input_parameter< const int >::type computeMode(computeModeSEXP );
+        Rcpp::traits::input_parameter< const int >::type nThreads(nThreadsSEXP );
         Rcpp::traits::input_parameter< const int >::type maxdepth(maxdepthSEXP );
-        std::vector<std::complex<double>> __result = bbd_lt_invert_Cpp(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, maxdepth);
+        std::vector<std::complex<double>> __result = bbd_lt_invert_Cpp(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, nblocks, tol, computeMode, nThreads, maxdepth);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

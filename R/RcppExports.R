@@ -5,8 +5,8 @@ bbd_lt_Cpp <- function(s, a0, b0, lambda1, lambda2, mu2, gamma, A, B, maxdepth, 
     invisible(.Call('BirthDeathBirth_bbd_lt_Cpp', PACKAGE = 'BirthDeathBirth', s, a0, b0, lambda1, lambda2, mu2, gamma, A, B, maxdepth, phi, prod_mu2, prod_lambda2, xvec, yvec_minus_s, yvec, lentz, inv_Bk1dBk, BidBj, f))
 }
 
-bbd_lt_invert_Cpp <- function(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, maxdepth) {
-    .Call('BirthDeathBirth_bbd_lt_invert_Cpp', PACKAGE = 'BirthDeathBirth', t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, maxdepth)
+bbd_lt_invert_Cpp <- function(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, nblocks, tol, computeMode, nThreads, maxdepth) {
+    .Call('BirthDeathBirth_bbd_lt_invert_Cpp', PACKAGE = 'BirthDeathBirth', t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, nblocks, tol, computeMode, nThreads, maxdepth)
 }
 
 BidBj_Cpp <- function(B, xvec, yvec, inv_Bk1dBk, BidBj) {

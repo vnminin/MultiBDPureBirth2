@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include "bbd.h"
+#include "boost/iterator/counting_iterator.hpp"
 
 using namespace Rcpp;
 
@@ -8,10 +9,10 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
     const int A, const int B, const int maxdepth, 
-    const int nblocks, const double tol, const double AA,
+    const int nblocks, const double tol,
     const ParallelizationScheme& scheme) {
   
-  const double double_PI  = 3.141592653589793238463;//, tol = 1e-12, AA = 20.0;
+  const double double_PI  = 3.141592653589793238463, AA = 20.0;//, tol = 1e-12;
 //  const int nblocks = 200, 
   const int dim = B+1, dimsq = (B+1)*(B+1);
   int kmax = nblocks;
@@ -122,21 +123,22 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
 std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
-    const int A, const int B, const int maxdepth) {
+    const int A, const int B, const int nblocks, const double tol, const int computeMode, 
+    const int nThreads, const int maxdepth) {
       
-    const double tol = 1e-12, AA = 20.0; // TODO Pass from R, no magic numbers
-    const int nblocks = 200; // TODO Pass from R        
-      
-    const int computeMode = 1; // TODO Pass from R
-    const int nThreads = 4; // TODO Pass from R
+//    const double tol = 1e-12; // TODO Pass from R, no magic numbers
+//    const int nblocks = 200; // TODO Pass from R        
+//      
+//    const int computeMode = 1; // TODO Pass from R
+//    const int nThreads = 4; // TODO Pass from R
     
     switch(computeMode) {  // Run-time selection on compute_mode    
       case 1:
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, 
-                    maxdepth, nblocks, tol, AA, loops::C11Threads(nThreads, nblocks));      
+                    maxdepth, nblocks, tol, loops::C11Threads(nThreads, nblocks));      
       default:            
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, B, 
-                    maxdepth, nblocks, tol, AA, loops::STL());        
+                    maxdepth, nblocks, tol, loops::STL());        
     }
 }
 

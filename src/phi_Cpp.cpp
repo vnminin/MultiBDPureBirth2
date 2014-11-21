@@ -3,7 +3,13 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, const std::vector<double>& mu2, const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj) {  
+void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, 
+    const std::vector<double>& mu2, const int A, const int B, const int maxdepth, 
+    std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, 
+    const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, 
+    const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, 
+    std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, 
+    std::vector<std::complex<double>>& BidBj) {  
   
   for (int a=0; a<=(A-a0); ++a) {     
     for (int i=0; i<((B+1) + maxdepth); ++i) yvec[i] = s + yvec_minus_s[a][i];

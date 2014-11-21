@@ -3,7 +3,8 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-void BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj) {
+void BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
+    const std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj) {
   
   for (int i=0; i<=B; ++i) {
   	for (int j=i; j<=B; ++j) {

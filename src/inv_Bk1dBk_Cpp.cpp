@@ -3,7 +3,8 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-void inv_Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& inv_Bk1dBk) {
+void inv_Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
+    std::vector<std::complex<double>>& inv_Bk1dBk) {
   
   std::complex<double> Dj = zero, Dj1 = zero;
     for (int j=0; j<=B; ++j) {

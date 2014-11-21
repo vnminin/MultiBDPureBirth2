@@ -3,7 +3,8 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-void lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz) {
+void lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
+    std::vector<std::complex<double>>& lentz) {
 
   typedef std::complex<double> Complex;
 
