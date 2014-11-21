@@ -19,7 +19,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
 //  std::deque<std::vector<std::complex<double>>> ig;
   std::vector<std::vector<std::complex<double>>> ig;
   std::deque<std::vector<double>> prod_mu2, prod_lambda2, xvec, yvec_minus_s;
-  std::vector<std::complex<double>> res((A+1-a0)*dim), f((A+1-a0)*dim);
+  std::vector<std::complex<double>> res((A+1-a0)*dim);//, f((A+1-a0)*dim);
   
   typedef std::vector<std::complex<double>> ComplexVector;
   
@@ -79,9 +79,9 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
   auto start2 = std::chrono::steady_clock::now();  
   
   std::complex<double> s(AA/(2*t),0);
-  bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi[0],prod_mu2,prod_lambda2,xvec,yvec_minus_s,
-      yvec[0],lentz[0],inv_Bk1dBk[0],BidBj[0],f);
-  std::vector<std::complex<double>> psum0 = f;
+  std::vector<std::complex<double>> psum0((A+1-a0)*dim);
+  bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi[0],prod_mu2,prod_lambda2,
+      xvec,yvec_minus_s,yvec[0],lentz[0],inv_Bk1dBk[0],BidBj[0],psum0);
   
   for (int i=0;i<=(A-a0);++i)
     for(int j=0;j<=B;++j) {
@@ -100,12 +100,24 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
         k++;
         sk1 = sk;
         if (k > kmax) {
-          for (int w=(kmax+1); w<=(kmax+nblocks); ++w) {
-            std::complex<double> s(AA/(2*t),double_PI*w/t);
-            bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi[0],prod_mu2,prod_lambda2,xvec,yvec_minus_s,
-                yvec[0],lentz[0],inv_Bk1dBk[0],BidBj[0],f);
-            ig.push_back(f);
-          }
+          ig.resize(kmax+nblocks);
+            
+//          for (int w=(kmax+1); w<=(kmax+nblocks); ++w) {
+//            std::complex<double> s(AA/(2*t),double_PI*w/t);
+//            ig[w-1].resize((A+1-a0)*dim);
+//            bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi[0],prod_mu2,
+//                prod_lambda2,xvec,yvec_minus_s,yvec[0],lentz[0],inv_Bk1dBk[0],BidBj[0],ig[w-1]);
+//          }
+          
+          scheme.for_each( boost::make_counting_iterator(0), boost::make_counting_iterator(nblocks),
+            [&](int w) {
+              std::complex<double> s(AA/(2*t),double_PI*(w+kmax+1)/t);
+              ig[w+kmax].resize((A+1-a0)*dim);
+              bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,B,maxdepth,phi[scheme.id(w)],
+                prod_mu2,prod_lambda2,xvec,yvec_minus_s,yvec[scheme.id(w)],lentz[scheme.id(w)],
+                inv_Bk1dBk[scheme.id(w)],BidBj[scheme.id(w)],ig[w+kmax]);
+            });
+            
           kmax += nblocks;
         }
       }
