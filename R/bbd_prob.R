@@ -57,7 +57,6 @@ dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,
                     nblocks=200,tol=1e-12,computeMode=0,nThreads=4,
                     doJIT=TRUE,maxdepth=400) {
   ## a>=0, a<=a0, B >=a0+b0-a 
-  B = a0+b0-a
 	l1 <- function(u,v){
     if (v>B) return(0)
     return(mu1(a0-u,B-v))

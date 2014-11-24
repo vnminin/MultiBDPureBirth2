@@ -32,10 +32,10 @@ sum(p)
 
 ### SIR
 
-a0 = 1
+a0 = 3
 A = 0
-B = 3
-N = 3
+N = 5
+B = N
 b0 = N-a0
 
 gamma = 1
@@ -48,11 +48,11 @@ drates2=function(a,b){gamma*b}
 trans=function(a,b){beta*a*b/N}
 
 # system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B))
-Rprof("func.out",memory.profiling=T)
+#Rprof("func.out",memory.profiling=T)
 #system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
 p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
-Rprof(NULL)
-summaryRprof("func.out",memory="both")
+#Rprof(NULL)
+#summaryRprof("func.out",memory="both")
 
 #source("bbd_prob0.r")
 #source("bbd_lt0.r")
@@ -62,7 +62,7 @@ summaryRprof("func.out",memory="both")
 #grid = expand.grid(0:a0,0:B)
 #system.time(p0 <- matrix(mapply(fun,grid[,1],grid[,2]),ncol=B+1))
 
-source("sir.r")
+#source("sir.r")
 #sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma,0,0)
 
 funsir <- function(x,y) {return(sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma,x,y))}
@@ -282,3 +282,63 @@ plot(dat[,1],type="l")
 plot(dat[,2],type="l")
 hist(dat[,1],breaks=20)
 hist(dat[,2],breaks=20)
+
+###########
+### Birth-death-shift
+
+tList = 1;  dt = 1; lam = .5; v = .2; mu = .4; initNum = 10
+gridLength = 51
+s1.seq <- exp(2*pi*1i*seq(from = 0, to = (gridLength-1))/gridLength)
+s2.seq <- exp(2*pi*1i*seq(from = 0, to = (gridLength-1))/gridLength)
+p0 <- getTrans.timeList(tList, lam, v, mu, initNum, s1.seq, s2.seq, dt)[[1]]
+p1 = p0[1:11,]
+
+brates1=function(a,b){0}
+drates1=function(a,b){mu*a}
+brates2=function(a,b){lam*(a+b)}
+drates2=function(a,b){mu*b}
+trans=function(a,b){v*a}
+
+a0 = 10
+b0 = 0
+A = 0
+B = 50
+
+p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+sum(abs(p-p1))
+
+####
+# SIR - Matrix exponential
+
+a0 = 5
+A = 0
+N = 10
+B = N
+b0 = N-a0
+
+alpha = 2.73
+beta = 0.0178
+brates1=function(a,b){0}
+drates1=function(a,b){0}
+brates2=function(a,b){0}
+drates2=function(a,b){alpha*b}
+trans=function(a,b){beta*a*b}
+
+grid = expand.grid(A:a0,0:B)
+Q = matrix(0,nrow = nrow(grid), ncol = nrow(grid))
+for (i in 1: nrow(Q))
+  for (j in 1: ncol(Q))
+  {
+    if ((grid[i,2]==grid[j,2])&&(grid[i,1] == grid[j,1]-1)) Q[i,j] = alpha*grid[i,2]
+    if ((grid[i,2]==grid[j,2]+1)&&(grid[i,1] == grid[j,1]-1)) Q[i,j] = beta*grid[i,1]*grid[i,2]
+    if ((grid[i,2]==grid[j,2])&&(grid[i,1] == grid[j,1])) Q[i,j] = - alpha*grid[i,2] - beta*grid[i,1]*grid[i,2]
+  }
+
+P0 = rep(0,nrow(grid))
+for (i in 1:nrow(grid)) {if ((grid[i,1]==a0)&&(grid[i,2]==b0)) P0[i]=1}
+tmp = expAtv(Q,P0)$eAtv
+P = matrix(0,nrow=a0-A+1, ncol=B+1)
+for (i in 1:nrow(grid)) {P[grid[i,1]-A+1,grid[i,2]+1]=tmp[i]}
+
+p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+
