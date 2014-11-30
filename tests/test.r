@@ -5,7 +5,7 @@ library(Rcpp)
 
 ### Within-host macroparasite population
 
-a0 = 20
+a0 = 50
 b0 = 0
 A = 0
 B = a0
@@ -21,8 +21,8 @@ drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> b
 
 #Rprof("func.out",memory.profiling=T)
-system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
-p[1:10,1:5]
+system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0))
+#p[1:10,1:5]
 #p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
@@ -310,9 +310,10 @@ sum(abs(p-p1))
 ####
 # SIR - Matrix exponential
 
-a0 = 5
-A = 0
-N = 10
+library(expm)
+a0 = 10
+A = 3
+N = 20
 B = N
 b0 = N-a0
 
@@ -329,16 +330,57 @@ Q = matrix(0,nrow = nrow(grid), ncol = nrow(grid))
 for (i in 1: nrow(Q))
   for (j in 1: ncol(Q))
   {
-    if ((grid[i,2]==grid[j,2])&&(grid[i,1] == grid[j,1]-1)) Q[i,j] = alpha*grid[i,2]
-    if ((grid[i,2]==grid[j,2]+1)&&(grid[i,1] == grid[j,1]-1)) Q[i,j] = beta*grid[i,1]*grid[i,2]
-    if ((grid[i,2]==grid[j,2])&&(grid[i,1] == grid[j,1])) Q[i,j] = - alpha*grid[i,2] - beta*grid[i,1]*grid[i,2]
+    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2]+1)) Q[i,j] = alpha*grid[i,2]
+    if ((grid[i,1]==grid[j,1]+1)&&(grid[i,2] == grid[j,2]-1)) Q[i,j] = beta*grid[i,1]*grid[i,2]
+    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2])) Q[i,j] = - alpha*grid[i,2] - beta*grid[i,1]*grid[i,2]
   }
 
 P0 = rep(0,nrow(grid))
 for (i in 1:nrow(grid)) {if ((grid[i,1]==a0)&&(grid[i,2]==b0)) P0[i]=1}
-tmp = expAtv(Q,P0)$eAtv
+tmp = expAtv(t(Q),P0,t=15)$eAtv
 P = matrix(0,nrow=a0-A+1, ncol=B+1)
 for (i in 1:nrow(grid)) {P[grid[i,1]-A+1,grid[i,2]+1]=tmp[i]}
 
-p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+p <- dbd_prob(t=15,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+sum(abs(P-p))
 
+####
+# Birth-death-birth
+
+a0 = 0
+A = 3
+B = 50
+b0 = 0
+
+alpha = 1
+beta = 1
+gamma = 1
+brates1=function(a,b){alpha*a+0.1}
+drates1=function(a,b){0}
+brates2=function(a,b){alpha*b+0.1}
+drates2=function(a,b){beta*b+0.1}
+trans=function(a,b){gamma*(a+b)+0.1}
+
+grid = expand.grid(a0:A,0:B)
+Q = matrix(0,nrow = nrow(grid), ncol = nrow(grid))
+for (i in 1: nrow(Q))
+  for (j in 1: ncol(Q))
+  {
+    if ((grid[i,1]==grid[j,1]-1)&&(grid[i,2] == grid[j,2])) Q[i,j] = alpha*grid[i,1]
+    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2]-1)) Q[i,j] = alpha*grid[i,2]
+    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2]+1)) Q[i,j] = beta*grid[i,2]
+    if ((grid[i,1]==grid[j,1]-1)&&(grid[i,2] == grid[j,2]+1)) Q[i,j] = gamma*(grid[i,1]+grid[i,2])
+    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2])) Q[i,j] = - alpha*grid[i,2] - alpha*grid[i,2]- beta*grid[i,2] - gamma*(grid[i,1]+grid[i,2])
+  }
+
+P0 = rep(0,nrow(grid))
+for (i in 1:nrow(grid)) {if ((grid[i,1]==a0)&&(grid[i,2]==b0)) P0[i]=1}
+tmp = expAtv(t(Q),P0,t=1)$eAtv
+P = matrix(0,nrow=A-a0+1, ncol=B+1)
+for (i in 1:nrow(grid)) {P[grid[i,1]-A+1,grid[i,2]+1]=tmp[i]}
+
+print("non-parallel bbd_prob:")
+p1 <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B)
+
+print("parallel bbd_prob:")
+p2 <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B,computeMode=1)

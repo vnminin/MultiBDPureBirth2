@@ -41,7 +41,7 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
 # 		})
 
   ## Rcpp
-  res = matrix(bbd_lt_invert_Cpp(t,a0,b0,l1,l2,m2,g,x,y,A,B,
+  res = matrix(bbd_lt_invert_Cpp(t,a0,b0,l1,l2,m2,g,x,y,A,B+1,
                                  nblocks,tol,computeMode,nThreads,maxdepth),
                nrow=(A-a0+1),byrow=T)
 	  

@@ -68,40 +68,54 @@ struct Levin {
     }
 };
 
-///// Declare functions
+///// Class triangular matrix
 
-void lentz_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
-    std::vector<std::complex<double>>& lentz);
+//class Trimax {
+//  private:
+//    std::complex<double>* elem;
+//    int sz;
+//  public:
+//    Trimax(int s): elem{new std::complex<double>[s*(s+1)/2]}, sz{s} {}    
+//    ~Trimax() {delete[] elem}
+//    // Assuming i <= j
+//    std::complex<double>& operator[](int i, int j) {return(elm[i + (j+1)*j/2]);}
+//};
+
+///// Declare functions
     
-void inv_Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
+void lentz_plus_invBk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, 
+  const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& inv_Bk1dBk, 
+  std::vector<std::complex<double>>& lentz_plus_invBk1dBk);
+    
+void inv_Bk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
     std::vector<std::complex<double>>& inv_Bk1dBk);
 
-void BidBj_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
+void BidBj_Cpp(const int Bp1, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
     const std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj);
 
-std::vector<double> prod_vec_Cpp(const int a, const int A, const int B, const std::vector<double>& mat);
+std::vector<double> prod_vec_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
 
 void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, 
-    const std::vector<double>& mu2, const int A, const int B, const int maxdepth, 
+    const std::vector<double>& mu2, const int A, const int Bp1, const int maxdepth, 
     std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, 
     const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, 
     const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, 
-    std::vector<std::complex<double>>& lentz, std::vector<std::complex<double>>& inv_Bk1dBk, 
+    std::vector<std::complex<double>>& lentz_plus_invBk1dBk, std::vector<std::complex<double>>& inv_Bk1dBk, 
     std::vector<std::complex<double>>& BidBj);
 
 void bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, 
     const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, 
-    const int A, const int B, const int maxdepth, std::vector<std::complex<double>>& phi, 
+    const int A, const int Bp1, const int maxdepth, std::vector<std::complex<double>>& phi, 
     const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, 
     const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, 
-    std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz, 
+    std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz_plus_invBk1dBk, 
     std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj, 
     std::vector<std::complex<double>>& f);
     
 std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
-    const int A, const int B, const int nblocks, const double tol, const int computeMode, 
+    const int A, const int Bp1, const int nblocks, const double tol, const int computeMode, 
     const int nThreads, const int maxdepth);
 
 ///// Generic loops
