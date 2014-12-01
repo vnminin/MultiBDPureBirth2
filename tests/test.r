@@ -5,7 +5,7 @@ library(Rcpp)
 
 ### Within-host macroparasite population
 
-a0 = 50
+a0 = 10
 b0 = 0
 A = 0
 B = a0

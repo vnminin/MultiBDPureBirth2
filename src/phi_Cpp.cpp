@@ -18,17 +18,10 @@ void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const st
     lentz_plus_invBk1dBk_Cpp(Bp1,xvec[a],yvec,inv_Bk1dBk,lentz_plus_invBk1dBk);
     BidBj_Cpp(Bp1,xvec[a],yvec,inv_Bk1dBk,BidBj);
         
-//    for (int i=0; i<Bp1; ++i) 
-//      for (int j=0; j<Bp1; ++j) {
-//		    if (i==j) phi[a*Bp1*Bp1 + i*Bp1 + j] = BidBj[i*Bp1 + j]/lentz_plus_invBk1dBk[j];
-//        if (i<j) phi[a*Bp1*Bp1 + i*Bp1 + j] = prod_mu2[a][(i+1)*Bp1 + j]*BidBj[i*Bp1 + j]/lentz_plus_invBk1dBk[j];				    
-//        if (i>j) phi[a*Bp1*Bp1 + i*Bp1 + j] = prod_lambda2[a][j*Bp1 + i-1]*BidBj[j*Bp1 + i]/lentz_plus_invBk1dBk[i];
-//		}
-    
     for (int i = 0; i < Bp1; ++i) {
-      phi[a*Bp1*Bp1 + i*Bp1 + i] = BidBj[i*Bp1 + i]/lentz_plus_invBk1dBk[i];
+      phi[a*Bp1*Bp1 + i*Bp1 + i] = BidBj[Trimat(i,i)]/lentz_plus_invBk1dBk[i];
       for (int j = i+1; j < Bp1; ++j) {
-        std::complex<double> tmp = BidBj[i*Bp1 + j]/lentz_plus_invBk1dBk[j];
+        std::complex<double> tmp = BidBj[Trimat(i,j)]/lentz_plus_invBk1dBk[j];
         phi[a*Bp1*Bp1 + i*Bp1 + j] = prod_mu2[a][(i+1)*Bp1 + j] * tmp;				    
         phi[a*Bp1*Bp1 + j*Bp1 + i] = prod_lambda2[a][i*Bp1 + j-1] * tmp;
       }

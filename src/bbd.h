@@ -20,6 +20,10 @@ inline std::complex<double> operator/(const std::complex<double>& x, const std::
                         (-x.real()*y.imag() + x.imag()*y.real())/denominator
                 };
               }
+              
+inline int Trimat(int i, int j) {
+  return(i + (j+1)*j/2); // i <=j
+  }
 
 ///// Struct Levin for series acceleration
 
@@ -68,18 +72,6 @@ struct Levin {
     }
 };
 
-///// Class triangular matrix
-
-//class Trimax {
-//  private:
-//    std::complex<double>* elem;
-//    int sz;
-//  public:
-//    Trimax(int s): elem{new std::complex<double>[s*(s+1)/2]}, sz{s} {}    
-//    ~Trimax() {delete[] elem}
-//    // Assuming i <= j
-//    std::complex<double>& operator[](int i, int j) {return(elm[i + (j+1)*j/2]);}
-//};
 
 ///// Declare functions
     

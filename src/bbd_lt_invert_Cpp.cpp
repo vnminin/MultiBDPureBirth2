@@ -25,13 +25,14 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
   std::vector<std::complex<double>> res((A+1-a0)*Bp1);
   
   const size_t size = scheme.private_size();
-  std::vector<ComplexVector> phi(size), yvec(size), lentz_plus_invBk1dBk(size), inv_Bk1dBk(size), BidBj(size);
+  std::vector<ComplexVector> phi(size), yvec(size), lentz_plus_invBk1dBk(size), inv_Bk1dBk(size),BidBj(size);
+
   for (int i = 0; i < size; ++i) {
     phi[i].resize((A+1-a0)*dimsq);
     yvec[i].resize(Bp1 + maxdepth);
     lentz_plus_invBk1dBk[i].resize(Bp1);
     inv_Bk1dBk[i].resize(Bp1);
-    BidBj[i].resize(dimsq);    
+    BidBj[i].resize(Bp1*(Bp1+1)/2);
   }
     
   for (int a=0; a<(A-a0+1); ++a) {
