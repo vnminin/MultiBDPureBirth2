@@ -12,7 +12,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
     const int nblocks, const double tol,
     const ParallelizationScheme& scheme) {
   
-  auto start = std::chrono::steady_clock::now();  
+//  auto start = std::chrono::steady_clock::now();  
   
   typedef std::vector<std::complex<double>> ComplexVector;
   
@@ -97,10 +97,10 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
       res[i*Bp1 + j] = sk1*exp(AA/2);
     }
     
-  auto end = std::chrono::steady_clock::now();  
-  
-  using TimingUnits = std::chrono::microseconds;
-  Rcpp::Rcout << "Time: " << std::chrono::duration_cast<TimingUnits>(end - start).count() << std::endl;
+//  auto end = std::chrono::steady_clock::now();  
+//  
+//  using TimingUnits = std::chrono::microseconds;
+//  Rcpp::Rcout << "Time: " << std::chrono::duration_cast<TimingUnits>(end - start).count() << std::endl;
     
   return(std::move(res));
 }

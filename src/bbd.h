@@ -124,7 +124,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
 
 ///// Generic loops
 
-#define DEBUG
+//#define DEBUG
 
 namespace loops {
   

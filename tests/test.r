@@ -168,8 +168,8 @@ i = c(22,29,21,8,8,0)
 ### Likelihood
 loglik <- function(param) {
 
-  alpha = param[1]
-  beta = param[2]
+  alpha = exp(param[1])
+  beta = exp(param[2])
   
   if ((alpha<0)||(beta<0)) return(-Inf)
   
@@ -181,7 +181,7 @@ loglik <- function(param) {
   
 	n = length(i)
   fun <- function(k){return(log(dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
-                                     a=s[k+1],B=s[k]+i[k]-s[k+1]))[1,i[k+1]+1])}
+                                     a=s[k+1],B=s[k]+i[k]-s[k+1],computeMode=1))[1,i[k+1]+1])}
   #tmp = mclapply(1:(n-1),fun,mc.cores=3)
   tmp = sapply(1:(n-1),fun)
   
@@ -214,8 +214,8 @@ print(c(l,alpha,beta))
 logprior <- function(param){
   alpha = param[1]
   beta = param[2]
-  aprior = dgamma(alpha, shape = 2.73, log = T)
-  bprior = dgamma(beta, shape = 0.0178, log = T)
+  aprior = dnorm(alpha, mean = log(2.73), sd = 0.1, log = TRUE)
+  bprior = dnorm(beta, mean = log(0.0178), sd = 0.1, log = TRUE)
   return(aprior+bprior)
 }
 
@@ -226,7 +226,7 @@ posterior <- function(param){
 ######## Metropolis algorithm ################
 
 proposalfunction <- function(param){
-  return(rnorm(2,mean = param, sd= c(0.05,0.005)))
+  return(rnorm(2,mean = param, sd= c(0.1,0.1)))
   # small sd, more acceptance
 }
 
@@ -252,15 +252,12 @@ run_metropolis_MCMC <- function(startvalue, iterations){
   return(chain)
 }
 
-#alpha = 2.73
-#beta =  0.0178
-
-alpha = 2.93516604664236
-beta = 0.0174758550488344
-startvalue = c(alpha,beta)
+alpha = 2.73
+beta =  0.0178
+startvalue = c(log(alpha),log(beta))
 
 #Rprof("func.out",memory.profiling=T)
-chain <- run_metropolis_MCMC(startvalue, 200)
+chain <- run_metropolis_MCMC(startvalue, 20)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 
