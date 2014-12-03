@@ -21,6 +21,15 @@ inline std::complex<double> operator/(const std::complex<double>& x, const std::
                 };
               }
               
+inline std::complex<double> operator/(const double& x, const std::complex<double>& y) {
+                const double denominator = y.real() * y.real() + y.imag() * y.imag();
+                return {
+                        x*y.real()/denominator,
+                        -x*y.imag()/denominator
+                };
+              }
+
+              
 inline int Trimat(int i, int j) {
   return(i + (j+1)*j/2); // i <=j
   }
@@ -48,6 +57,7 @@ struct Levin {
         
         double fact,ratio,term,val;
         if ((sum==0)&&(omega==0)) return(0);
+        //if ((abs(sum)<1e-12)&&(abs(omega)<1e-12)) return(0);
         term = 1.0/(beta+n);
         denom.push_back(term/omega);
         numer.push_back(sum*denom[n]);
@@ -62,6 +72,8 @@ struct Levin {
         }
         n++;
         val = std::abs(denom[0]) < small ? lastval : numer[0]/denom[0];
+        if (isnan(val)) val = 0;
+        //Rcpp::Rcout << "denom = " << denom[0] << ", numer = " << numer[0] << std::endl;
         lasteps = std::abs(val-lastval);
         if (lasteps <= eps) ++ncv;
         //if((ncv>0) && (lasteps > eps)) ncv = 0;

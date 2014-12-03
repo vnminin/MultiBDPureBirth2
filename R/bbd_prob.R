@@ -12,6 +12,18 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
 #   dyn.load("src/cf_BidBj.so")
 #   dyn.load("src/prod_vec.so")
 #   dyn.load("src/phi_routine.so")
+
+  if (a0<0) stop("a0 cannot be negative.")
+  if (a0>A) stop("a0 cannot be bigger than A.")
+  if (B<0) stop("B cannot be negative.")
+  if (t<0) stop("t cannot be negative.")
+  if (t==0) {
+    res = matrix(0,nrow=A-a0+1,ncol=B+1)
+    res[1,b0+1] = 1
+    colnames(res) = 0:B
+    rownames(res) = a0:A
+    return(res)
+  }
 	
 	grid  = expand.grid(a0:A,0:(B+maxdepth))
 	l1 = matrix(mapply(lambda1,grid[,1],grid[,2]),ncol=B+1+maxdepth)
@@ -57,6 +69,10 @@ dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,
                     nblocks=200,tol=1e-12,computeMode=0,nThreads=4,
                     doJIT=TRUE,maxdepth=400) {
   ## a>=0, a<=a0, B >=a0+b0-a 
+  if(a<0) stop("a cannot be negative.")
+  if (a>a0) stop("a0 canot be smaller than a0.")
+  if (B < a0+b0-a) stop("B is too small.")
+  
 	l1 <- function(u,v){
     if (v>B) return(0)
     return(mu1(a0-u,B-v))
@@ -73,7 +89,7 @@ dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,
 	  if (v>B) return(0)
     return(gamma(a0-u,B-v))
 	}
-	res = matrix(NA,nrow=a0-a+1,ncol=B+1)
+	res = matrix(0,nrow=a0-a+1,ncol=B+1)
 	res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,
 	                                   nblocks,tol,computeMode,nThreads,
                                      doJIT,maxdepth)

@@ -10,6 +10,7 @@ test_that("SIR", {
   N = 20
   B = N
   b0 = N-a0
+  t = 15
   
   alpha = 2.73
   beta = 0.0178
@@ -19,27 +20,40 @@ test_that("SIR", {
   drates2=function(a,b){alpha*b}
   trans=function(a,b){beta*a*b}
   
-  grid = expand.grid(A:a0,0:B)
-  Q = matrix(0,nrow = nrow(grid), ncol = nrow(grid))
-  for (i in 1: nrow(Q))
-    for (j in 1: ncol(Q))
-    {
-      if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2]+1)) Q[i,j] = alpha*grid[i,2]
-      if ((grid[i,1]==grid[j,1]+1)&&(grid[i,2] == grid[j,2]-1)) Q[i,j] = beta*grid[i,1]*grid[i,2]
-      if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2])) Q[i,j] = - alpha*grid[i,2] - beta*grid[i,1]*grid[i,2]
+  Q = matrix(0,nrow = (a0-A+1)*(B+1), ncol = (a0-A+1)*(B+1))
+  P0 = rep(0,(a0-A+1)*(B+1))
+  
+  for (i in A:a0) {
+    for (j in 0:B) {
+      tmp = (i-A)*(B+1) + j+1
+      Q[tmp,tmp] = - alpha*j - beta*i*j
+      if (j>0) {
+        tmp1 = (i-A)*(B+1) + j
+        Q[tmp,tmp1] = - alpha*j
+      }
+      if ((i>A)&&(j<B)) {
+        tmp2 = (i-A-1)*(B+1) + j+2
+        Q[tmp,tmp2] = - beta*i*j
+      }
     }
+  }
+  tmp0 = (a0-A)*(B+1) + b0+1
+  P0[tmp0] = 1
   
-  P0 = rep(0,nrow(grid))
-  for (i in 1:nrow(grid)) {if ((grid[i,1]==a0)&&(grid[i,2]==b0)) P0[i]=1}
-  tmp = expAtv(t(Q),P0,t=15)$eAtv
+  expM = expAtv(t(Q),P0,t)$eAtv
   P = matrix(0,nrow=a0-A+1, ncol=B+1)
-  for (i in 1:nrow(grid)) {P[grid[i,1]-A+1,grid[i,2]+1]=tmp[i]}
   
+  for (i in A:a0) {
+    for (j in 0:B) {
+      P[i-A+1,j+1] = expM[(i-A)*(B+1) + j+1]
+    }
+  }
+    
   print("non-parallel bbd_prob:")
-  p1 <- dbd_prob(t=15,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+  p1 <- dbd_prob(t,a0,b0,drates1,brates2,drates2,trans,a=A,B)
   
   print("parallel bbd_prob:")
-  p2 <- dbd_prob(t=15,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1)
+  p2 <- dbd_prob(t,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1)
   
   expect_equal(0.0, sum(abs(P-p1)), tolerance)
   expect_equal(0.0, sum(abs(p2-p1)), tolerance)

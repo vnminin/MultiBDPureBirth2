@@ -73,10 +73,12 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
         term = sgn*real(ig[k-1][i*Bp1 + j])/t;
         psum += term;
         double omega = k*term;
+//        Rcpp::Rcout << "psum = " << psum << ", omega = " << omega << std::endl;
         sk = levin.next(psum,omega,1.0);
         if (k>1) sdiff = sk - sk1;
         k++;
         sk1 = sk;
+//        Rcpp::Rcout << "sk1 = " << sk1 << std::endl;
         if (k > kmax) {
           ig.resize(kmax+nblocks);
                       

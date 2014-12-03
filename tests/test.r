@@ -5,7 +5,7 @@ library(Rcpp)
 
 ### Within-host macroparasite population
 
-a0 = 10
+a0 = 100
 b0 = 0
 A = 0
 B = a0
@@ -21,7 +21,7 @@ drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> b
 
 #Rprof("func.out",memory.profiling=T)
-system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0))
+system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1))
 #p[1:10,1:5]
 #p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #Rprof(NULL)
@@ -72,17 +72,17 @@ system.time(p1 <- matrix(mapply(funsir,grid[,1],grid[,2]),nrow = a0+1))
 
 bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   
-  source("bd_prob.r")
-  source("bd_lt.r")
-  
+#   source("bd_prob.r")
+#   source("bd_lt.r")
+#   
   states = 0:50
   #Rprof("func.out",memory.profiling=T)
-  system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){return(0.5*k)}, drates=function(k){0.3*k}))
+  system.time(p1 <- sapply(states, bd_prob, m=3, t=1e-3, brates=function(k){return(0.5*k)}, drates=function(k){0.3*k}))
   #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 
  #Rprof("func.out",memory.profiling=T)
- system.time(p <- bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
+ system.time(p <- bbd_prob(t=1e-2,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
   sum(p)
  #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
@@ -148,7 +148,7 @@ for (y in 1:10){
 # s = c(254,235,201,154,121,108,97,83)
 # i = c(7,15,22,29,21,8,8,0)
 
-t = c(0,16,17,16,17,32)
+t = c(0,16,33,49,66,98)
 s = c(201,154,121,108,97,83)
 i = c(22,29,21,8,8,0)
 
@@ -206,8 +206,8 @@ p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)
 Rprof(NULL)
 summaryRprof("func.out",memory="both")
 
-# system.time(l<-loglik(c(alpha,beta)))
-# print(c(l,alpha,beta))
+system.time(l<-loglik(c(alpha,beta)))
+print(c(l,alpha,beta))
 
 
 ### Prior
@@ -311,9 +311,9 @@ sum(abs(p-p1))
 # SIR - Matrix exponential
 
 library(expm)
-a0 = 10
-A = 3
-N = 20
+a0 = 20
+A = 0
+N = 50
 B = N
 b0 = N-a0
 
@@ -325,23 +325,54 @@ brates2=function(a,b){0}
 drates2=function(a,b){alpha*b}
 trans=function(a,b){beta*a*b}
 
-grid = expand.grid(A:a0,0:B)
-Q = matrix(0,nrow = nrow(grid), ncol = nrow(grid))
-for (i in 1: nrow(Q))
-  for (j in 1: ncol(Q))
-  {
-    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2]+1)) Q[i,j] = alpha*grid[i,2]
-    if ((grid[i,1]==grid[j,1]+1)&&(grid[i,2] == grid[j,2]-1)) Q[i,j] = beta*grid[i,1]*grid[i,2]
-    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2])) Q[i,j] = - alpha*grid[i,2] - beta*grid[i,1]*grid[i,2]
+# grid = expand.grid(A:a0,0:B)
+# Q = matrix(0,nrow = nrow(grid), ncol = nrow(grid))
+# for (i in 1: nrow(Q))
+#   for (j in 1: ncol(Q))
+#   {
+#     if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2]+1)) Q[i,j] = alpha*grid[i,2]
+#     if ((grid[i,1]==grid[j,1]+1)&&(grid[i,2] == grid[j,2]-1)) Q[i,j] = beta*grid[i,1]*grid[i,2]
+#     if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2])) Q[i,j] = - alpha*grid[i,2] - beta*grid[i,1]*grid[i,2]
+#   }
+# 
+# P0 = rep(0,nrow(grid))
+# for (i in 1:nrow(grid)) {if ((grid[i,1]==a0)&&(grid[i,2]==b0)) P0[i]=1}
+
+Q = matrix(0,nrow = (a0-A+1)*(B+1), ncol = (a0-A+1)*(B+1))
+P0 = rep(0,(a0-A+1)*(B+1))
+
+for (i in A:a0) {
+  for (j in 0:B) {
+    tmp = (i-A)*(B+1) + j+1
+    Q[tmp,tmp] = - alpha*j - beta*i*j
+    if (j>0) {
+      tmp1 = (i-A)*(B+1) + j
+      Q[tmp,tmp1] = - alpha*j
+    }
+    if ((i>A)&&(j<B)) {
+      tmp2 = (i-A-1)*(B+1) + j+2
+      Q[tmp,tmp2] = - beta*i*j
+    }
   }
+}
+tmp0 = (a0-A)*(B+1) + b0+1
+P0[tmp0] = 1
 
-P0 = rep(0,nrow(grid))
-for (i in 1:nrow(grid)) {if ((grid[i,1]==a0)&&(grid[i,2]==b0)) P0[i]=1}
-tmp = expAtv(t(Q),P0,t=15)$eAtv
+# When t=1 exponential method fails, but when t=15 it does pretty good
+
+t = 1
+
+system.time(expM <- expAtv(t(Q),P0,t)$eAtv)
+#system.time(expM0 <- expm(t(Q)*t)%*%P0)
 P = matrix(0,nrow=a0-A+1, ncol=B+1)
-for (i in 1:nrow(grid)) {P[grid[i,1]-A+1,grid[i,2]+1]=tmp[i]}
+# for (i in 1:nrow(grid)) {P[grid[i,1]-A+1,grid[i,2]+1]=tmp[i]}
+for (i in A:a0) {
+  for (j in 0:B) {
+    P[i-A+1,j+1] = expM[(i-A)*(B+1) + j+1]
+  }
+}
 
-p <- dbd_prob(t=15,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+system.time(p <- dbd_prob(t,a0,b0,drates1,brates2,drates2,trans,a=A,B))
 sum(abs(P-p))
 
 ####
