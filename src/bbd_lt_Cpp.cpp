@@ -17,14 +17,15 @@ using namespace Rcpp;
   
   for (int i=0; i<Bp1; i++) f[i] = phi[i*Bp1 + b0];
   if (a0<A) {
-    for (int i=1; i<(A-a0+1); ++i) 
+    for (int i=0; i<(A-a0); ++i) 
       for (int j=0; j<Bp1; ++j) {
         std::complex<double> sum = zero;
-        for (int k=0; k<Bp1; ++k) {
-          sum += lambda1[i-1+k*(A-a0+1)]*f[(i-1)*Bp1 + k]*phi[i*Bp1*Bp1 + j*Bp1 + k];
-          if (k<Bp1-1) sum += gamma[i-1 + (k+1)*(A-a0+1)]*f[(i-1)*Bp1 + k+1]*phi[i*Bp1*Bp1 + j*Bp1 + k];
+        for (int k=0; k<(Bp1-1); ++k) {
+          sum += lambda1[i + k*(A-a0+1)]*f[i*Bp1 + k]*phi[(i+1)*Bp1*Bp1 + j*Bp1 + k];
+          sum += gamma[i + (k+1)*(A-a0+1)]*f[i*Bp1 + k+1]*phi[(i+1)*Bp1*Bp1 + j*Bp1 + k];
         }
-        f[i*Bp1 + j] = sum;
+        sum += lambda1[i + (Bp1-1)*(A-a0+1)]*f[i*Bp1 + Bp1-1]*phi[(i+1)*Bp1*Bp1 + j*Bp1 + Bp1-1];
+        f[(i+1)*Bp1 + j] = sum;
       }
   }
 }  

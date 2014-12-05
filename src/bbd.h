@@ -124,7 +124,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
 
 ///// Generic loops
 
-//#define DEBUG
+#define DEBUG
 
 namespace loops {
   
@@ -201,11 +201,41 @@ namespace loops {
     };
     
     struct C11ThreadPool : public AbstractC11Thread {
+      
+	  std::thread *workers;
+    C11ThreadPool(int t, int w) :  AbstractC11Thread(t,w), workers{new std::thread[t-1]} {}
+		using AbstractC11Thread::AbstractC11Thread; // inherit constructor    
+  
+    template <class InputIt, class UnaryFunction>
+  	inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) const {
 	
-		using AbstractC11Thread::AbstractC11Thread; // inherit constructor
-		
-		// TODO To be written; creates a thread pool once, then reuses the pool for all 
-		// calls to for_each		
+			const int minSize = 0;
+      
+			if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
+				size_t chunkSize = std::distance(begin, end) / nThreads;
+				size_t start = 0;
+				for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
+					workers[i] = std::thread(
+						std::for_each<InputIt, UnaryFunction>,
+						begin + start, 
+						begin + start + chunkSize, 
+						function);
+#ifdef DEBUG
+					Rcpp::Rcout << "Thread #" << i << ": " << *(begin + start) << " to " << *(begin + start + chunkSize) << std::endl;
+#endif					
+				}
+#ifdef DEBUG
+					Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
+#endif				
+				auto rtn = std::for_each(begin + start, end, function);
+				for (int i = 0; i < nThreads - 1; ++i) {
+					workers[i].join();
+				}
+				return rtn;
+			} else {				
+				return std::for_each(begin, end, function);
+			}                  
+		}
     };
     
 //     struct Reverse {

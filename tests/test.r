@@ -5,30 +5,45 @@ library(Rcpp)
 
 ### Within-host macroparasite population
 
-a0 = 100
+a0 = 50
 b0 = 0
 A = 0
 B = a0
 
-muL = runif(1,0,1)
-muM = 0.0015
-eta = runif(1,0,1)
-gamma = 0.04
+nsim = 100
+ser = rep(0,nsim)
+par2 = rep(0,nsim)
+par4 = rep(0,nsim)
 
-drates1=function(a,b){muL*a+eta*a^2}
-brates2=function(a,b){0}
-drates2=function(a,b){muM*b}
-trans=function(a,b){gamma*a} # a -> b
+for (i in 1:100) {
+  muL = runif(1,0,1)
+  muM = 0.0015
+  eta = runif(1,0,1)
+  gamma = 0.04
+  
+  drates1=function(a,b){muL*a+eta*a^2}
+  brates2=function(a,b){0}
+  drates2=function(a,b){muM*b}
+  trans=function(a,b){gamma*a} # a -> bs
+  
+  #Rprof("func.out",memory.profiling=T)
+  ser[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0))[3]
+  par2[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1,nThreads=2))[3]
+  par4[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1,nThreads=4))[3]
+  #p[1:10,1:5]
+  #p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+  #Rprof(NULL)
+  #summaryRprof("func.out",memory="both")
+  #sum(p)
+  #print(c(muL,muM))
+}
 
-#Rprof("func.out",memory.profiling=T)
-system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1))
-#p[1:10,1:5]
-#p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
-#Rprof(NULL)
-#summaryRprof("func.out",memory="both")
-sum(p)
-#print(c(muL,muM))
-
+dat = data.frame(
+  ser = ser,
+  par2 = par2,
+  par4 = par4
+  )
+boxplot(dat, at = c(1,2,4),ylab="Time",xlab="nThreads")
 
 ### SIR
 
@@ -171,7 +186,7 @@ loglik <- function(param) {
   alpha = exp(param[1])
   beta = exp(param[2])
   
-  if ((alpha<0)||(beta<0)) return(-Inf)
+  #if ((alpha<0)||(beta<0)) return(-Inf)
   
   brates1=function(a,b){0}
   drates1=function(a,b){0}
@@ -206,7 +221,7 @@ p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)
 Rprof(NULL)
 summaryRprof("func.out",memory="both")
 
-system.time(l<-loglik(c(alpha,beta)))
+system.time(l<-loglik(c(log(alpha),log(beta))))
 print(c(l,alpha,beta))
 
 
@@ -271,8 +286,8 @@ hist(chain[,2],breaks=20)
 
 write.table(chain, "tests/chain.txt", col.names=F, row.names=F, append = T)
 
-# minus.loglik <- function(parameter){return(-loglik(parameter))}
-# optim(c(2.73,0.0178), minus.loglik, method="L-BFGS-B", lower=c(2,0.01), upper=c(3,0.03))
+minus.loglik <- function(parameter){return(-loglik(parameter))}
+sytem.time(opt <- optim(c(log(2.73),log(0.0178)),minus.loglik), hessian = TRUE)
 
 dat = read.table("tests/chain.txt",header=F)
 plot(dat[,1],type="l")

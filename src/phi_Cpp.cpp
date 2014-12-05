@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include "bbd.h"
+#include "boost/iterator/counting_iterator.hpp"
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -16,23 +17,29 @@ void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const st
 
     inv_Bk1dBk_Cpp(Bp1,xvec[a],yvec,inv_Bk1dBk);
     lentz_plus_invBk1dBk_Cpp(Bp1,xvec[a],yvec,inv_Bk1dBk,lentz_plus_invBk1dBk);
-//    auto start1 = std::chrono::steady_clock::now();  
     BidBj_Cpp(Bp1,xvec[a],yvec,inv_Bk1dBk,BidBj);
-//    auto end1 = std::chrono::steady_clock::now();  
     
-//    auto start = std::chrono::steady_clock::now();  
-    for (int i = 0; i < Bp1; ++i) {
-      phi[a*Bp1*Bp1 + i*Bp1 + i] = BidBj[Trimat(i,i)]/lentz_plus_invBk1dBk[i];
-      for (int j = i+1; j < Bp1; ++j) {
-        std::complex<double> tmp = BidBj[Trimat(i,j)]/lentz_plus_invBk1dBk[j];
-        phi[a*Bp1*Bp1 + i*Bp1 + j] = prod_mu2[a][(i+1)*Bp1 + j] * tmp;				    
-        phi[a*Bp1*Bp1 + j*Bp1 + i] = prod_lambda2[a][i*Bp1 + j-1] * tmp;
+//    for (int i = 0; i < Bp1; ++i) {
+//      phi[a*Bp1*Bp1 + i*Bp1 + i] = BidBj[Trimat(i,i)]/lentz_plus_invBk1dBk[i];
+//      for (int j = i+1; j < Bp1; ++j) {
+//        std::complex<double> tmp = BidBj[Trimat(i,j)]/lentz_plus_invBk1dBk[j];
+//        phi[a*Bp1*Bp1 + i*Bp1 + j] = prod_mu2[a][Trimat(i+1,j)] * tmp;				    
+//        phi[a*Bp1*Bp1 + j*Bp1 + i] = prod_lambda2[a][Trimat(i,j-1)] * tmp;
+//      }
+//		}
+    
+    std::for_each (boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1*(Bp1+1)/2),
+      [&](int k) {
+        int j = (int)((-1+sqrt(8*k+1))/2);  
+        int i = k - j*(j+1)/2;  
+        std::complex<double> tmp = BidBj[k]/lentz_plus_invBk1dBk[j];
+        if (i==j) phi[a*Bp1*Bp1 + i*Bp1 + i] = tmp;
+        else {
+          phi[a*Bp1*Bp1 + i*Bp1 + j] = prod_mu2[a][Trimat(i+1,j)] * tmp;  			    
+          phi[a*Bp1*Bp1 + j*Bp1 + i] = prod_lambda2[a][Trimat(i,j-1)] * tmp;
+        }
       }
-		}
-    
-//    auto end = std::chrono::steady_clock::now();  
-//    using TimingUnits = std::chrono::microseconds;
-//    Rcpp::Rcout << "Ratio: " << std::chrono::duration_cast<TimingUnits>(end - start).count()/std::chrono::duration_cast<TimingUnits>(end1 - start1).count() << std::endl;
+    );
       
 //    for (auto it = begin(x); it != end(x); it += 1) {
 //      *it = my_computed_value;
