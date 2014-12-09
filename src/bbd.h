@@ -32,7 +32,11 @@ inline std::complex<double> operator/(const double& x, const std::complex<double
               
 inline int Trimat(int i, int j) {
   return(i + (j+1)*j/2); // i <=j
-  }
+}
+  
+inline int get_phi(int i, int j, int k, int Bp1) {
+  return(i*Bp1*Bp1 + j*Bp1 + k);
+}
 
 ///// Struct Levin for series acceleration
 

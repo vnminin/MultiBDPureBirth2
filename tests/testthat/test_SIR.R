@@ -10,7 +10,7 @@ test_that("SIR", {
   N = 20
   B = N
   b0 = N-a0
-  t = 15
+  t = 1
   
   alpha = 2.73
   beta = 0.0178
@@ -29,11 +29,11 @@ test_that("SIR", {
       Q[tmp,tmp] = - alpha*j - beta*i*j
       if (j>0) {
         tmp1 = (i-A)*(B+1) + j
-        Q[tmp,tmp1] = - alpha*j
+        Q[tmp,tmp1] = alpha*j
       }
       if ((i>A)&&(j<B)) {
         tmp2 = (i-A-1)*(B+1) + j+2
-        Q[tmp,tmp2] = - beta*i*j
+        Q[tmp,tmp2] = beta*i*j
       }
     }
   }
@@ -54,7 +54,9 @@ test_that("SIR", {
   
   print("parallel bbd_prob:")
   p2 <- dbd_prob(t,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1)
+  p3 <- dbd_prob(t,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=2)
   
   expect_equal(0.0, sum(abs(P-p1)), tolerance)
   expect_equal(0.0, sum(abs(p2-p1)), tolerance)
+  expect_equal(0.0, sum(abs(p3-p2)), tolerance)
 })

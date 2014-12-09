@@ -5,17 +5,21 @@ library(Rcpp)
 
 ### Within-host macroparasite population
 
-a0 = 50
+expMtime = rep(0,10)
+dbdtime = rep(0,10)
+
+for (sim in 1:10) {
+a0 = 10*sim
 b0 = 0
 A = 0
 B = a0
 
-nsim = 100
-ser = rep(0,nsim)
-par2 = rep(0,nsim)
-par4 = rep(0,nsim)
+# nsim = 100
+# ser = rep(0,nsim)
+# par2 = rep(0,nsim)
+# par4 = rep(0,nsim)
 
-for (i in 1:100) {
+# for (i in 1:100) {
   muL = runif(1,0,1)
   muM = 0.0015
   eta = runif(1,0,1)
@@ -25,31 +29,73 @@ for (i in 1:100) {
   brates2=function(a,b){0}
   drates2=function(a,b){muM*b}
   trans=function(a,b){gamma*a} # a -> bs
-  
+
+Q = matrix(0,nrow = (a0-A+1)*(B+1), ncol = (a0-A+1)*(B+1))
+P0 = rep(0,(a0-A+1)*(B+1))
+
+for (i in A:a0) {
+  for (j in 0:B) {
+    tmp = (i-A)*(B+1) + j+1
+    Q[tmp,tmp] = - muL*i - eta*i^2 - muM*j - gamma*i
+    if (i>A) {
+      tmp1 = (i-A-1)*(B+1) + j+1
+      Q[tmp,tmp1] =  muL*i+ eta*i^2
+    }
+    if (j>0) {
+      tmp1 = (i-A)*(B+1) + j
+      Q[tmp,tmp1] =  muM*j
+    }
+    if ((i>A)&&(j<B)) {
+      tmp2 = (i-A-1)*(B+1) + j+2
+      Q[tmp,tmp2] =  gamma*i
+    }
+  }
+}
+tmp0 = (a0-A)*(B+1) + b0+1
+P0[tmp0] = 1
+
+t = 1
+expMtime[sim] = system.time(expM <- expAtv(t(Q),P0,t)$eAtv)[3]
+P = matrix(0,nrow=a0-A+1, ncol=B+1)
+for (i in A:a0) {
+  for (j in 0:B) {
+    P[i-A+1,j+1] = expM[(i-A)*(B+1) + j+1]
+  }
+}
+dbdtime[sim] = system.time(p <- dbd_prob(t,a0,b0,drates1,brates2,drates2,trans,a=A,B))[3]
+print(sum(abs(p-P)))
+}
+
+pdf("expM_vs_bbd.pdf")
+N = (1:10)*10
+plot(expMtime~N,type="b",col="red",ylab="Time (seconds)",log="y",xlab="Number of lavae",ylim=c(1e-3,1000))
+points(dbdtime~N,type="b",col="blue")
+legend("bottomright",c("expM","bbd"),col=c("red","blue"),lty=1)
+dev.off()
   #Rprof("func.out",memory.profiling=T)
-  ser[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0))[3]
-  par2[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1,nThreads=2))[3]
-  par4[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1,nThreads=4))[3]
+#   ser[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0))[3]
+#   par2[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1,nThreads=2))[3]
+#   par4[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1,nThreads=4))[3]
   #p[1:10,1:5]
-  #p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+  system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
   #Rprof(NULL)
   #summaryRprof("func.out",memory="both")
   #sum(p)
   #print(c(muL,muM))
-}
+# }
 
-dat = data.frame(
-  ser = ser,
-  par2 = par2,
-  par4 = par4
-  )
-boxplot(dat, at = c(1,2,4),ylab="Time",xlab="nThreads")
+# dat = data.frame(
+#   ser = ser,
+#   par2 = par2,
+#   par4 = par4
+#   )
+# boxplot(dat, at = c(1,2,4),ylab="Time",xlab="nThreads")
 
 ### SIR
 
-a0 = 3
+a0 = 5
 A = 0
-N = 5
+N = 10
 B = N
 b0 = N-a0
 
@@ -73,19 +119,12 @@ p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #source("bbd_lt0.r")
 #source("contfr0.r")
 
-#fun <-function(x,y) {return(dbd_prob0(t=1,a0,b0,drates1,brates2,drates2,trans,x,y,B))}
-#grid = expand.grid(0:a0,0:B)
-#system.time(p0 <- matrix(mapply(fun,grid[,1],grid[,2]),ncol=B+1))
+# fun <-function(x,y) {return(dbd_prob0(t=1,a0,b0,drates1,brates2,drates2,trans,x,y,B))}
+# grid = expand.grid(0:a0,0:B)
+# system.time(p0 <- matrix(mapply(fun,grid[,1],grid[,2]),ncol=B+1))
 
-#source("sir.r")
-#sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma,0,0)
-
-funsir <- function(x,y) {return(sir(t=1,n=a0,a=N-a0,f=trans,mu=gamma,x,y))}
-grid = expand.grid(0:a0,0:N)
-system.time(p1 <- matrix(mapply(funsir,grid[,1],grid[,2]),nrow = a0+1))
-
-
-bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
+#source("sir.r") 
+# bbd_phi(s=1,a0,b0,brates1,brates2,drates2,trans,A,B)
   
 #   source("bd_prob.r")
 #   source("bd_lt.r")
@@ -323,9 +362,9 @@ sum(abs(p-p1))
 # SIR - Matrix exponential
 
 library(expm)
-a0 = 20
+a0 = 50
 A = 0
-N = 50
+N = 100
 B = N
 b0 = N-a0
 
@@ -359,21 +398,18 @@ for (i in A:a0) {
     Q[tmp,tmp] = - alpha*j - beta*i*j
     if (j>0) {
       tmp1 = (i-A)*(B+1) + j
-      Q[tmp,tmp1] = - alpha*j
+      Q[tmp,tmp1] =  alpha*j
     }
     if ((i>A)&&(j<B)) {
       tmp2 = (i-A-1)*(B+1) + j+2
-      Q[tmp,tmp2] = - beta*i*j
+      Q[tmp,tmp2] =  beta*i*j
     }
   }
 }
 tmp0 = (a0-A)*(B+1) + b0+1
 P0[tmp0] = 1
 
-# When t=1 exponential method fails, but when t=15 it does pretty good
-
-t = 1
-
+t = 10
 system.time(expM <- expAtv(t(Q),P0,t)$eAtv)
 #system.time(expM0 <- expm(t(Q)*t)%*%P0)
 P = matrix(0,nrow=a0-A+1, ncol=B+1)
@@ -390,40 +426,61 @@ sum(abs(P-p))
 ####
 # Birth-death-birth
 
-a0 = 0
-A = 3
-B = 50
-b0 = 0
+a0 = 3
+A = 100
+B = 100
+b0 = 3
 
 alpha = 1
 beta = 1
 gamma = 1
-brates1=function(a,b){alpha*a+0.1}
+brates1=function(a,b){alpha*a}
 drates1=function(a,b){0}
-brates2=function(a,b){alpha*b+0.1}
-drates2=function(a,b){beta*b+0.1}
-trans=function(a,b){gamma*(a+b)+0.1}
+brates2=function(a,b){alpha*b}
+drates2=function(a,b){beta*b}
+trans=function(a,b){gamma*(a+b)}
 
-grid = expand.grid(a0:A,0:B)
-Q = matrix(0,nrow = nrow(grid), ncol = nrow(grid))
-for (i in 1: nrow(Q))
-  for (j in 1: ncol(Q))
-  {
-    if ((grid[i,1]==grid[j,1]-1)&&(grid[i,2] == grid[j,2])) Q[i,j] = alpha*grid[i,1]
-    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2]-1)) Q[i,j] = alpha*grid[i,2]
-    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2]+1)) Q[i,j] = beta*grid[i,2]
-    if ((grid[i,1]==grid[j,1]-1)&&(grid[i,2] == grid[j,2]+1)) Q[i,j] = gamma*(grid[i,1]+grid[i,2])
-    if ((grid[i,1]==grid[j,1])&&(grid[i,2] == grid[j,2])) Q[i,j] = - alpha*grid[i,2] - alpha*grid[i,2]- beta*grid[i,2] - gamma*(grid[i,1]+grid[i,2])
+Q = matrix(0,nrow = (A-a0+1)*(B+1), ncol = (A-a0+1)*(B+1))
+P0 = rep(0,(A-a0+1)*(B+1))
+
+for (i in a0:A) {
+  for (j in 0:B) {
+    tmp = (i-a0)*(B+1) + j+1
+    Q[tmp,tmp] = - alpha*(i+j) - beta*j - gamma*(i+j)
+    if (i<A) {
+      tmp1 = (i-a0+1)*(B+1) + j+1
+      Q[tmp,tmp1] =  alpha*i
+    }
+    if (j<B) {
+      tmp1 = (i-a0)*(B+1) + j+2
+      Q[tmp,tmp1] =  alpha*j
+    }
+    if (j>0) {
+      tmp1 = (i-a0)*(B+1) + j
+      Q[tmp,tmp1] = beta*j
+    }
+    if ((i<A)&&(j>0)) {
+      tmp2 = (i-a0+1)*(B+1) + j
+      Q[tmp,tmp2] = gamma*(i+j)
+    }
   }
+}
+tmp0 = b0+1
+P0[tmp0] = 1
 
-P0 = rep(0,nrow(grid))
-for (i in 1:nrow(grid)) {if ((grid[i,1]==a0)&&(grid[i,2]==b0)) P0[i]=1}
-tmp = expAtv(t(Q),P0,t=1)$eAtv
+t = 100
+system.time(expM <- expAtv(t(Q),P0,t)$eAtv)
 P = matrix(0,nrow=A-a0+1, ncol=B+1)
-for (i in 1:nrow(grid)) {P[grid[i,1]-A+1,grid[i,2]+1]=tmp[i]}
+for (i in a0:A) {
+  for (j in 0:B) {
+    P[i-a0+1,j+1] = expM[(i-a0)*(B+1) + j+1]
+  }
+}
 
 print("non-parallel bbd_prob:")
-p1 <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B)
+system.time(p1 <- bbd_prob(t,a0,b0,brates1,brates2,drates2,trans,A,B))
+sum(abs(p1-P))
+# print("parallel bbd_prob:")
+# system.time(p2 <- bbd_prob(t,a0,b0,brates1,brates2,drates2,trans,A,B,computeMode=1))
 
-print("parallel bbd_prob:")
-p2 <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B,computeMode=1)
+

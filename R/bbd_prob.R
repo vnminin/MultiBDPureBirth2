@@ -17,7 +17,7 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
   if (a0>A) stop("a0 cannot be bigger than A.")
   if (B<0) stop("B cannot be negative.")
   if (t<0) stop("t cannot be negative.")
-  if (t==0) {
+  if (t<tol) {
     res = matrix(0,nrow=A-a0+1,ncol=B+1)
     res[1,b0+1] = 1
     colnames(res) = 0:B

@@ -15,7 +15,6 @@ void BidBj_Cpp(const int Bp1, const std::vector<double>& xvec, const std::vector
       if (BidBj[Trimat(i,j)]==zero) {std::fill_n(&BidBj[Trimat(i,j)],Bp1-j,zero);break;}
     }
   }
-  
   BidBj[Trimat(Bp1-1,Bp1-1)] = one;
   
 // assume y>=x

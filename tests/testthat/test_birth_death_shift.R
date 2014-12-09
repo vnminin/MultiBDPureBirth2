@@ -28,8 +28,10 @@ test_that("Birth death process", {
   p2 <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
   print("parallel bbd_prob:")
   p3 <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1)
+  p4 <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=2)
   
   expect_equal(0.0, sum(abs(p1-p2)), tolerance)
   expect_equal(0.0, sum(abs(p2-p3)), tolerance)
+  expect_equal(0.0, sum(abs(p3-p4)), tolerance)
   
 })
