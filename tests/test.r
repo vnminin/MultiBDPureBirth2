@@ -468,7 +468,7 @@ for (i in a0:A) {
 tmp0 = b0+1
 P0[tmp0] = 1
 
-t = 100
+t = 1e-6
 system.time(expM <- expAtv(t(Q),P0,t)$eAtv)
 P = matrix(0,nrow=A-a0+1, ncol=B+1)
 for (i in a0:A) {
@@ -477,9 +477,12 @@ for (i in a0:A) {
   }
 }
 
+system.time(p <- bbd_expM(t,a0,b0,brates1,brates2,drates2,trans,A,B))
+
 print("non-parallel bbd_prob:")
 system.time(p1 <- bbd_prob(t,a0,b0,brates1,brates2,drates2,trans,A,B))
-sum(abs(p1-P))
+sum(abs(p1-p))
+sum(abs(p-P))
 # print("parallel bbd_prob:")
 # system.time(p2 <- bbd_prob(t,a0,b0,brates1,brates2,drates2,trans,A,B,computeMode=1))
 
