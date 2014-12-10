@@ -9,7 +9,8 @@ expMtime = rep(0,10)
 dbdtime = rep(0,10)
 
 for (sim in 1:10) {
-a0 = 10*sim
+a0 = 100
+# a0 = 10*sim
 b0 = 0
 A = 0
 B = a0
@@ -77,7 +78,7 @@ dev.off()
 #   par2[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1,nThreads=2))[3]
 #   par4[i] = system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=1,nThreads=4))[3]
   #p[1:10,1:5]
-  system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+  system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=2))
   #Rprof(NULL)
   #summaryRprof("func.out",memory="both")
   #sum(p)
@@ -255,6 +256,8 @@ trans=function(a,b){beta*a*b}
 
 Rprof("func.out",memory.profiling=T)
 p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
+p1 <- dbd_expM(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
+sum(p1)
 #p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
 #sum(p)
 Rprof(NULL)
@@ -362,7 +365,7 @@ sum(abs(p-p1))
 # SIR - Matrix exponential
 
 library(expm)
-a0 = 50
+a0 = 100
 A = 0
 N = 100
 B = N

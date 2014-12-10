@@ -1,6 +1,4 @@
-#include <Rcpp.h>
 #include "bbd.h"
-#include "boost/iterator/counting_iterator.hpp"
 using namespace Rcpp;
 
 // [[Rcpp::export]]

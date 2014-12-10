@@ -1,4 +1,3 @@
-#include <Rcpp.h>
 #include "bbd.h"
 using namespace Rcpp;
 

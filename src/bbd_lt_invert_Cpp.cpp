@@ -1,7 +1,4 @@
-#include <Rcpp.h>
 #include "bbd.h"
-#include "boost/iterator/counting_iterator.hpp"
-
 using namespace Rcpp;
 
 template <class ParallelizationScheme>
@@ -10,7 +7,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
     const int A, const int Bp1, const int maxdepth, 
     const int nblocks, const double tol,
-    const ParallelizationScheme& scheme) {
+    ParallelizationScheme& scheme) {
   
   auto start = std::chrono::steady_clock::now();  
   
@@ -24,7 +21,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
   std::deque<std::vector<double>> prod_mu2, prod_lambda2, xvec, yvec_minus_s;
   std::vector<std::complex<double>> res((A+1-a0)*Bp1);
   
-  const size_t size = scheme.private_size();
+  const size_t size = scheme.private_size();  
   std::vector<ComplexVector> phi(size), yvec(size), lentz_plus_invBk1dBk(size), inv_Bk1dBk(size),BidBj(size);
 
   for (int i = 0; i < size; ++i) {
@@ -102,6 +99,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
   Rcpp::Rcout << "Time: " << std::chrono::duration_cast<TimingUnits>(end - start).count() << std::endl;
     
   return(std::move(res));
+//  return(res);
 }
 
 // [[Rcpp::export]]
@@ -112,17 +110,23 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
     const int nThreads, const int maxdepth) {
             
     switch(computeMode) {  // Run-time selection on compute_mode    
-      case 1:
+      case 1: {
+        loops::C11Threads loopC11Threads(nThreads, nblocks);
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
-                    maxdepth, nblocks, tol, loops::C11Threads(nThreads, nblocks));      
-      
-      case 2:
+                    maxdepth, nblocks, tol, loopC11Threads);         
+      }
+            
+      case 2: {
+        loops::C11ThreadPool loopC11ThreadPool(nThreads, nblocks);
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
-                    maxdepth, nblocks, tol, loops::C11ThreadPool(nThreads, nblocks));      
-      
-      default:            
+                    maxdepth, nblocks, tol, loopC11ThreadPool);      
+      }
+        
+      default: {
+        loops::STL loopSTL; 
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
-                    maxdepth, nblocks, tol, loops::STL());        
+                    maxdepth, nblocks, tol, loopSTL);        
+      }                   
     }    
 }
 

@@ -1,6 +1,8 @@
 #include <Rcpp.h>
 #include <thread>
 #include <iostream>
+#include "boost/iterator/counting_iterator.hpp"
+#include "ThreadPool.h"
 
 const std::complex<double> one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0), huge(1e16,0.0);
 
@@ -155,16 +157,16 @@ namespace loops {
     
     	AbstractC11Thread(int t, int w) : nThreads(t), chunkSize(w / t) { }
     	
-    	inline size_t id(size_t w) const {
+    	inline size_t id(size_t w)  {
     		return w / chunkSize;
     	}
     	
-    	inline size_t private_size() const {
+    	inline size_t private_size() {
     		return nThreads;
     	}
     	
-    	const int nThreads;
-    	const int chunkSize;
+      int nThreads;
+      int chunkSize;
     };
     
     struct C11Threads : public AbstractC11Thread {
@@ -178,7 +180,7 @@ namespace loops {
 
 			if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
 				std::vector<std::thread> workers(nThreads - 1);
-				size_t chunkSize = std::distance(begin, end) / nThreads;
+				//size_t chunkSize = std::distance(begin, end) / nThreads;
 				size_t start = 0;
 				for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
 					workers[i] = std::thread(
@@ -205,41 +207,46 @@ namespace loops {
     };
     
     struct C11ThreadPool : public AbstractC11Thread {
-      
-	  std::thread *workers;
-    C11ThreadPool(int t, int w) :  AbstractC11Thread(t,w), workers{new std::thread[t-1]} {}
-		using AbstractC11Thread::AbstractC11Thread; // inherit constructor    
-  
+    
+    C11ThreadPool(int t, int w) : AbstractC11Thread(t,w), pool(t) {}
+    virtual ~C11ThreadPool() { };
+
+	  using AbstractC11Thread::AbstractC11Thread; // inherit constructor   
+    ThreadPool pool;
+    
     template <class InputIt, class UnaryFunction>
-  	inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) const {
+  	inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) {
 	
-			const int minSize = 0;
+      std::vector< std::future<void> > results;
       
-			if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
-				size_t chunkSize = std::distance(begin, end) / nThreads;
-				size_t start = 0;
-				for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
-					workers[i] = std::thread(
-						std::for_each<InputIt, UnaryFunction>,
-						begin + start, 
-						begin + start + chunkSize, 
-						function);
+			//size_t chunkSize = std::distance(begin, end) / nThreads;
+			size_t start = 0;
+			for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
+        results.emplace_back(
+  					pool.enqueue([=] {
+							std::for_each(
+								begin + start, 
+								begin + start + chunkSize,
+								function);					
+						})
+					);
+						
 #ifdef DEBUG
-					Rcpp::Rcout << "Thread #" << i << ": " << *(begin + start) << " to " << *(begin + start + chunkSize) << std::endl;
+        Rcpp::Rcout << "Thread #" << i << ": " << *(begin + start) << " to " << *(begin + start + chunkSize) << std::endl;
 #endif					
-				}
+			}
 #ifdef DEBUG
-					Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
+			Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
 #endif				
-				auto rtn = std::for_each(begin + start, end, function);
-				for (int i = 0; i < nThreads - 1; ++i) {
-					workers[i].join();
-				}
-				return rtn;
-			} else {				
-				return std::for_each(begin, end, function);
-			}                  
-		}
+			results.emplace_back(
+  				pool.enqueue([=] {
+						std::for_each(begin + start, end, function);
+					})
+				);
+			
+      for (auto&& result: results) result.get();	
+      return function;
+		  }
     };
     
 //     struct Reverse {
@@ -316,6 +323,7 @@ namespace loops {
 //     inline UnaryFunction for_each(InputIt first, InputIt last, UnaryFunction f, Specifics& x) {
 //         return impl::for_each(first, last, f, x);
 //     }    
-    
+
 } // namespace loops
+
 
