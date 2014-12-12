@@ -3,6 +3,34 @@ library(parallel)
 library(compiler)
 library(Rcpp)
 
+#### Time comparision
+
+a0 = 100
+b0 = 0
+A = 0
+B = a0
+
+muL = runif(1,0,1)
+muM = 0.0015
+eta = runif(1,0,1)
+gamma = 0.04
+
+drates1=function(a,b){muL*a+eta*a^2}
+brates2=function(a,b){0}
+drates2=function(a,b){muM*b}
+trans=function(a,b){gamma*a} # a -> bs
+
+system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+
+sim = 100
+t = rep(NA,sim)
+for (i in 1:sim) {
+  t[i] = system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=2))[3]    
+}
+mean(t)
+sd(t)
+
+
 ### Within-host macroparasite population
 
 expMtime = rep(0,10)
@@ -258,6 +286,7 @@ Rprof("func.out",memory.profiling=T)
 p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
 p1 <- dbd_expM(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
 sum(p1)
+#### Example where exponential matrix method fails
 #p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
 #sum(p)
 Rprof(NULL)

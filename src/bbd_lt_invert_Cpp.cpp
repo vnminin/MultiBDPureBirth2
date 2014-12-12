@@ -9,7 +9,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
     const int nblocks, const double tol,
     ParallelizationScheme& scheme) {
   
-  auto start = std::chrono::steady_clock::now();  
+//  auto start = std::chrono::steady_clock::now();  
   
   typedef std::vector<std::complex<double>> ComplexVector;
   
@@ -33,8 +33,10 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
   }
     
   for (int a=0; a<(A-a0+1); ++a) {
-    prod_mu2.push_back(prod_vec_Cpp(a-a0+1,A-a0,Bp1,mu2));
-    prod_lambda2.push_back(prod_vec_Cpp(a-a0+1,A-a0,Bp1,lambda2));
+//    prod_mu2.push_back(prod_vec_Cpp(a-a0+1,A-a0,Bp1,mu2));
+//    prod_lambda2.push_back(prod_vec_Cpp(a-a0+1,A-a0,Bp1,lambda2));
+    prod_mu2.push_back(prod_mu2_Cpp(a-a0+1,A-a0,Bp1,mu2));
+    prod_lambda2.push_back(prod_lambda2_Cpp(a-a0+1,A-a0,Bp1,lambda2));
     std::vector<double> tmpx(Bp1 + maxdepth), tmpy(Bp1 + maxdepth);
     std::copy_n(&x[a*(Bp1 + maxdepth)],Bp1 + maxdepth,tmpx.begin());
     std::copy_n(&y[a*(Bp1 + maxdepth)],Bp1 + maxdepth,tmpy.begin());
@@ -93,13 +95,12 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
       res[i*Bp1 + j] = sk1*exp(AA/2);
     }
     
-  auto end = std::chrono::steady_clock::now();  
+//  auto end = std::chrono::steady_clock::now();  
+//  
+//  using TimingUnits = std::chrono::microseconds;
+//  Rcpp::Rcout << "Time: " << std::chrono::duration_cast<TimingUnits>(end - start).count() << std::endl;  
   
-  using TimingUnits = std::chrono::microseconds;
-  Rcpp::Rcout << "Time: " << std::chrono::duration_cast<TimingUnits>(end - start).count() << std::endl;
-    
   return(std::move(res));
-//  return(res);
 }
 
 // [[Rcpp::export]]

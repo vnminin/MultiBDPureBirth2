@@ -27,15 +27,18 @@ void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const st
 //		}
     
     std::for_each (boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1*(Bp1+1)/2),
+//    unroll::for_each_2 (boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1*(Bp1+1)/2),
       [&](int k) {
         int j = (int)((-1+sqrt(8*k+1))/2);  
         int i = k - j*(j+1)/2;
         std::complex<double> tmp = BidBj[k]/lentz_plus_invBk1dBk[j];
-        if (i==j) phi[get_phi(a,i,i,Bp1)] = tmp;
-        else {
-          phi[get_phi(a,i,j,Bp1)] = prod_mu2[a][Trimat(i+1,j)] * tmp;    		    
-          phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][Trimat(i,j-1)] * tmp;
-        }
+//        if (i==j) phi[get_phi(a,i,i,Bp1)] = tmp;
+//        else {
+//          phi[get_phi(a,i,j,Bp1)] = prod_mu2[a][Trimat(i+1,j)] * tmp;    		    
+//          phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][Trimat(i,j-1)] * tmp;
+          phi[get_phi(a,i,j,Bp1)] = prod_mu2[a][k] * tmp;            
+          phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][k] * tmp;
+//        }
       }
     );
       

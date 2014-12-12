@@ -54,7 +54,7 @@ dbd_expM <- function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B) {
     for (j in 0:B) {
       tmp = (i-a)*(B+1) + j+1
       Q[tmp,tmp] = - mu1(i,j) - lambda2(i,j) - mu2(i,j) - gamma(i,j)
-      if (i>A) {
+      if (i>a) {
         tmp1 = (i-a-1)*(B+1) + j+1
         Q[tmp,tmp1] =  mu1(i,j)
       }

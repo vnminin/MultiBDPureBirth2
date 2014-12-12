@@ -37,6 +37,14 @@ phi_routine_Cpp <- function(B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz) {
     .Call('BirthDeathBirth_phi_routine_Cpp', PACKAGE = 'BirthDeathBirth', B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz)
 }
 
+prod_lambda2_Cpp <- function(a, A, Bp1, mat) {
+    .Call('BirthDeathBirth_prod_lambda2_Cpp', PACKAGE = 'BirthDeathBirth', a, A, Bp1, mat)
+}
+
+prod_mu2_Cpp <- function(a, A, Bp1, mat) {
+    .Call('BirthDeathBirth_prod_mu2_Cpp', PACKAGE = 'BirthDeathBirth', a, A, Bp1, mat)
+}
+
 prod_vec_Cpp <- function(a, A, Bp1, mat) {
     .Call('BirthDeathBirth_prod_vec_Cpp', PACKAGE = 'BirthDeathBirth', a, A, Bp1, mat)
 }
