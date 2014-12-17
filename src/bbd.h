@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <thread>
+#include <future>
 #include <iostream>
 #include "boost/iterator/counting_iterator.hpp"
 #include "ThreadPool.h"
@@ -102,7 +103,7 @@ void inv_Bk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, const std::v
 void BidBj_Cpp(const int Bp1, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
     const std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj);
 
-std::vector<double> prod_vec_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
+//std::vector<double> prod_vec_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
 std::vector<double> prod_mu2_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
 std::vector<double> prod_lambda2_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
 
@@ -131,7 +132,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
 
 ///// Generic loops
 
-//#define DEBUG
+#define DEBUG
 
 namespace loops {
   
@@ -159,14 +160,14 @@ namespace loops {
     	AbstractC11Thread(int t, int w) : nThreads(t), chunkSize(w / t) { }
     	
     	inline size_t id(size_t w)  {
-    		return w / chunkSize;
+    		return std::min(w / chunkSize,nThreads - 1);
     	}
     	
     	inline size_t private_size() {
     		return nThreads;
     	}
     	
-      int nThreads;
+      size_t nThreads;
       int chunkSize;
     };
     
@@ -181,7 +182,7 @@ namespace loops {
 
 			if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
 				std::vector<std::thread> workers(nThreads - 1);
-				//size_t chunkSize = std::distance(begin, end) / nThreads;
+				// size_t chunkSize = std::distance(begin, end) / nThreads;
 				size_t start = 0;
 				for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
 					workers[i] = std::thread(
@@ -196,7 +197,9 @@ namespace loops {
 #ifdef DEBUG
 					Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
 #endif				
+    
 				auto rtn = std::for_each(begin + start, end, function);
+
 				for (int i = 0; i < nThreads - 1; ++i) {
 					workers[i].join();
 				}
@@ -206,6 +209,48 @@ namespace loops {
 			}                  
 		}         
     };
+    
+    
+    struct C11Async : public AbstractC11Thread {
+      
+    	using AbstractC11Thread::AbstractC11Thread; // inherit constructor
+    	
+		template <class InputIt, class UnaryFunction>
+		inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) const {
+	
+			const int minSize = 0;
+
+			if (nThreads > 1 && std::distance(begin, end) >= minSize) {				  
+				std::vector<std::future<UnaryFunction>> workers(nThreads - 1);
+				// size_t chunkSize = std::distance(begin, end) / nThreads;
+				size_t start = 0;
+				for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
+					workers[i] = std::async(
+            std::launch::async,
+						std::for_each<InputIt, UnaryFunction>,
+						begin + start, 
+						begin + start + chunkSize, 
+						function);
+#ifdef DEBUG
+					Rcpp::Rcout << "Thread #" << i << ": " << *(begin + start) << " to " << *(begin + start + chunkSize) << std::endl;
+#endif					
+				}
+#ifdef DEBUG
+					Rcpp::Rcout << "Thread #" << (nThreads - 1) << ": " << *(begin + start) << " to " << *(end) << std::endl;
+#endif				
+        
+				auto rtn = std::for_each(begin + start, end, function);
+
+				for (int i = 0; i < nThreads - 1; ++i) {
+					workers[i].get();
+				}
+				return rtn;
+			} else {				
+				return std::for_each(begin, end, function);
+			}                  
+		}         
+    };
+    
     
     struct C11ThreadPool : public AbstractC11Thread {
     
@@ -259,11 +304,12 @@ namespace unroll {
 
   template <class InputIt, class UnaryFunction>
   UnaryFunction for_each_2(InputIt begin, InputIt end, UnaryFunction f) {      
-    int r = std::distance(begin, end) % 2;
-    for (; begin != (end - r); ++begin) {
+    InputIt endr = end - std::distance(begin, end) % 2;
+    for (; begin != endr; ++begin) {
         f(*begin);
         f(*(++begin));
     }
+    
     for (; begin != end; ++begin) {
       f(*begin);
     }
@@ -271,15 +317,18 @@ namespace unroll {
     return f;
   }
   
+  /// Unroll 4 is slower
+  
   template <class InputIt, class UnaryFunction>
   UnaryFunction for_each_4(InputIt begin, InputIt end, UnaryFunction f) {      
-    int r = std::distance(begin, end) % 4;
-    for (; begin != (end - r); ++begin) {
+    InputIt endr = end - std::distance(begin, end) % 4;
+    for (; begin != endr; ++begin) {
         f(*begin);
         f(*(++begin));
         f(*(++begin));
         f(*(++begin));
     }
+    
     for (; begin != end; ++begin) {
       f(*begin);
     }
@@ -295,6 +344,16 @@ namespace unroll {
 //    begin += 2;
 //  }
 //}
+
+  template <class InputIt, class UnaryFunction>
+  UnaryFunction vectorized_for_each(InputIt begin, InputIt end, UnaryFunction vec_f) {      
+    // Assumes that std::distance(begin, end) % 2 == 0
+    for (; begin != end; begin += 2) {
+        vec_f(*begin);
+    }
+    
+    return vec_f;
+  }
 
 } // namespace unroll
 

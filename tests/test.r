@@ -20,12 +20,12 @@ brates2=function(a,b){0}
 drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> bs
 
-system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0))
 
 sim = 100
 t = rep(NA,sim)
 for (i in 1:sim) {
-  t[i] = system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=2))[3]    
+  t[i] = system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0))[3]    
 }
 mean(t)
 sd(t)

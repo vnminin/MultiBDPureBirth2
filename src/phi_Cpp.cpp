@@ -26,8 +26,8 @@ void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const st
 //      }
 //		}
     
-    std::for_each (boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1*(Bp1+1)/2),
-//    unroll::for_each_2 (boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1*(Bp1+1)/2),
+    std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1*(Bp1+1)/2),
+//    unroll::for_each_4(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1*(Bp1+1)/2),
       [&](int k) {
         int j = (int)((-1+sqrt(8*k+1))/2);  
         int i = k - j*(j+1)/2;

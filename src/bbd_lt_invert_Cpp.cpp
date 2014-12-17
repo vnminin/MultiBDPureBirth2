@@ -122,6 +122,12 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
                     maxdepth, nblocks, tol, loopC11ThreadPool);      
       }
+      
+      case 3: {
+        loops::C11Async loopC11Async(nThreads, nblocks);
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
+                    maxdepth, nblocks, tol, loopC11Async);      
+      }
         
       default: {
         loops::STL loopSTL; 

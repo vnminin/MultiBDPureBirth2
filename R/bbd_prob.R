@@ -4,7 +4,7 @@
 
 
 bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
-                     nblocks=200,tol=1e-12,computeMode=0,nThreads=4,
+                     nblocks=256,tol=1e-12,computeMode=0,nThreads=4,
                      doJIT=TRUE,maxdepth=400) {
 	if (doJIT) enableJIT(1)
   
@@ -66,7 +66,7 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
 }
 
 dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B,
-                    nblocks=200,tol=1e-12,computeMode=0,nThreads=4,
+                    nblocks=256,tol=1e-12,computeMode=0,nThreads=4,
                     doJIT=TRUE,maxdepth=400) {
   ## a>=0, a<=a0, B >=a0+b0-a 
   if(a<0) stop("a cannot be negative.")

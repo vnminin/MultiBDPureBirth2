@@ -31,7 +31,7 @@ using namespace Rcpp;
 //      }
       
     std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
-//    unroll::for_each_2(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
+//    unroll::for_each_4(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
       [&](int i) {
         for (int j=0; j<Bp1; ++j) {
           std::complex<double> sum = zero;
