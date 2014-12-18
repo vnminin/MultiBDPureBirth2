@@ -2,6 +2,8 @@ library(BirthDeathBirth)
 library(parallel)
 library(compiler)
 library(Rcpp)
+library(Matrix)
+library(expoRkit)
 
 #### Time comparision
 
@@ -20,7 +22,9 @@ brates2=function(a,b){0}
 drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> bs
 
-system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0))
+system.time(p <- dbd_prob(t=4,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=2,nblocks=80))
+# system.time(p1 <- dbd_expM(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+# sum(abs(p-p1))
 
 sim = 100
 t = rep(NA,sim)
@@ -231,7 +235,8 @@ for (y in 1:10){
 # s = c(254,235,201,154,121,108,97,83)
 # i = c(7,15,22,29,21,8,8,0)
 
-t = c(0,16,33,49,66,98)
+# t = c(0,16,33,49,66,98)
+t = c(0,0.5,1,1.5,2,3)
 s = c(201,154,121,108,97,83)
 i = c(22,29,21,8,8,0)
 
@@ -249,7 +254,7 @@ i = c(22,29,21,8,8,0)
 
 
 ### Likelihood
-loglik <- function(param) {
+loglik <- function(param,method=1) {
 
   alpha = exp(param[1])
   beta = exp(param[2])
@@ -263,10 +268,16 @@ loglik <- function(param) {
   trans=function(a,b){beta*a*b}
   
 	n = length(i)
-  fun <- function(k){return(log(dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
-                                     a=s[k+1],B=s[k]+i[k]-s[k+1],computeMode=1))[1,i[k+1]+1])}
+  if (method == 1)
+    fun <- function(k){return(log(dbd_prob(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
+                                     a=s[k+1],B=s[k]+i[k]-s[k+1], computeMode = 0, nblocks = 20))[1,i[k+1]+1])}
+  else 
+    fun <- function(k){return(log(dbd_expM(t=t[k+1]-t[k],a0=s[k],b0=i[k],drates1,brates2,drates2,trans,
+                                              a=s[k+1],B=s[k]+i[k]-s[k+1]))[1,i[k+1]+1])}
   #tmp = mclapply(1:(n-1),fun,mc.cores=3)
   tmp = sapply(1:(n-1),fun)
+#   tmp1 = sapply(1:(n-1),fun1)
+#   print(abs(tmp-tmp1))
   
   #loglik = sum(unlist(tmp))
   loglik = sum(tmp)
@@ -283,17 +294,19 @@ drates2=function(a,b){alpha*b}
 trans=function(a,b){beta*a*b}
 
 Rprof("func.out",memory.profiling=T)
-p <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
-p1 <- dbd_expM(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49)  
-sum(p1)
+system.time(p <- dbd_prob(t=15,a0=254,b0=7,drates1,brates2,drates2,trans,a=235,B=28))
+system.time(p1 <- dbd_expM(t=15,a0=254,b0=7,drates1,brates2,drates2,trans,a=235,B=28))  
+sum(abs(p-p1))
 #### Example where exponential matrix method fails
-#p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
+p <- dbd_prob(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
+p1 <- dbd_expM(t=15,a0=235,b0=5,drates1,brates2,drates2,trans,a=220,B=20)  
 #sum(p)
 Rprof(NULL)
 summaryRprof("func.out",memory="both")
 
 system.time(l<-loglik(c(log(alpha),log(beta))))
-print(c(l,alpha,beta))
+system.time(l1<-loglik(c(log(alpha),log(beta)),method=0))
+print(c(l,l1,alpha,beta))
 
 
 ### Prior
@@ -358,7 +371,7 @@ hist(chain[,2],breaks=20)
 write.table(chain, "tests/chain.txt", col.names=F, row.names=F, append = T)
 
 minus.loglik <- function(parameter){return(-loglik(parameter))}
-sytem.time(opt <- optim(c(log(2.73),log(0.0178)),minus.loglik), hessian = TRUE)
+system.time(opt <- optim(c(log(2.73),log(0.0178)),minus.loglik), hessian = TRUE)
 
 dat = read.table("tests/chain.txt",header=F)
 plot(dat[,1],type="l")
@@ -394,11 +407,12 @@ sum(abs(p-p1))
 # SIR - Matrix exponential
 
 library(expm)
-a0 = 100
+library(expoRkit)
+library(Matrix)
+a0 = 20
 A = 0
-N = 100
-B = N
-b0 = N-a0
+B = 50
+b0 = 30
 
 alpha = 2.73
 beta = 0.0178
@@ -441,8 +455,10 @@ for (i in A:a0) {
 tmp0 = (a0-A)*(B+1) + b0+1
 P0[tmp0] = 1
 
-t = 10
+t = 1
+QQ = as(Q, "TsparseMatrix")
 system.time(expM <- expAtv(t(Q),P0,t)$eAtv)
+system.time(expMM <- expv(x = QQ,v = P0,t = t,transpose=TRUE))
 #system.time(expM0 <- expm(t(Q)*t)%*%P0)
 P = matrix(0,nrow=a0-A+1, ncol=B+1)
 # for (i in 1:nrow(grid)) {P[grid[i,1]-A+1,grid[i,2]+1]=tmp[i]}
@@ -459,7 +475,7 @@ sum(abs(P-p))
 # Birth-death-birth
 
 a0 = 3
-A = 100
+A = 20
 B = 100
 b0 = 3
 

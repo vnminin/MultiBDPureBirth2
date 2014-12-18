@@ -15,8 +15,8 @@ void BidBj_Cpp(const int Bp1, const std::vector<double>& xvec, const std::vector
 //    }
 //  }
   
-//  std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1-1),
-  unroll::for_each_4(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1-1),
+  std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1-1),
+//  unroll::for_each_2(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1-1),
     [&](int i) {
       BidBj[Trimat(i,i)] = one;
       BidBj[Trimat(i,i+1)] = one/inv_Bk1dBk[i];

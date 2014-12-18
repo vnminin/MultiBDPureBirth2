@@ -132,7 +132,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, cons
 
 ///// Generic loops
 
-#define DEBUG
+//#define DEBUG
 
 namespace loops {
   
@@ -317,8 +317,6 @@ namespace unroll {
     return f;
   }
   
-  /// Unroll 4 is slower
-  
   template <class InputIt, class UnaryFunction>
   UnaryFunction for_each_4(InputIt begin, InputIt end, UnaryFunction f) {      
     InputIt endr = end - std::distance(begin, end) % 4;
@@ -326,7 +324,7 @@ namespace unroll {
         f(*begin);
         f(*(++begin));
         f(*(++begin));
-        f(*(++begin));
+        f(*(++begin)); 
     }
     
     for (; begin != end; ++begin) {

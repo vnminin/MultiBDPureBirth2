@@ -33,7 +33,11 @@ bbd_expM <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
   tmp0 = b0+1
   P0[tmp0] = 1
   
-  expM <- expAtv(t(Q),P0,t)$eAtv
+#   expM <- expAtv(t(Q),P0,t)$eAtv
+  
+  QQ = as(Q, "TsparseMatrix")
+  expM <- expv(QQ,P0,t,transpose=TRUE)
+  
   P = matrix(0,nrow=A-a0+1, ncol=B+1)
   for (i in a0:A) {
     for (j in 0:B) {
@@ -42,7 +46,7 @@ bbd_expM <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B) {
   }
   colnames(P) = 0:B
   rownames(P) = a0:A
-  return(P)
+  return(abs(P))
 }
 
 dbd_expM <- function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B) {
@@ -75,7 +79,12 @@ dbd_expM <- function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B) {
   tmp0 = (a0-a)*(B+1) + b0+1
   P0[tmp0] = 1
   
-  expM <- expAtv(t(Q),P0,t)$eAtv
+#   expM <- expAtv(t(Q),P0,t)$eAtv
+  time1 = system.time(QQ <- as(Q, "TsparseMatrix"))[3]
+#   print(time1)
+  time2 = system.time(expM <- expv(QQ,P0,t,transpose=TRUE))[3]
+#   print(time2)
+
   P = matrix(0,nrow=a0-a+1, ncol=B+1)
   for (i in a:a0) {
     for (j in 0:B) {
@@ -84,5 +93,5 @@ dbd_expM <- function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B) {
   }
   colnames(P) = 0:B
   rownames(P) = a:a0
-  return(P)
+  return(abs(P))
 }
