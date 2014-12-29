@@ -4,6 +4,7 @@
 #include <iostream>
 #include "boost/iterator/counting_iterator.hpp"
 #include "ThreadPool.h"
+#include "complexvec.h"
 
 const std::complex<double> one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0), huge(1e16,0.0);
 

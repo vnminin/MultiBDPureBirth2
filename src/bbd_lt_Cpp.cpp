@@ -30,19 +30,40 @@ using namespace Rcpp;
 //        f[(i+1)*Bp1 + j] = sum;
 //      }
       
-    std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
-//    unroll::for_each_4(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
+//    std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
+////    unroll::for_each_4(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
+//      [&](int i) {
+//        for (int j=0; j<Bp1; ++j) {
+//          std::complex<double> sum = zero;
+//          for (int k=0; k<(Bp1-1); ++k) {
+//            sum += lambda1[i + k*(A-a0+1)]*f[i*Bp1 + k]*phi[get_phi(i+1,j,k,Bp1)];
+//            sum += gamma[i + (k+1)*(A-a0+1)]*f[i*Bp1 + k+1]*phi[get_phi(i+1,j,k,Bp1)];
+//          }
+//          sum += lambda1[i + (Bp1-1)*(A-a0+1)]*f[i*Bp1 + Bp1-1]*phi[get_phi(i+1,j,Bp1-1,Bp1)];
+//          f[(i+1)*Bp1 + j] = sum;
+//        }
+//      });
+      
+      
+      std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
       [&](int i) {
         for (int j=0; j<Bp1; ++j) {
-          std::complex<double> sum = zero;
+          Complex2d sum(0.0,0.0);
           for (int k=0; k<(Bp1-1); ++k) {
-            sum += lambda1[i + k*(A-a0+1)]*f[i*Bp1 + k]*phi[get_phi(i+1,j,k,Bp1)];
-            sum += gamma[i + (k+1)*(A-a0+1)]*f[i*Bp1 + k+1]*phi[get_phi(i+1,j,k,Bp1)];
+            Complex2d f1_cplx(f[i*Bp1 + k].real(),f[i*Bp1 + k].imag());
+            Complex2d f2_cplx(f[i*Bp1 + k+1].real(),f[i*Bp1 + k+1].imag());
+            Complex2d phi_cplx(phi[get_phi(i+1,j,k,Bp1)].real(),phi[get_phi(i+1,j,k,Bp1)].imag());
+            sum += lambda1[i + k*(A-a0+1)]*f1_cplx*phi_cplx + gamma[i + (k+1)*(A-a0+1)]*f2_cplx*phi_cplx;
           }
-          sum += lambda1[i + (Bp1-1)*(A-a0+1)]*f[i*Bp1 + Bp1-1]*phi[get_phi(i+1,j,Bp1-1,Bp1)];
-          f[(i+1)*Bp1 + j] = sum;
+          Complex2d f3_cplx(f[i*Bp1 + Bp1-1].real(),f[i*Bp1 + Bp1-1].imag());
+          Complex2d phi_cplx(phi[get_phi(i+1,j,Bp1-1,Bp1)].real(),phi[get_phi(i+1,j,Bp1-1,Bp1)].imag());
+          sum += lambda1[i + (Bp1-1)*(A-a0+1)]*f3_cplx*phi_cplx;
+          std::complex<double> tmp(sum.extract(0),sum.extract(1));
+          f[(i+1)*Bp1 + j] = tmp;
         }
-      });  
+      });
+      
+      
   }
 }  
   
