@@ -45,10 +45,10 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
 	y = matrix(mapply(yf,grid[,1],grid[,2]),nrow=B+1+maxdepth,byrow=TRUE)	
 					
 # 	res = bbd_lt_invert(t,f=function(s) {
-#     ## R
-# 		#return(bbd_lt(s,a0,b0,l1,l2,m2,g,x,y,A,B))
-#     
-#     ## Rcpp and R
+    ## R
+# 		return(bbd_lt(s,a0,b0,l1,l2,m2,g,x,y,A,B))
+    
+    ## Rcpp and R
 # 		return(matrix(bbd_lt_Cpp(s,a0,b0,l1,l2,m2,g,x,y,A,B),nrow=(A-a0+1),byrow=T))
 # 		})
 
@@ -56,7 +56,7 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
   res = matrix(bbd_lt_invert_Cpp(t,a0,b0,l1,l2,m2,g,x,y,A,B+1,
                                  nblocks,tol,computeMode,nThreads,maxdepth),
                nrow=(A-a0+1),byrow=T)
-	  
+# 	  
   #if(any(is.na(res))) cat("bbd_prob(",a0,",",b0,",",t,") failed\n")
   colnames(res) = 0:B
   rownames(res) = a0:A

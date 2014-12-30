@@ -6,9 +6,24 @@
 #include "ThreadPool.h"
 #include "complexvec.h"
 
-const std::complex<double> one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0), huge(1e16,0.0);
+namespace mytype {
+  //typedef std::complex<double> ComplexNumber;
+  typedef Complex2d ComplexNumber;
+  typedef std::vector<ComplexNumber> ComplexVector;  
+} // namespace mytype
+
+
+const mytype::ComplexNumber one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0), huge(1e16,0.0);
 
 ///// Inline opertators  for complex number
+
+inline double real(const Complex2d& x) {
+  return(x.extract(0));
+}
+
+inline double imag(const Complex2d& x) {
+  return(x.extract(1));
+}
 
 inline std::complex<double> operator*(const std::complex<double>& x, const std::complex<double>& y) {
                 return {
@@ -95,35 +110,34 @@ struct Levin {
 ///// Declare functions
     
 void lentz_plus_invBk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, 
-  const std::vector<std::complex<double>>& yvec, const std::vector<std::complex<double>>& inv_Bk1dBk, 
-  std::vector<std::complex<double>>& lentz_plus_invBk1dBk);
+  const mytype::ComplexVector& yvec, const mytype::ComplexVector& inv_Bk1dBk, 
+  mytype::ComplexVector& lentz_plus_invBk1dBk);
     
-void inv_Bk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
-    std::vector<std::complex<double>>& inv_Bk1dBk);
+void inv_Bk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, const mytype::ComplexVector& yvec, 
+    mytype::ComplexVector& inv_Bk1dBk);
 
-void BidBj_Cpp(const int Bp1, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec, 
-    const std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj);
+void BidBj_Cpp(const int Bp1, const std::vector<double>& xvec, const mytype::ComplexVector& yvec, 
+    const mytype::ComplexVector& inv_Bk1dBk, mytype::ComplexVector& BidBj);
 
-//std::vector<double> prod_vec_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
 std::vector<double> prod_mu2_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
 std::vector<double> prod_lambda2_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
 
-void phi_Cpp (const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda2, 
+void phi_Cpp (const mytype::ComplexNumber s, const int a0, const int b0, const std::vector<double>& lambda2, 
     const std::vector<double>& mu2, const int A, const int Bp1, const int maxdepth, 
-    std::vector<std::complex<double>>& phi, const std::deque<std::vector<double>>& prod_mu2, 
+    mytype::ComplexVector& phi, const std::deque<std::vector<double>>& prod_mu2, 
     const std::deque<std::vector<double>>& prod_lambda2, const std::deque<std::vector<double>>& xvec, 
-    const std::deque<std::vector<double>>& yvec_minus_s, std::vector<std::complex<double>>& yvec, 
-    std::vector<std::complex<double>>& lentz_plus_invBk1dBk, std::vector<std::complex<double>>& inv_Bk1dBk, 
-    std::vector<std::complex<double>>& BidBj);
-
-void bbd_lt_Cpp(const std::complex<double> s, const int a0, const int b0, const std::vector<double>& lambda1, 
+    const std::deque<std::vector<double>>& yvec_minus_s, mytype::ComplexVector& yvec, 
+    mytype::ComplexVector& lentz_plus_invBk1dBk, mytype::ComplexVector& inv_Bk1dBk, 
+    mytype::ComplexVector& BidBj);
+    
+void bbd_lt_Cpp(const mytype::ComplexNumber s, const int a0, const int b0, const std::vector<double>& lambda1, 
     const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, 
-    const int A, const int Bp1, const int maxdepth, std::vector<std::complex<double>>& phi, 
+    const int A, const int Bp1, const int maxdepth, mytype::ComplexVector& phi, 
     const std::deque<std::vector<double>>& prod_mu2, const std::deque<std::vector<double>>& prod_lambda2, 
     const std::deque<std::vector<double>>& xvec, const std::deque<std::vector<double>>& yvec_minus_s, 
-    std::vector<std::complex<double>>& yvec, std::vector<std::complex<double>>& lentz_plus_invBk1dBk, 
-    std::vector<std::complex<double>>& inv_Bk1dBk, std::vector<std::complex<double>>& BidBj, 
-    std::vector<std::complex<double>>& f);
+    mytype::ComplexVector& yvec, mytype::ComplexVector& lentz_plus_invBk1dBk, 
+    mytype::ComplexVector& inv_Bk1dBk, mytype::ComplexVector& BidBj, 
+    mytype::ComplexVector& f);
     
 std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
