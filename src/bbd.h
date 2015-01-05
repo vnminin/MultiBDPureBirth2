@@ -139,7 +139,7 @@ void bbd_lt_Cpp(const mytype::ComplexNumber s, const int a0, const int b0, const
     mytype::ComplexVector& inv_Bk1dBk, mytype::ComplexVector& BidBj, 
     mytype::ComplexVector& f);
     
-std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
+std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
     const int A, const int Bp1, const int nblocks, const double tol, const int computeMode, 
@@ -363,8 +363,7 @@ namespace unroll {
     // Assumes that std::distance(begin, end) % 2 == 0
     for (; begin != end; begin += 2) {
         vec_f(*begin);
-    }
-    
+    }    
     return vec_f;
   }
 

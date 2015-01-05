@@ -22,10 +22,28 @@ void phi_Cpp (const mytype::ComplexNumber s, const int a0, const int b0, const s
         int j = (int)((-1+sqrt(8*k+1))/2);  
         int i = k - j*(j+1)/2;
         mytype::ComplexNumber tmp = BidBj[k]/lentz_plus_invBk1dBk[j];
-          phi[get_phi(a,i,j,Bp1)] = prod_mu2[a][k] * tmp;            
-          phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][k] * tmp;          
+        phi[get_phi(a,i,j,Bp1)] = prod_mu2[a][k] * tmp;            
+        phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][k] * tmp;          
       }
     );
+    
+//    unroll::vectorized_for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1*(Bp1+1)/2),
+//      [&](int k) {
+//        int j1 = (int)((-1+sqrt(8*k+1))/2);  
+//        int i1 = k - j1*(j1+1)/2;
+//        int j2 = (int)((-1+sqrt(8*(k+1)+1))/2);  
+//        int i2 = k+1 - j2*(j2+1)/2;
+//        
+//        Complex4d BidBj_vec(BidBj[k],BidBj[k+1]);
+//        Complex4d lentz_plus_invBk1dBk_vec(lentz_plus_invBk1dBk[j1],lentz_plus_invBk1dBk[j2]);
+//        Complex4d tmp_vec = BidBj_vec/lentz_plus_invBk1dBk_vec;
+//        phi[get_phi(a,i1,j1,Bp1)] = prod_mu2[a][k] * tmp_vec.get_low();            
+//        phi[get_phi(a,j1,i1,Bp1)] = prod_lambda2[a][k] * tmp_vec.get_low();
+//        phi[get_phi(a,i2,j2,Bp1)] = prod_mu2[a][k+1] * tmp_vec.get_high();            
+//        phi[get_phi(a,j2,i2,Bp1)] = prod_lambda2[a][k+1] * tmp_vec.get_high();          
+//      }
+//    );
+    
   }
 }
 

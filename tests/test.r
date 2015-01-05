@@ -22,7 +22,7 @@ brates2=function(a,b){0}
 drates2=function(a,b){muM*b}
 trans=function(a,b){gamma*a} # a -> bs
 
-system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0,nblocks=2))
+system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0,nblocks=20))
 sum(p)
 # system.time(p1 <- dbd_expM(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
 # sum(abs(p-p1))

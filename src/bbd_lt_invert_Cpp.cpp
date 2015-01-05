@@ -1,7 +1,7 @@
 #include "bbd.h"
 
 template <class ParallelizationScheme>
-std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0, const int b0, 
+std::vector<double> bbd_lt_invert_Cpp_impl(double t, const int a0, const int b0, 
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
     const int A, const int Bp1, const int maxdepth, 
@@ -17,7 +17,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
 
   std::vector<mytype::ComplexVector> ig;
   std::deque<std::vector<double>> prod_mu2, prod_lambda2, xvec, yvec_minus_s;
-  std::vector<std::complex<double>> res(matsize);
+  std::vector<double> res(matsize);
   
   const size_t size = scheme.private_size();  
   std::vector<mytype::ComplexVector> phi(size), yvec(size), lentz_plus_invBk1dBk(size), inv_Bk1dBk(size),BidBj(size);
@@ -88,9 +88,8 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
           kmax += nblocks;
         }
       }
-      mytype::ComplexNumber res_cplx = sk1*exp(AA/2);
-      std::complex<double> res_tmp(real(res_cplx),imag(res_cplx)); 
-      res[i] = res_tmp;
+      
+      res[i] = sk1*exp(AA/2);
     });
     
 //  auto end = std::chrono::steady_clock::now();  
@@ -102,7 +101,7 @@ std::vector<std::complex<double>> bbd_lt_invert_Cpp_impl(double t, const int a0,
 }
 
 // [[Rcpp::export]]
-std::vector<std::complex<double>> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
+std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
     const int A, const int Bp1, const int nblocks, const double tol, const int computeMode, 
