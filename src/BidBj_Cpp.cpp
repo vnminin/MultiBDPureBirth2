@@ -2,9 +2,7 @@
 
 void BidBj_Cpp(const int Bp1, const std::vector<double>& xvec, const mytype::ComplexVector& yvec, 
     const mytype::ComplexVector& inv_Bk1dBk, mytype::ComplexVector& BidBj) {
-  
-  int flag;
-  
+    
   std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1-1),
 //  unroll::for_each_4(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1-1),
     [&](int i) {
