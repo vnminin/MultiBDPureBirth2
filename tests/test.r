@@ -12,20 +12,21 @@ b0 = 0
 A = 0
 B = a0
 
-muL = runif(1,0,1)
+muL = 6.82
 muM = 0.0015
-eta = runif(1,0,1)
+eta = 0.09
 gamma = 0.04
 
 drates1=function(a,b){muL*a+eta*a^2}
 brates2=function(a,b){0}
 drates2=function(a,b){muM*b}
-trans=function(a,b){gamma*a} # a -> bs
+trans=function(a,b){gamma*a} # a -> b
 
-system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,computeMode=0,nblocks=20))
+system.time(p <- dbd_prob(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B,
+                          computeMode=4,nblocks=4, nThreads = 4))
 sum(p)
-# system.time(p1 <- dbd_expM(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
-# sum(abs(p-p1))
+system.time(p1 <- dbd_expM(t=400,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+sum(abs(p-p1))
 
 sim = 100
 t = rep(NA,sim)
@@ -34,6 +35,40 @@ for (i in 1:sim) {
 }
 mean(t)
 sd(t)
+
+###########
+### Birth-death-shift
+library(compiler)
+library(deSolve)
+library(expoRkit)
+library(Matrix)
+
+initNum = 30
+gridLength = 81
+
+tList = 1;  dt = 1; lam = .5; v = .2; mu = .4; 
+s1.seq <- exp(2*pi*1i*seq(from = 0, to = (gridLength-1))/gridLength)
+s2.seq <- exp(2*pi*1i*seq(from = 0, to = (gridLength-1))/gridLength)
+
+brates1=function(a,b){0}
+drates1=function(a,b){mu*a}
+brates2=function(a,b){lam*(a+b)}
+drates2=function(a,b){mu*b}
+trans=function(a,b){v*a}
+
+a0 = initNum
+b0 = 0
+A = 0
+B = gridLength - 1
+
+# system.time(p0 <- getTrans.timeList(tList, lam, v, mu, initNum, s1.seq, s2.seq, dt)[[1]])
+# p1 = p0[1:(initNum+1),]
+system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+sum(p)
+# sum(abs(p-p1))
+system.time(p2 <- dbd_expM(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+# sum(p2)
+sum(abs(p-p2))
 
 
 ### Within-host macroparasite population
@@ -127,25 +162,28 @@ dev.off()
 
 ### SIR
 
-a0 = 5
+a0 = 50
 A = 0
-N = 10
+N = 100
 B = N
 b0 = N-a0
 
 gamma = 1
-beta = pi
+beta = 1
 
 brates1=function(a,b){0}
 drates1=function(a,b){0}
 brates2=function(a,b){0}
 drates2=function(a,b){gamma*b}
-trans=function(a,b){beta*a*b/N}
+trans=function(a,b){beta*a*b}
 
 # system.time(p <- bbd_prob(t=1,a0,b0,brates1,brates2,drates2,trans,A,B))
 #Rprof("func.out",memory.profiling=T)
-#system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,B))
-p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
+system.time(p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+sum(p)
+system.time(p1 <- dbd_expM(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B))
+sum(abs(p-p1))
+# p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 
@@ -165,17 +203,26 @@ p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
 #   
   states = 0:50
   #Rprof("func.out",memory.profiling=T)
-  system.time(p1 <- sapply(states, bd_prob, m=3, t=1e-3, brates=function(k){return(0.5*k)}, drates=function(k){0.3*k}))
+  system.time(p1 <- sapply(states, bd_prob, m=3, t=1, brates=function(k){return(0.5*k)}, drates=function(k){0.3*k}))
   #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 
  #Rprof("func.out",memory.profiling=T)
- system.time(p <- bbd_prob(t=1e-2,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
+  system.time(p <- bbd_prob(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
   sum(p)
+  system.time(p2 <- bbd_expM(t=1,0,3,lambda1=function(a,b){0},lambda2=function(a,b){return(0.5*b)},mu2=function(a,b){return(0.3*b)},gamma=function(a,b){0},A=0,B=50))
+  sum(abs(p-p2))
  #Rprof(NULL)
 #summaryRprof("func.out",memory="both")
 
- 
+system.time(p <- bbd_prob(t=1,0,0,lambda1=function(a,b){return(0.5*(max(3+a-b,0)))},lambda2=function(a,b){return(0.3*(max(3+a-b,0)))},mu2=function(a,b){return(0)},gamma=function(a,b){0},A=50,B=50))
+tmp = rep(0,51)
+for (i in 1:51)
+  for (j in 1:51) {
+    if ((3+i-j >= 0)&&(3+i-j <= 50)) tmp[3+i-j+1] = tmp[3+i-j+1] + p[i,j]
+  }
+sum(abs(p1-tmp))
+
 ###########################################
 
 # Data: Spread of Smallpox in a Nigerian Village (Yip 1989 - Theoretical Pop Bio)
@@ -380,29 +427,6 @@ plot(dat[,2],type="l")
 hist(dat[,1],breaks=20)
 hist(dat[,2],breaks=20)
 
-###########
-### Birth-death-shift
-
-tList = 1;  dt = 1; lam = .5; v = .2; mu = .4; initNum = 10
-gridLength = 51
-s1.seq <- exp(2*pi*1i*seq(from = 0, to = (gridLength-1))/gridLength)
-s2.seq <- exp(2*pi*1i*seq(from = 0, to = (gridLength-1))/gridLength)
-p0 <- getTrans.timeList(tList, lam, v, mu, initNum, s1.seq, s2.seq, dt)[[1]]
-p1 = p0[1:11,]
-
-brates1=function(a,b){0}
-drates1=function(a,b){mu*a}
-brates2=function(a,b){lam*(a+b)}
-drates2=function(a,b){mu*b}
-trans=function(a,b){v*a}
-
-a0 = 10
-b0 = 0
-A = 0
-B = 50
-
-p <- dbd_prob(t=1,a0,b0,drates1,brates2,drates2,trans,a=A,B)
-sum(abs(p-p1))
 
 ####
 # SIR - Matrix exponential

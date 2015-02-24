@@ -5,17 +5,20 @@
 #include "boost/iterator/counting_iterator.hpp"
 #include "ThreadPool.h"
 #include "complexvec.h"
+#include "RcppParallel.h"
 
-namespace mytype {
-  //typedef std::complex<double> ComplexNumber;
-  typedef Complex2d ComplexNumber;
+namespace mytype { // define data type
+  typedef std::complex<double> ComplexNumber;
+  //typedef Complex2d ComplexNumber;
   typedef std::vector<ComplexNumber> ComplexVector;  
 } // namespace mytype
 
-
+// define some constants
 const mytype::ComplexNumber one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-16,0.0), huge(1e16,0.0);
 
-///// Inline opertators  for complex number
+/////////////////////////////////////////
+// Inline opertators  for complex number
+/////////////////////////////////////////
 
 inline double real(const Complex2d& x) {
   return(x.extract(0));
@@ -48,16 +51,21 @@ inline std::complex<double> operator/(const double& x, const std::complex<double
                 };
               }
 
-              
+////////////////////////////////////////////////
+// Inline function for rearrange data structure
+////////////////////////////////////////////////
+
 inline int Trimat(int i, int j) {
-  return(i + (j+1)*j/2); // i <=j
-}
+  return(i + (j+1)*j/2); 
+} // i <= j
   
 inline int get_phi(int i, int j, int k, int Bp1) {
   return(i*Bp1*Bp1 + j*Bp1 + k);
-}
+} // phi(a,b,m)
 
-///// Struct Levin for series acceleration
+////////////////////////////////////////
+// Struct Levin for series acceleration
+////////////////////////////////////////
 
 struct Levin {
     
@@ -106,9 +114,10 @@ struct Levin {
     }
 };
 
+/////////////////////
+// Declare functions
+/////////////////////
 
-///// Declare functions
-    
 void lentz_plus_invBk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, 
   const mytype::ComplexVector& yvec, const mytype::ComplexVector& inv_Bk1dBk, 
   mytype::ComplexVector& lentz_plus_invBk1dBk);
@@ -145,7 +154,9 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
     const int A, const int Bp1, const int nblocks, const double tol, const int computeMode, 
     const int nThreads, const int maxdepth);
 
-///// Generic loops
+/////////////////
+// Generic loops
+/////////////////
 
 //#define DEBUG
 
@@ -168,7 +179,7 @@ namespace loops {
     	inline size_t private_size() const {
     		return 1;
     	}
-    };
+    }; // STL
     
     struct AbstractC11Thread {
     
@@ -184,7 +195,7 @@ namespace loops {
     	
       size_t nThreads;
       int chunkSize;
-    };
+    }; // AbstractC11Thread
     
     struct C11Threads : public AbstractC11Thread {
     	
@@ -223,7 +234,7 @@ namespace loops {
 				return std::for_each(begin, end, function);
 			}                  
 		}         
-    };
+    }; // C11Threads
     
     
     struct C11Async : public AbstractC11Thread {
@@ -264,7 +275,7 @@ namespace loops {
 				return std::for_each(begin, end, function);
 			}                  
 		}         
-    };
+    }; // C11Async
     
     
     struct C11ThreadPool : public AbstractC11Thread {
@@ -301,9 +312,47 @@ namespace loops {
       for (auto&& result: results) result.get();	
       return function;
 		  }
-    };
+    }; // C11ThreadPool
+    
+ //   mutex;
+//    ostream stream;
+    
+   template <typename InputIt, typename UnaryFunction>
+    struct WrapWorker : public ::RcppParallel::Worker {
+      
+      WrapWorker(InputIt begin, InputIt end, UnaryFunction function) : 
+        begin(begin), end(end), function(function) { }
+        
+        void operator()(std::size_t i, std::size_t j) {
+          // grab lock
+  //        stream << i << ":" << j;
+          // release lock
+            std::for_each(begin + i, begin + j, function);
+          //  std::cout << i << ":" << j << std::endl;
+        }
+
+        InputIt begin;
+        InputIt end;
+        UnaryFunction function;
+    }; // WrapWorker
+    
+    struct RcppThreads : public AbstractC11Thread {
+      using AbstractC11Thread::AbstractC11Thread; // inherit constructor
+      
+      template <class InputIt, class UnaryFunction>  
+      inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) {
+            auto worker = WrapWorker<InputIt, UnaryFunction>(begin, end, function);
+            ::RcppParallel::parallelFor(0, std::distance(begin, end), worker);
+            return function;
+          }
+      
+    }; // RcppThreads
     
 } // namespace loops
+
+////////////////
+// Loops unroll
+////////////////
 
 #define ROUND_DOWN(x, s) ((x) & ~((s)-1))
 

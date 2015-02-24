@@ -7,6 +7,10 @@ void phi_Cpp (const mytype::ComplexNumber s, const int a0, const int b0, const s
     const std::deque<std::vector<double>>& yvec_minus_s, mytype::ComplexVector& yvec, 
     mytype::ComplexVector& lentz_plus_invBk1dBk, mytype::ComplexVector& inv_Bk1dBk, 
     mytype::ComplexVector& BidBj) {  
+
+/////////////////////////////////////////////////////////////////
+// Compute continued fractions phi_{a,b}^m using Lentz algorithm
+/////////////////////////////////////////////////////////////////
       
   for (int a=0; a<(A-a0+1); ++a) {
     for (int i=0; i<(Bp1 + maxdepth); ++i) yvec[i] = s + yvec_minus_s[a][i];

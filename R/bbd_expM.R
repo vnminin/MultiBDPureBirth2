@@ -79,11 +79,8 @@ dbd_expM <- function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B) {
   tmp0 = (a0-a)*(B+1) + b0+1
   P0[tmp0] = 1
   
-#   expM <- expAtv(t(Q),P0,t)$eAtv
-  time1 = system.time(QQ <- as(Q, "TsparseMatrix"))[3]
-#   print(time1)
-  time2 = system.time(expM <- expv(QQ,P0,t,transpose=TRUE))[3]
-#   print(time2)
+  QQ <- as(Q, "TsparseMatrix")
+  time = system.time(expM <- expv(QQ,P0,t,transpose=TRUE))[3]
 
   P = matrix(0,nrow=a0-a+1, ncol=B+1)
   for (i in a:a0) {
@@ -93,5 +90,5 @@ dbd_expM <- function(t,a0,b0,mu1,lambda2,mu2,gamma,a,B) {
   }
   colnames(P) = 0:B
   rownames(P) = a:a0
-  return(abs(P))
+  return(list(prob = abs(P), time = time))
 }

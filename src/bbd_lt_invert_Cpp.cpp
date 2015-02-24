@@ -40,7 +40,13 @@ std::vector<double> bbd_lt_invert_Cpp_impl(double t, const int a0, const int b0,
     yvec_minus_s.push_back(tmpy);
   }
   
-  ig.resize(kmax);
+/////////////////////////////////////////////////////////////
+// The following code computes the inverse Laplace transform
+// Algorithm from Abate and Whitt using a Riemann sum
+// Levin tranform is used to accelerate the convergence
+/////////////////////////////////////////////////////////////
+    
+ig.resize(kmax);
   
   scheme.for_each( boost::make_counting_iterator(0), boost::make_counting_iterator(kmax),
     [&](int w) {
@@ -57,7 +63,7 @@ std::vector<double> bbd_lt_invert_Cpp_impl(double t, const int a0, const int b0,
   
   std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(matsize),
     [&](int i) {
-      Levin levin(tol); 
+      Levin levin(tol); // A struct for Levin transform
       double term = 1e16, sdiff = 1e16;
       int k = 1;
       double psum = real(psum0[i])/(2*t);
@@ -125,6 +131,12 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
                     maxdepth, nblocks, tol, loopC11Async);      
       }
+      
+      case 4: {        
+        loops::RcppThreads loopRcppThreads(nThreads, nblocks);
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
+                    maxdepth, nblocks, tol, loopRcppThreads);      
+      }
         
       default: {
         loops::STL loopSTL; 
@@ -133,6 +145,5 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
       }                   
     }    
 }
-
 
 

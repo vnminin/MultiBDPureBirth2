@@ -23,7 +23,7 @@ test_that("SIR", {
   p2 <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49,computeMode=1)
   p3 <- dbd_prob(t=15,a0=235,b0=15,drates1,brates2,drates2,trans,a=201,B=49,computeMode=2)
   
-  expect_equal(0.0, sum(abs(p-p1)), tolerance)
+  expect_equal(0.0, sum(abs(p$prob-p1)), tolerance)
   expect_equal(0.0, sum(abs(p2-p1)), tolerance)
   expect_equal(0.0, sum(abs(p3-p2)), tolerance)
 })

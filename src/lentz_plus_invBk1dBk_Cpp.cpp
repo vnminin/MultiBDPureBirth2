@@ -4,6 +4,10 @@ void lentz_plus_invBk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec,
   const mytype::ComplexVector& yvec, const mytype::ComplexVector& inv_Bk1dBk, 
   mytype::ComplexVector& lentz_plus_invBk1dBk) {
 
+///////////////////
+// Lentz algorithm
+///////////////////
+
   const double eps = 1e-8;
   
   for (int m=0; m<Bp1; ++m) {
