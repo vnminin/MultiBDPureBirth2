@@ -1,12 +1,15 @@
-Package: BirthDeathBirth
+Package: MultiBD
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: Exact inference of multivariate birth-death processes.
+Version: 0.1
 Date: 2014-10-10
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What Licence is it under ?
+Author:
+	Lam S.T. Ho [aut, cre],
+	Marc A. Suchard [aut],
+	Forrest W. Crawford [aut]
+Maintainer: Lam S.T. Ho <lamho@ucla.edu>
+Description: A package for exact inference of multivariate birth-death processes.
+License: Apache License 2
 Depends: BH, RcppParallel
 Imports: Rcpp (>= 0.11.2)
 LinkingTo: Rcpp, BH, RcppParallel
