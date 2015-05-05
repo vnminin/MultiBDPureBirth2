@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // bbd_lt_invert_Cpp
 std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0, const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, const int A, const int Bp1, const int nblocks, const double tol, const int computeMode, const int nThreads, const int maxdepth);
-RcppExport SEXP BirthDeathBirth_bbd_lt_invert_Cpp(SEXP tSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP gammaSEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP nblocksSEXP, SEXP tolSEXP, SEXP computeModeSEXP, SEXP nThreadsSEXP, SEXP maxdepthSEXP) {
+RcppExport SEXP MultiBD_bbd_lt_invert_Cpp(SEXP tSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP mu2SEXP, SEXP gammaSEXP, SEXP xSEXP, SEXP ySEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP nblocksSEXP, SEXP tolSEXP, SEXP computeModeSEXP, SEXP nThreadsSEXP, SEXP maxdepthSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -37,7 +37,7 @@ END_RCPP
 }
 // Bk1dBk_Cpp
 std::vector<std::complex<double>> Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
-RcppExport SEXP BirthDeathBirth_Bk1dBk_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP) {
+RcppExport SEXP MultiBD_Bk1dBk_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -54,7 +54,7 @@ END_RCPP
 }
 // phi_routine_Cpp
 std::vector< std::complex<double> > phi_routine_Cpp(int B, std::vector<double> prod_mu2, std::vector<double> prod_lambda2, std::vector< std::complex<double> > Bk1dBk, std::vector< std::complex<double> > BidBj, std::vector< std::complex<double> > lentz);
-RcppExport SEXP BirthDeathBirth_phi_routine_Cpp(SEXP BSEXP, SEXP prod_mu2SEXP, SEXP prod_lambda2SEXP, SEXP Bk1dBkSEXP, SEXP BidBjSEXP, SEXP lentzSEXP) {
+RcppExport SEXP MultiBD_phi_routine_Cpp(SEXP BSEXP, SEXP prod_mu2SEXP, SEXP prod_lambda2SEXP, SEXP Bk1dBkSEXP, SEXP BidBjSEXP, SEXP lentzSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -74,7 +74,7 @@ END_RCPP
 }
 // prod_lambda2_Cpp
 std::vector<double> prod_lambda2_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
-RcppExport SEXP BirthDeathBirth_prod_lambda2_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP matSEXP) {
+RcppExport SEXP MultiBD_prod_lambda2_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP matSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -92,7 +92,7 @@ END_RCPP
 }
 // prod_mu2_Cpp
 std::vector<double> prod_mu2_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
-RcppExport SEXP BirthDeathBirth_prod_mu2_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP matSEXP) {
+RcppExport SEXP MultiBD_prod_mu2_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP matSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -110,7 +110,7 @@ END_RCPP
 }
 // prod_vec_Cpp
 std::vector<double> prod_vec_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
-RcppExport SEXP BirthDeathBirth_prod_vec_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP matSEXP) {
+RcppExport SEXP MultiBD_prod_vec_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP matSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -128,7 +128,7 @@ END_RCPP
 }
 // rcpp_hello_world
 List rcpp_hello_world();
-RcppExport SEXP BirthDeathBirth_rcpp_hello_world() {
+RcppExport SEXP MultiBD_rcpp_hello_world() {
 BEGIN_RCPP
     SEXP __sexp_result;
     {

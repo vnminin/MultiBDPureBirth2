@@ -2,30 +2,30 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 bbd_lt_invert_Cpp <- function(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, nblocks, tol, computeMode, nThreads, maxdepth) {
-    .Call('BirthDeathBirth_bbd_lt_invert_Cpp', PACKAGE = 'BirthDeathBirth', t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, nblocks, tol, computeMode, nThreads, maxdepth)
+    .Call('MultiBD_bbd_lt_invert_Cpp', PACKAGE = 'MultiBD', t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, nblocks, tol, computeMode, nThreads, maxdepth)
 }
 
 Bk1dBk_Cpp <- function(B, xvec, yvec) {
-    .Call('BirthDeathBirth_Bk1dBk_Cpp', PACKAGE = 'BirthDeathBirth', B, xvec, yvec)
+    .Call('MultiBD_Bk1dBk_Cpp', PACKAGE = 'MultiBD', B, xvec, yvec)
 }
 
 phi_routine_Cpp <- function(B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz) {
-    .Call('BirthDeathBirth_phi_routine_Cpp', PACKAGE = 'BirthDeathBirth', B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz)
+    .Call('MultiBD_phi_routine_Cpp', PACKAGE = 'MultiBD', B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz)
 }
 
 prod_lambda2_Cpp <- function(a, A, Bp1, mat) {
-    .Call('BirthDeathBirth_prod_lambda2_Cpp', PACKAGE = 'BirthDeathBirth', a, A, Bp1, mat)
+    .Call('MultiBD_prod_lambda2_Cpp', PACKAGE = 'MultiBD', a, A, Bp1, mat)
 }
 
 prod_mu2_Cpp <- function(a, A, Bp1, mat) {
-    .Call('BirthDeathBirth_prod_mu2_Cpp', PACKAGE = 'BirthDeathBirth', a, A, Bp1, mat)
+    .Call('MultiBD_prod_mu2_Cpp', PACKAGE = 'MultiBD', a, A, Bp1, mat)
 }
 
 prod_vec_Cpp <- function(a, A, Bp1, mat) {
-    .Call('BirthDeathBirth_prod_vec_Cpp', PACKAGE = 'BirthDeathBirth', a, A, Bp1, mat)
+    .Call('MultiBD_prod_vec_Cpp', PACKAGE = 'MultiBD', a, A, Bp1, mat)
 }
 
 rcpp_hello_world <- function() {
-    .Call('BirthDeathBirth_rcpp_hello_world', PACKAGE = 'BirthDeathBirth')
+    .Call('MultiBD_rcpp_hello_world', PACKAGE = 'MultiBD')
 }
 
