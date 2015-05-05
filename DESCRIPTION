@@ -7,7 +7,7 @@ Author:
 	Lam S.T. Ho [aut, cre],
 	Marc A. Suchard [aut],
 	Forrest W. Crawford [aut]
-Maintainer: Lam S.T. Ho <lamho@ucla.edu>
+Maintainer: Lam S.T. Ho <lamho86@gmail.edu>
 Description: A package for exact inference of multivariate birth-death processes.
 License: Apache License 2
 Depends: BH, RcppParallel
