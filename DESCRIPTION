@@ -10,7 +10,10 @@ Author:
 Maintainer: Lam S.T. Ho <lamho86@gmail.com>
 Description: A package for exact inference of multivariate birth-death processes.
 License: Apache License 2
-Depends: BH, RcppParallel
-Imports: Rcpp (>= 0.11.2)
+Depends: R (>= 3.1.0)
+Imports: 
+  Rcpp (>= 0.11.2),
+  BH,
+  RcppParallel
 LinkingTo: Rcpp, BH, RcppParallel
 Suggests: testthat
