@@ -1,0 +1,75 @@
+##########################################################
+### Transition probabilities of a death/birth-death process
+##########################################################
+
+#' Transition probabilities of a death/birth-death process
+#'
+#' Computes the transition pobabilities of a death/birth-death process 
+#' using Laplace transform and continued fraction
+#' @param t time
+#' @param a0 total number of type 1 particles at \code{t = 0}
+#' @param b0 total number of type 2 particles at \code{t = 0}
+#' @param mu1 death rate of type 1 particles (a two variables function)
+#' @param lambda2 birth rate of type 2 particles (a two variables function)
+#' @param mu2 death rate function of type 2 particles (a two variables function)
+#' @param gamma transition rate from type 2 particles to type 1 particles (a two variables function)
+#' @param a lower bound for the total number of type 1 particles (default \code{a = 0})
+#' @param B upper bound for the total number of type 2 particles
+#' @param nblocks number of blocks
+#' @param tol tolerance
+#' @param computeMode computation mode
+#' @param nThreads number of threads
+#' @param maxdepth maximum number of iterations for Lentz algorithm
+
+dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a=0,B,
+                    nblocks=256,tol=1e-12,computeMode=0,nThreads=4,
+                    maxdepth=400) {
+  
+  ###################
+  ### Input checking
+  ###################
+  
+  ## a>=0, a<=a0, B >=a0+b0-a 
+  if(a<0) stop("a cannot be negative.")
+  if (a>a0) stop("a0 canot be smaller than a0.")
+  if (B < a0+b0-a) stop("B is too small.")
+  
+  ###########################################################
+  ### store rate values in matrices
+  ### rates are transformed to fit birth/birth-death process
+  ###########################################################
+  
+  l1 <- function(u,v){
+    if (v>B) return(0)
+    return(mu1(a0-u,B-v))
+  }
+  
+  l2 <- function(u,v){
+    if (v>B) return(0)
+    return(mu2(a0-u,B-v))
+  }
+  
+  m2 <- function(u,v){
+    if (v>B) return(0)
+    return(lambda2(a0-u,B-v))
+  }
+  
+  g <- function(u,v){
+    if (v>B) return(0)
+    return(gamma(a0-u,B-v))
+  }
+  
+  ###########################
+  ### Call bbd_prob function
+  ###########################
+  
+  res = matrix(0,nrow=a0-a+1,ncol=B+1)
+  res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,
+                                     nblocks,tol,computeMode,nThreads,
+                                     maxdepth)
+  
+  
+  colnames(res) = 0:B
+  rownames(res) = a:a0
+  return(res)
+}
