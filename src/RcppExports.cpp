@@ -35,43 +35,6 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// Bk1dBk_Cpp
-std::vector<std::complex<double>> Bk1dBk_Cpp(const int B, const std::vector<double>& xvec, const std::vector<std::complex<double>>& yvec);
-RcppExport SEXP MultiBD_Bk1dBk_Cpp(SEXP BSEXP, SEXP xvecSEXP, SEXP yvecSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const int >::type B(BSEXP );
-        Rcpp::traits::input_parameter< const std::vector<double>& >::type xvec(xvecSEXP );
-        Rcpp::traits::input_parameter< const std::vector<std::complex<double>>& >::type yvec(yvecSEXP );
-        std::vector<std::complex<double>> __result = Bk1dBk_Cpp(B, xvec, yvec);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// phi_routine_Cpp
-std::vector< std::complex<double> > phi_routine_Cpp(int B, std::vector<double> prod_mu2, std::vector<double> prod_lambda2, std::vector< std::complex<double> > Bk1dBk, std::vector< std::complex<double> > BidBj, std::vector< std::complex<double> > lentz);
-RcppExport SEXP MultiBD_phi_routine_Cpp(SEXP BSEXP, SEXP prod_mu2SEXP, SEXP prod_lambda2SEXP, SEXP Bk1dBkSEXP, SEXP BidBjSEXP, SEXP lentzSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< int >::type B(BSEXP );
-        Rcpp::traits::input_parameter< std::vector<double> >::type prod_mu2(prod_mu2SEXP );
-        Rcpp::traits::input_parameter< std::vector<double> >::type prod_lambda2(prod_lambda2SEXP );
-        Rcpp::traits::input_parameter< std::vector< std::complex<double> > >::type Bk1dBk(Bk1dBkSEXP );
-        Rcpp::traits::input_parameter< std::vector< std::complex<double> > >::type BidBj(BidBjSEXP );
-        Rcpp::traits::input_parameter< std::vector< std::complex<double> > >::type lentz(lentzSEXP );
-        std::vector< std::complex<double> > __result = phi_routine_Cpp(B, prod_mu2, prod_lambda2, Bk1dBk, BidBj, lentz);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
 // prod_lambda2_Cpp
 std::vector<double> prod_lambda2_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
 RcppExport SEXP MultiBD_prod_lambda2_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP matSEXP) {
@@ -102,38 +65,6 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const int >::type Bp1(Bp1SEXP );
         Rcpp::traits::input_parameter< const std::vector<double>& >::type mat(matSEXP );
         std::vector<double> __result = prod_mu2_Cpp(a, A, Bp1, mat);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// prod_vec_Cpp
-std::vector<double> prod_vec_Cpp(const int a, const int A, const int Bp1, const std::vector<double>& mat);
-RcppExport SEXP MultiBD_prod_vec_Cpp(SEXP aSEXP, SEXP ASEXP, SEXP Bp1SEXP, SEXP matSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const int >::type a(aSEXP );
-        Rcpp::traits::input_parameter< const int >::type A(ASEXP );
-        Rcpp::traits::input_parameter< const int >::type Bp1(Bp1SEXP );
-        Rcpp::traits::input_parameter< const std::vector<double>& >::type mat(matSEXP );
-        std::vector<double> __result = prod_vec_Cpp(a, A, Bp1, mat);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP MultiBD_rcpp_hello_world() {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        List __result = rcpp_hello_world();
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

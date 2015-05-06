@@ -1,4 +1,4 @@
 library(testthat)
-library(BirthDeathBirth)
+library(MultiBD)
 
-test_check("BirthDeathBirth")
+test_check("MultiBD")

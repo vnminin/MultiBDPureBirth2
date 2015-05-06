@@ -1,4 +1,4 @@
-library(BirthDeathBirth)
+library(MultiBD)
 library(compiler)
 
 test_that("Sum of conditional probabilities", {

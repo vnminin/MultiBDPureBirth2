@@ -1,7 +1,8 @@
-library(BirthDeathBirth)
+library(MultiBD)
 library(compiler)
 library(expoRkit)
 library(Matrix)
+source("../../simulations/bbd_expM.R")
 
 test_that("SIR", {
   tolerance = 1E-7

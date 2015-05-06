@@ -27,7 +27,7 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
                      doJIT=TRUE,maxdepth=400) {
 
 	if (doJIT) enableJIT(1)
-	setThreadOptions(numThreads = nThreads)
+# 	setThreadOptions(numThreads = nThreads)
   
   ## R-C interface
 #   dyn.load("src/cf_BidBj.so")

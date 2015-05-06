@@ -4,7 +4,7 @@
 #include <iostream>
 #include "boost/iterator/counting_iterator.hpp"
 #include "ThreadPool.h"
-#include "complexvec.h"
+//#include "complexvec.h"
 #include "RcppParallel.h"
 
 namespace mytype { // define data type
@@ -20,13 +20,13 @@ const mytype::ComplexNumber one(1.0,0.0), two(2.0,0.0), zero(0.0,0.0), tiny(1e-1
 // Inline opertators  for complex number
 /////////////////////////////////////////
 
-inline double real(const Complex2d& x) {
-  return(x.extract(0));
-}
+//inline double real(const Complex2d& x) {
+//  return(x.extract(0));
+//}
 
-inline double imag(const Complex2d& x) {
-  return(x.extract(1));
-}
+//inline double imag(const Complex2d& x) {
+//  return(x.extract(1));
+//}
 
 inline std::complex<double> operator*(const std::complex<double>& x, const std::complex<double>& y) {
                 return {

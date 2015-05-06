@@ -1,6 +1,7 @@
-library(BirthDeathBirth)
+library(MultiBD)
 library(compiler)
 library(deSolve)
+source("../../simulations/bsd_package.R")
 
 test_that("Birth death process", {
   tolerance = 1E-7
