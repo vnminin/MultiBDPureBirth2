@@ -5,7 +5,7 @@
 #include "boost/iterator/counting_iterator.hpp"
 #include "ThreadPool.h"
 //#include "complexvec.h"
-#include "RcppParallel.h"
+//#include "RcppParallel.h"
 
 namespace mytype { // define data type
   typedef std::complex<double> ComplexNumber;
@@ -121,10 +121,10 @@ struct Levin {
 void lentz_plus_invBk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, 
   const mytype::ComplexVector& yvec, const mytype::ComplexVector& inv_Bk1dBk, 
   mytype::ComplexVector& lentz_plus_invBk1dBk);
-    
+  
 void inv_Bk1dBk_Cpp(const int Bp1, const std::vector<double>& xvec, const mytype::ComplexVector& yvec, 
     mytype::ComplexVector& inv_Bk1dBk);
-
+    
 void BidBj_Cpp(const int Bp1, const std::vector<double>& xvec, const mytype::ComplexVector& yvec, 
     const mytype::ComplexVector& inv_Bk1dBk, mytype::ComplexVector& BidBj);
 
@@ -317,36 +317,36 @@ namespace loops {
  //   mutex;
 //    ostream stream;
     
-   template <typename InputIt, typename UnaryFunction>
-    struct WrapWorker : public ::RcppParallel::Worker {
+//   template <typename InputIt, typename UnaryFunction>
+//    struct WrapWorker : public ::RcppParallel::Worker {
       
-      WrapWorker(InputIt begin, InputIt end, UnaryFunction function) : 
-        begin(begin), end(end), function(function) { }
+//      WrapWorker(InputIt begin, InputIt end, UnaryFunction function) : 
+//        begin(begin), end(end), function(function) { }
         
-        void operator()(std::size_t i, std::size_t j) {
+//        void operator()(std::size_t i, std::size_t j) {
           // grab lock
   //        stream << i << ":" << j;
           // release lock
-            std::for_each(begin + i, begin + j, function);
+//            std::for_each(begin + i, begin + j, function);
           //  std::cout << i << ":" << j << std::endl;
-        }
+//        }
 
-        InputIt begin;
-        InputIt end;
-        UnaryFunction function;
-    }; // WrapWorker
+//        InputIt begin;
+//        InputIt end;
+//        UnaryFunction function;
+//    }; // WrapWorker
     
-    struct RcppThreads : public AbstractC11Thread {
-      using AbstractC11Thread::AbstractC11Thread; // inherit constructor
+//    struct RcppThreads : public AbstractC11Thread {
+//      using AbstractC11Thread::AbstractC11Thread; // inherit constructor
       
-      template <class InputIt, class UnaryFunction>  
-      inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) {
-            auto worker = WrapWorker<InputIt, UnaryFunction>(begin, end, function);
-            ::RcppParallel::parallelFor(0, std::distance(begin, end), worker);
-            return function;
-          }
+//      template <class InputIt, class UnaryFunction>  
+//      inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) {
+//            auto worker = WrapWorker<InputIt, UnaryFunction>(begin, end, function);
+//            ::RcppParallel::parallelFor(0, std::distance(begin, end), worker);
+//            return function;
+//          }
       
-    }; // RcppThreads
+//    }; // RcppThreads
     
 } // namespace loops
 
@@ -354,49 +354,49 @@ namespace loops {
 // Loops unroll
 ////////////////
 
-#define ROUND_DOWN(x, s) ((x) & ~((s)-1))
+//#define ROUND_DOWN(x, s) ((x) & ~((s)-1))
 
-namespace unroll {
+//namespace unroll {
   
-  template <class InputIt, class UnaryFunction>
-  UnaryFunction for_each_1(InputIt begin, InputIt end, UnaryFunction f) {
-    for (; begin != end; ++begin) {
-        f(*begin);
-    }
-    return f;
-  }
+//  template <class InputIt, class UnaryFunction>
+//  UnaryFunction for_each_1(InputIt begin, InputIt end, UnaryFunction f) {
+//    for (; begin != end; ++begin) {
+//        f(*begin);
+//    }
+//    return f;
+//  }
 
-  template <class InputIt, class UnaryFunction>
-  UnaryFunction for_each_2(InputIt begin, InputIt end, UnaryFunction f) {      
-    InputIt endr = end - std::distance(begin, end) % 2;
-    for (; begin != endr; ++begin) {
-        f(*begin);
-        f(*(++begin));
-    }
+//  template <class InputIt, class UnaryFunction>
+//  UnaryFunction for_each_2(InputIt begin, InputIt end, UnaryFunction f) {      
+//    InputIt endr = end - std::distance(begin, end) % 2;
+//    for (; begin != endr; ++begin) {
+//        f(*begin);
+//        f(*(++begin));
+//    }
     
-    for (; begin != end; ++begin) {
-      f(*begin);
-    }
+//    for (; begin != end; ++begin) {
+//      f(*begin);
+//    }
     
-    return f;
-  }
+//    return f;
+//  }
   
-  template <class InputIt, class UnaryFunction>
-  UnaryFunction for_each_4(InputIt begin, InputIt end, UnaryFunction f) {      
-    InputIt endr = end - std::distance(begin, end) % 4;
-    for (; begin != endr; ++begin) {
-        f(*begin);
-        f(*(++begin));
-        f(*(++begin));
-        f(*(++begin)); 
-    }
+//  template <class InputIt, class UnaryFunction>
+//  UnaryFunction for_each_4(InputIt begin, InputIt end, UnaryFunction f) {      
+//    InputIt endr = end - std::distance(begin, end) % 4;
+//    for (; begin != endr; ++begin) {
+//        f(*begin);
+//        f(*(++begin));
+//        f(*(++begin));
+//        f(*(++begin)); 
+//    }
     
-    for (; begin != end; ++begin) {
-      f(*begin);
-    }
+//    for (; begin != end; ++begin) {
+//      f(*begin);
+//    }
     
-    return f;
-  }
+//    return f;
+//  }
 
 //template <typename Iterator, typename Function>
 //void vectorized_for_each(Iterator begin, Iterator end, Function vector_function) {
@@ -407,15 +407,15 @@ namespace unroll {
 //  }
 //}
 
-  template <class InputIt, class UnaryFunction>
-  UnaryFunction vectorized_for_each(InputIt begin, InputIt end, UnaryFunction vec_f) {      
+//  template <class InputIt, class UnaryFunction>
+//  UnaryFunction vectorized_for_each(InputIt begin, InputIt end, UnaryFunction vec_f) {      
     // Assumes that std::distance(begin, end) % 2 == 0
-    for (; begin != end; begin += 2) {
-        vec_f(*begin);
-    }    
-    return vec_f;
-  }
+//    for (; begin != end; begin += 2) {
+//        vec_f(*begin);
+//    }    
+//    return vec_f;
+//  }
 
-} // namespace unroll
+//} // namespace unroll
 
 

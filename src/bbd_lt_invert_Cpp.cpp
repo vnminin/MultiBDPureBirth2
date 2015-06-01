@@ -132,11 +132,11 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
                     maxdepth, nblocks, tol, loopC11Async);      
       }
       
-      case 4: {        
-        loops::RcppThreads loopRcppThreads(nThreads, nblocks);
-        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
-                    maxdepth, nblocks, tol, loopRcppThreads);      
-      }
+//      case 4: {        
+//        loops::RcppThreads loopRcppThreads(nThreads, nblocks);
+//        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, 
+//                    maxdepth, nblocks, tol, loopRcppThreads);      
+//      }
         
       default: {
         loops::STL loopSTL; 

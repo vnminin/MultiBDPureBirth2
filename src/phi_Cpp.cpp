@@ -14,7 +14,7 @@ void phi_Cpp (const mytype::ComplexNumber s, const int a0, const int b0, const s
       
   for (int a=0; a<(A-a0+1); ++a) {
     for (int i=0; i<(Bp1 + maxdepth); ++i) yvec[i] = s + yvec_minus_s[a][i];
-
+    
     inv_Bk1dBk_Cpp(Bp1,xvec[a],yvec,inv_Bk1dBk);
     lentz_plus_invBk1dBk_Cpp(Bp1,xvec[a],yvec,inv_Bk1dBk,lentz_plus_invBk1dBk);
     BidBj_Cpp(Bp1,xvec[a],yvec,inv_Bk1dBk,BidBj);
