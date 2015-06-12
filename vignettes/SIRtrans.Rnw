@@ -225,8 +225,8 @@ simulateSIR <- function(t.end, S, I, beta, gam, maxEvents = 99999999){
       print("Negative population? Error")
       return(-99) #error code
     }
-    if( S == 0 ){
-      print("No more susceptibles")
+    if( S == 0 || I ==0){
+      #print("S or I is zero, end epidemic")
       return( c(S,I) )   #end epidemic
     }
     infectRate <- S*I*beta
@@ -336,6 +336,72 @@ plot(seq(S+I), xlim = c(110,160), suscepProbs.FFT, pch = 3,
 plotCI(seq(S+I), xlim = c(110,160), suscepProbs.MC, pch = 16, 
        col = 4, ui = upper, li = lower, add=TRUE)
 @
+
+
+Finally, let's begin comparisons with the partial fraction method. We begin by importing MultiBD and defining parameters of the SIR model. We choose rates similar to the Eyam example for now, and begin with a small population of 100 susceptibles and 15 infectives. There seems to be some computational bug when testing for larger cases... will look into this soon. We compute a matrix containing transition probabilities using all three methods below:
+<<cache=TRUE>>=
+library(MultiBD)
+t.end <- .5
+gridLength = 128
+a0 = 100 # S_0
+b0 = 15 # I_0
+A = 0
+B = gridLength - 1
+alpha = 3.5 #3.2 #this is death rate
+beta = .025 #.019 #this is transition or infection rates
+
+brates1=function(a,b){0}
+drates1=function(a,b){0}
+brates2=function(a,b){0}
+drates2=function(a,b){alpha*b}
+trans=function(a,b){beta*a*b}
+
+
+system.time( tpm.Closed <- getTransProbsClosed(t.end, gridLength, 
+                                         beta, alpha, a0, b0) ) #[1:(a0+b0),1:(a0+b0)]  )
+tpm1 = tpm.Closed[1:(a0+1),] #using 2-type branching approximation
+
+#using partial fractions via MultiBD
+system.time( tpm2 <- dbd_prob(t.end, a0, b0, drates1, brates2, drates2, trans,
+                                         a=A, B))#, computeMode=2))#, nblocks = 80)) 
+
+#MC simulation "ground truth"
+nSim = 10000
+#tpm.MC <- getTrans.MC(nSim, t.end, s[k], i[k], alpha, beta)
+tpm.MC <- getTrans.MC(nSim, t.end, a0, b0, beta, alpha)
+tpm3 <- tpm.MC[1:(a0+1), ]
+@
+
+Next, we can look at measures of similarity: first, we can look at where the largest entries are located, and then plot the probability mass over regions where most of the support lies.
+<<>>=
+#where are the largest entries of each
+which(tpm1 >= sort(tpm1, decreasing=T)[5], arr.ind=TRUE)
+which(tpm2 >= sort(tpm2, decreasing=T)[5], arr.ind=TRUE)
+which(tpm3 >= sort(tpm3, decreasing=T)[5], arr.ind=TRUE)
+
+#where is most of the mass?
+small1 <- tpm1[61:101,1:25]; small2 <- tpm2[61:101,1:25]
+small3 <- tpm3[61:101,1:25]
+
+#they comprise most of transition probability mass:
+sum(small1); sum(small2); sum(small3)
+
+#mean errors
+mean(abs(small1- small3 ) )
+mean(abs(small2 - small3) )
+
+par(mfrow=(c(3,1)))
+image(small1)
+image(small2)
+image(small3)
+@
+
+From the heatmap plots above, we see that indeed the partial fraction method looks like it assigns probability mass to the correct areas, very similar to the contours of the MC estimates in the bottom panel. The two-type approximation is close but centered slightly off, as is reflected by the slightly higher mean error and indices of largest values above the plot as well.
+
+Next, we would like to vary the populations, time intervals, etc, and make some plots of a few given transition probabilities as these parameters vary. We can compare the 2-type branching approximation with the partial fraction method and see how closely each aligns with MC simulation.
+
+
+
 
 
 
