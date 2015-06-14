@@ -339,66 +339,92 @@ plotCI(seq(S+I), xlim = c(110,160), suscepProbs.MC, pch = 16,
 
 
 Finally, let's begin comparisons with the partial fraction method. We begin by importing MultiBD and defining parameters of the SIR model. We choose rates similar to the Eyam example for now, and begin with a small population of 100 susceptibles and 15 infectives. There seems to be some computational bug when testing for larger cases... will look into this soon. We compute a matrix containing transition probabilities using all three methods below:
-<<cache=TRUE>>=
+
+<<>>=
 library(MultiBD)
-t.end <- .5
+tList  <- c(.1, .2, ,.25, .3, ,.35, .4, .5, .6, .7, .8, .9, 1)
 gridLength = 128
-a0 = 100 # S_0
+a0 = 110 # S_0
 b0 = 15 # I_0
 A = 0
 B = gridLength - 1
-alpha = 3.5 #3.2 #this is death rate
+alpha = 3.2 #3.2 #this is death rate
 beta = .025 #.019 #this is transition or infection rates
+nSim = 5000 #number of MC simulations
 
 brates1=function(a,b){0}
 drates1=function(a,b){0}
 brates2=function(a,b){0}
 drates2=function(a,b){alpha*b}
 trans=function(a,b){beta*a*b}
+@
 
+Having specified the parameters, list of times, and rates, let's compute probabilities using each method (the following takes a while to run because of the Monte Carlo simulations):
+<<cache=TRUE>>= 
+#indexed by time, type of computation, and dimensions of the tpm
+tpmArray <- array(NA, dim= c(length(tList),3, 52, 25 )) #store a subset of transition probabilities 
 
-system.time( tpm.Closed <- getTransProbsClosed(t.end, gridLength, 
-                                         beta, alpha, a0, b0) ) #[1:(a0+b0),1:(a0+b0)]  )
-tpm1 = tpm.Closed[1:(a0+1),] #using 2-type branching approximation
+for(i in 1:length(tList)){
+  t.end <- tList[i]
+  system.time( tpm.Closed <- getTransProbsClosed(t.end, gridLength, 
+                                           beta, alpha, a0, b0) ) 
+  tpm1 = tpm.Closed[1:(a0+1),] #using 2-type branching approximation
+  
+  #using partial fractions via MultiBD
+  system.time( tpm2 <- dbd_prob(t.end, a0, b0, drates1, brates2, drates2, trans,
+                                           a=A, B))#, computeMode=2))
+  #MC simulation "ground truth"
+  tpm.MC <- getTrans.MC(nSim, t.end, a0, b0, beta, alpha)
+  tpm3 <- tpm.MC[1:(a0+1), ]
 
-#using partial fractions via MultiBD
-system.time( tpm2 <- dbd_prob(t.end, a0, b0, drates1, brates2, drates2, trans,
-                                         a=A, B))#, computeMode=2))#, nblocks = 80)) 
-
-#MC simulation "ground truth"
-nSim = 10000
-#tpm.MC <- getTrans.MC(nSim, t.end, s[k], i[k], alpha, beta)
-tpm.MC <- getTrans.MC(nSim, t.end, a0, b0, beta, alpha)
-tpm3 <- tpm.MC[1:(a0+1), ]
+  #store subset of matrices containing about 99 percent of the mass:
+  tpmArray[i,1,,] <- tpm1[60:(a0+1),1:25]
+  tpmArray[i,2,,] <- tpm2[60:(a0+1),1:25]
+  tpmArray[i,3,,] <- tpm3[60:(a0+1),1:25]
+}
 @
 
 Next, we can look at measures of similarity: first, we can look at where the largest entries are located, and then plot the probability mass over regions where most of the support lies.
 <<>>=
-#where are the largest entries of each
-which(tpm1 >= sort(tpm1, decreasing=T)[5], arr.ind=TRUE)
-which(tpm2 >= sort(tpm2, decreasing=T)[5], arr.ind=TRUE)
-which(tpm3 >= sort(tpm3, decreasing=T)[5], arr.ind=TRUE)
-
-#where is most of the mass?
-small1 <- tpm1[61:101,1:25]; small2 <- tpm2[61:101,1:25]
-small3 <- tpm3[61:101,1:25]
+#for example, look at the ones with t.end = .5
+small1 <- tpmArray[5,1,,]
+small2 <- tpmArray[5,2,,]
+small3 <- tpmArray[5,3,,]
 
 #they comprise most of transition probability mass:
 sum(small1); sum(small2); sum(small3)
 
-#mean errors
-mean(abs(small1- small3 ) )
-mean(abs(small2 - small3) )
+# mean errors
+mean(abs(small1- small3 ) ) #2-type vs MC
+mean(abs(small2 - small3) ) #Partial Frac vs MC
 
+# scaled heatmap images to compare tpm visually
 par(mfrow=(c(3,1)))
-image(small1)
-image(small2)
-image(small3)
+image(small1, main = "Two-type branching approximation")
+image(small2, main = "Partial Fraction expansion")
+image(small3, main = "Monte Carlo estimates")
 @
 
 From the heatmap plots above, we see that indeed the partial fraction method looks like it assigns probability mass to the correct areas, very similar to the contours of the MC estimates in the bottom panel. The two-type approximation is close but centered slightly off, as is reflected by the slightly higher mean error and indices of largest values above the plot as well.
 
 Next, we would like to vary the populations, time intervals, etc, and make some plots of a few given transition probabilities as these parameters vary. We can compare the 2-type branching approximation with the partial fraction method and see how closely each aligns with MC simulation.
+
+<<transitionCompare>>=
+library(plotrix)
+inds <- t(which(tpmArray[5,2,,] >= sort(tpmArray[5,2,,], decreasing=T)[16], arr.ind=TRUE))
+#ind1 <- sample(52,25, replace=T); ind2 <- sample(25,25,replace=T)
+par(mfrow = c(4,4), oma = c(5,4,0,0) + 0.1, mar = c(0,0,1,1) + 0.1)
+for(i in 1:16){
+  plot(tList, tpmArray[,2,inds[1,i], inds[2,i] ], pch = 3, col = 'red', ylim = c(0,.006),
+     yaxt = 'n', xlab = "dt")
+  MCp <- tpmArray[,3,inds[1,i], inds[2,i] ] #MC prob
+  plotCI(tList, MCp, pch = 16, col = 'purple', ui=MCp+1.96*sqrt(MCp*(1-MCp)), 
+         li=MCp-1.96*sqrt(MCp*(1-MCp)), add = TRUE)
+  points(tList, tpmArray[,1,inds[1,i], inds[2,i] ], col='green')
+}
+
+#legend("topright",legend=c("MC simulation","Frequent Monitoring", "Generating Function"), cex=.9, bty="o", col=c(4,'purple',2), pch = c(16,3,17))
+@
 
 
 
