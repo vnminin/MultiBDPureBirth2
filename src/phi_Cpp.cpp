@@ -27,7 +27,7 @@ void phi_Cpp (const mytype::ComplexNumber s, const int a0, const int b0, const s
         int i = k - j*(j+1)/2;
         mytype::ComplexNumber tmp = BidBj[k]/lentz_plus_invBk1dBk[j];
         phi[get_phi(a,i,j,Bp1)] = prod_mu2[a][k] * tmp;            
-        phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][k] * tmp;          
+        phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][k] * tmp;           
       }
     );
     
