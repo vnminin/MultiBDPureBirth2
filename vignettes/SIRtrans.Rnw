@@ -81,7 +81,7 @@ Below, I'll walk through some example code that implements the above formula. I'
 
 First, we have the relatively simple ODE solutions, and code to evaluate them over a grid of arguments (naively with nested for loops) and functions to take the Fourier transforms of these grids, yielding transition probabilities.
 
-<<>>=
+<<ODE>>=
 library(matrixStats)
 # solutions to phi1 and phi2, the generating function ODES
 # phi1 is generating function starting with 1 suscep, phi2 is starting with 1 infected
@@ -127,7 +127,7 @@ getTransProbsODE <- function(t, gridLength, beta, gam, S0, I0){
 
 We can use these as a ``ground truth" for transition probabilities of the \textit{approximate branching model} to test our closed form probabilities, implemented below. For the paper, we will probably only include the more relevant comparison to Monte Carlo estimates from simulating the true SIR process.
 
-<<>>=
+<<BranchingFunctions>>=
 # expression for the phi1 cross-partials
 A <- function(t, m, n, k, j, beta, gam){
   if(j > m-k){return(0)} else{ 
@@ -309,7 +309,7 @@ In terms of \textit{total} absolute error, we see that the closed form probabili
 
 Below, the purple crosses are probabilities computed using our method, and the blue points with confidence intervals are from Monte Carlo. We can try different settings to see when these are close and when they break down. When incorporated within a M-H sampler, it will be interesting to see how any discrepancies actually affect the final posterior estimates over parameters.
 
-<<eval=TRUE>>=
+<<marginalizedSIRplots>>=
 #marginalize over susceptibles: c
 infectiveProbs.MC <- colSums(tpm.MC)
 infectiveSD.MC <- sqrt( (infectiveProbs.MC)*(1 - infectiveProbs.MC)/(N) )
@@ -340,7 +340,7 @@ plotCI(seq(S+I), xlim = c(110,160), suscepProbs.MC, pch = 16,
 
 Finally, let's begin comparisons with the continued fraction method. We begin by importing MultiBD and defining parameters of the SIR model. We choose rates similar to the Eyam example for now, and begin with a small population of 100 susceptibles and 15 infectives. There seems to be some computational bug when testing for larger cases... will look into this soon. We compute a matrix containing transition probabilities using all three methods below:
 
-<<>>=
+<<multiBDsetup>>=
 library(MultiBD)
 tList  <- c(.1, .2, .25, .3 ,.35, .4, .5, .6, .7, .8, .9, 1)
 gridLength = 128
@@ -350,7 +350,7 @@ A = 0
 B = gridLength - 1
 alpha = 3.2 #3.2 #this is death rate
 beta = .025 #.019 #this is transition or infection rates
-nSim = 2000 #number of MC simulations
+nSim = 4000 #number of MC simulations
 
 brates1=function(a,b){0}
 drates1=function(a,b){0}
@@ -360,7 +360,7 @@ trans=function(a,b){beta*a*b}
 @
 
 Having specified the parameters, list of times, and rates, let's compute probabilities using each method (the following takes a while to run because of the Monte Carlo simulations):
-<<cache=TRUE>>= 
+<<makeTPMs, cache=TRUE>>= 
 #indexed by time, type of computation, and dimensions of the tpm
 tpmArray <- array(NA, dim= c(length(tList),3, 52, 25 )) #store a subset of transition probabilities 
 
@@ -407,6 +407,15 @@ image(small3, main = "Monte Carlo estimates")
 
 From the heatmap plots above, we see that indeed the continued fraction method looks like it assigns probability mass to the correct areas, very similar to the contours of the MC estimates in the bottom panel. The two-type approximation is close but centered slightly off, as is reflected by the slightly higher mean error and indices of largest values above the plot as well.
 
+However, for larger time intervals, the two-type approximation is more noticeably far
+from the true MC estimates: below shows the heatmaps for $t = 1$:
+<<>>=
+par(mfrow=(c(3,1)))
+image(tpmArray[12,1,,], main = "Two-type branching approximation")
+image(tpmArray[12,2,,], main = "Continued Fraction expansion")
+image(tpmArray[12,3,,], main = "Monte Carlo estimates")
+@
+
 Next, we would like to vary the populations, time intervals, etc, and make some plots of a few given transition probabilities as these parameters vary. We can compare the 2-type branching approximation with the continued fraction method and see how closely each aligns with MC simulation.
 
 <<transitionCompare>>=
@@ -415,21 +424,50 @@ inds <- t(which(tpmArray[7,2,,] >= sort(tpmArray[7,2,,], decreasing=T)[16], arr.
 #ind1 <- sample(52,25, replace=T); ind2 <- sample(25,25,replace=T)
 par(mfrow = c(4,4), oma = c(5,4,0,0) + 0.1, mar = c(0,0,1,1) + 0.1)
 for(i in 1:16){
-  plot(tList, tpmArray[,2,inds[1,i], inds[2,i] ], pch = 3, col = 'red',# ylim = c(0,.009),
-     yaxt = 'n', xlab = "dt")
-  MCp <- tpmArray[,3,inds[1,i], inds[2,i] ] #MC prob
-  plotCI(tList, MCp, pch = 16, col = 'purple', ui=MCp+1.96*sqrt(MCp*(1-MCp)/nSim), 
-         li=MCp-1.96*sqrt(MCp*(1-MCp)/nSim), add = TRUE)
-  points(tList, tpmArray[,1,inds[1,i], inds[2,i] ], col='green')
+plot(tList, tpmArray[,2,inds[1,i], inds[2,i] ], pch = 17, col = 'red',
+ylim = c(0,max(tpmArray[,,inds[1,i], inds[2,i]])),
+yaxt = 'n', xlab = "dt")
+MCp <- tpmArray[,3,inds[1,i], inds[2,i] ] #MC prob
+plotCI(tList, MCp, pch = 4, col = 'green', ui=MCp+1.96*sqrt(MCp*(1-MCp)/nSim),
+li=MCp-1.96*sqrt(MCp*(1-MCp)/nSim), add = TRUE)
+points(tList, tpmArray[,1,inds[1,i], inds[2,i] ], col='purple', pch = 16)
 }
-
-#legend("topright",legend=c("MC simulation","Frequent Monitoring", "Generating Function"), cex=.9, bty="o", col=c(4,'purple',2), pch = c(16,3,17))
 @
 
 
+Let's repeat some of the heatmap images to check the multibd package with larger populations:
+<<largerPopulation,cache=TRUE>>=
+tList  <- c( .5, 1)
+gridLength = 256
+a0 = 235 # S_0
+b0 = 15 # I_0
+A = 0
+B = gridLength - 1
+alpha = 3.2 #3.2 #this is death rate
+beta = .025 #.019 #this is transition or infection rates
+nSim <- 10000
+tpmArray <- array(NA, dim= c(length(tList),2, (a0+1), 240 )) #store a subset of transition probabilities 
 
+for(i in 1:length(tList)){
+  t.end <- tList[i]
+  system.time( tpm2 <- dbd_prob(t.end, a0, b0, drates1, brates2, drates2, trans,
+                                           a=A, B))#, computeMode=2))
+  #MC simulation "ground truth"
+  tpm.MC <- getTrans.MC(nSim, t.end, a0, b0, beta, alpha)
+  tpm3 <- tpm.MC[1:(a0+1), ]
 
+  #store subset of matrices containing about 99 percent of the mass:
+  tpmArray[i,1,,] <- tpm2[1:(a0+1),1:240]
+  tpmArray[i,2,,] <- tpm3[1:(a0+1),1:240]
+}
+@
+The below plots are for $t=.5, 1$ respectively:
+<<>>=
+image(tpmArray[1,1,,1:60], main = "Continued Fraction approximation, t=.5")
+image(tpmArray[1,2,,1:60], main = "Monte Carlo estimates")
 
-
+image(tpmArray[2,1,,1:60], main = "Continued Fraction approximation, t=1")
+image(tpmArray[2,2,,1:60], main = "Monte Carlo estimates")
+@
 
 \end{document}
