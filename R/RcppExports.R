@@ -5,11 +5,3 @@ bbd_lt_invert_Cpp <- function(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, 
     .Call('MultiBD_bbd_lt_invert_Cpp', PACKAGE = 'MultiBD', t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, nblocks, tol, computeMode, nThreads, maxdepth)
 }
 
-prod_lambda2_Cpp <- function(a, A, Bp1, mat) {
-    .Call('MultiBD_prod_lambda2_Cpp', PACKAGE = 'MultiBD', a, A, Bp1, mat)
-}
-
-prod_mu2_Cpp <- function(a, A, Bp1, mat) {
-    .Call('MultiBD_prod_mu2_Cpp', PACKAGE = 'MultiBD', a, A, Bp1, mat)
-}
-
