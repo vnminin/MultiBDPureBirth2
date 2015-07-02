@@ -463,9 +463,11 @@ for(i in 1:length(tList)){
 @
 The below plots are for $t=.5, 1$ respectively:
 <<>>=
+par(mfrow=(c(2,1)))
 image(tpmArray[1,1,,1:60], main = "Continued Fraction approximation, t=.5")
 image(tpmArray[1,2,,1:60], main = "Monte Carlo estimates")
 
+par(mfrow=(c(2,1)))
 image(tpmArray[2,1,,1:60], main = "Continued Fraction approximation, t=1")
 image(tpmArray[2,2,,1:60], main = "Monte Carlo estimates")
 @
