@@ -199,7 +199,8 @@ namespace loops {
     
     struct C11Threads : public AbstractC11Thread {
     	
-    	using AbstractC11Thread::AbstractC11Thread; // inherit constructor
+    	//using AbstractC11Thread::AbstractC11Thread; // inherit constructor
+    	C11Threads(int t, int w) : AbstractC11Thread(t, w) { }
     	
 		template <class InputIt, class UnaryFunction>
 		inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) const {
@@ -239,8 +240,9 @@ namespace loops {
     
     struct C11Async : public AbstractC11Thread {
       
-    	using AbstractC11Thread::AbstractC11Thread; // inherit constructor
-    	
+    	//using AbstractC11Thread::AbstractC11Thread; // inherit constructor
+    	C11Async(int t, int w) : AbstractC11Thread(t, w) { }    	
+      
 		template <class InputIt, class UnaryFunction>
 		inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) const {
 	
@@ -283,7 +285,7 @@ namespace loops {
     C11ThreadPool(int t, int w) : AbstractC11Thread(t,w), pool(t) {}
     virtual ~C11ThreadPool() { };
 
-	  using AbstractC11Thread::AbstractC11Thread; // inherit constructor   
+	  //using AbstractC11Thread::AbstractC11Thread; // inherit constructor   
     ThreadPool pool;
     
     template <class InputIt, class UnaryFunction>

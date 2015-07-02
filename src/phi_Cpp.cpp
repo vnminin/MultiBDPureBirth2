@@ -26,8 +26,15 @@ void phi_Cpp (const mytype::ComplexNumber s, const int a0, const int b0, const s
         int j = (int)((-1+sqrt(8*k+1))/2);  
         int i = k - j*(j+1)/2;
         mytype::ComplexNumber tmp = BidBj[k]/lentz_plus_invBk1dBk[j];
-        phi[get_phi(a,i,j,Bp1)] = prod_mu2[a][k] * tmp;            
-        phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][k] * tmp;           
+        // When tmp == 0, set phi = 0 to avoid "0 x infinity" 
+        // in the case prod_lambda2 or prod_mu2 is overflow
+        if (tmp == zero) {
+          phi[get_phi(a,i,j,Bp1)] = 0;            
+          phi[get_phi(a,j,i,Bp1)] = 0;             
+        } else {
+          phi[get_phi(a,i,j,Bp1)] = prod_mu2[a][k] * tmp;            
+          phi[get_phi(a,j,i,Bp1)] = prod_lambda2[a][k] * tmp;             
+        }
       }
     );
     
