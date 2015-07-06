@@ -102,6 +102,7 @@ ig.resize(kmax);
 //  
 //  using TimingUnits = std::chrono::microseconds;
 //  Rcpp::Rcout << "Time: " << std::chrono::duration_cast<TimingUnits>(end - start).count() << std::endl;  
+//  Rcpp::Rcout << "kmax: " << kmax << std::endl;  
   
   return(std::move(res));
 }
