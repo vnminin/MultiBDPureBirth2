@@ -23,7 +23,7 @@
 
 dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a=0,B,
                     nblocks=256,tol=1e-12,computeMode=0,nThreads=4,
-                    maxdepth=400) {
+                    maxdepth=400, vec_output=NULL) {
   
   ###################
   ### Input checking
@@ -63,13 +63,22 @@ dbd_prob <-function(t,a0,b0,mu1,lambda2,mu2,gamma,a=0,B,
   ### Call bbd_prob function
   ###########################
   
-  res = matrix(0,nrow=a0-a+1,ncol=B+1)
-  res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,
-                                     nblocks,tol,computeMode,nThreads,
-                                     maxdepth)
+  if (is.null(vec_output)) {
+    res = matrix(0,nrow=a0-a+1,ncol=B+1)
+    res[(a0-a+1):1,(B+1):1] = bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,
+                                       nblocks,tol,computeMode,nThreads,
+                                       maxdepth, vec_output)
+    
+    colnames(res) = 0:B
+    rownames(res) = a:a0  
+  } else {
+    vec_tmp = vec_output
+    vec_tmp[,1] = a0 - vec_output[,1]
+    vec_tmp[,2] = B - vec_output[,2]
+    res = cbind(vec_output, bbd_prob(t,0,B-b0,l1,l2,m2,g,A=a0-a,B,
+                   nblocks,tol,computeMode,nThreads,
+                   maxdepth, vec_tmp)[,3])
+  }
   
-  
-  colnames(res) = 0:B
-  rownames(res) = a:a0
   return(res)
 }

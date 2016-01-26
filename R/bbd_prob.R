@@ -23,7 +23,7 @@
 
 bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
                      nblocks=256,tol=1e-12,computeMode=0,nThreads=4,
-                     maxdepth=400) {
+                     maxdepth=400, vec_output=NULL) {
   
 #   setThreadOptions(numThreads = nThreads)
   
@@ -81,12 +81,19 @@ bbd_prob <- function(t,a0,b0,lambda1,lambda2,mu2,gamma,A,B,
   ### Call C function via Rcpp
   #############################
   
-  res = matrix(bbd_lt_invert_Cpp(t,a0,b0,l1,l2,m2,g,x,y,A,B+1,
-                                 nblocks,tol,computeMode,nThreads,maxdepth),
-               nrow=(A-a0+1),byrow=T)
+  if (is.null(vec_output)) {
+    vec_output = -1
+    res = matrix(bbd_lt_invert_Cpp(t,a0,b0,l1,l2,m2,g,x,y,A,B+1, vec_output,
+                                   nblocks,tol,computeMode,nThreads,maxdepth),
+                 nrow=(A-a0+1),byrow=T)
+    
+    colnames(res) = 0:B
+    rownames(res) = a0:A
+  } else {
+    res = cbind(vec_output, bbd_lt_invert_Cpp(t,a0,b0,l1,l2,m2,g,x,y,A,B+1, vec_output,
+                                    nblocks,tol,computeMode,nThreads,maxdepth))
+  }
   
-  colnames(res) = 0:B
-  rownames(res) = a0:A
   
   return(abs(res))
 }
