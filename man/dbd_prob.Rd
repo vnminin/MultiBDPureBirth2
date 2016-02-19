@@ -5,7 +5,8 @@
 \title{Transition probabilities of a death/birth-death process}
 \usage{
 dbd_prob(t, a0, b0, mu1, lambda2, mu2, gamma, a = 0, B, nblocks = 256,
-  tol = 1e-12, computeMode = 0, nThreads = 4, maxdepth = 400)
+  tol = 1e-12, computeMode = 0, nThreads = 4, maxdepth = 400,
+  vec_output = NULL)
 }
 \arguments{
 \item{t}{time}

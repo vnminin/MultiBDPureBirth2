@@ -5,7 +5,8 @@
 \title{Transition probabilities of a birth/birth-death process}
 \usage{
 bbd_prob(t, a0, b0, lambda1, lambda2, mu2, gamma, A, B, nblocks = 256,
-  tol = 1e-12, computeMode = 0, nThreads = 4, maxdepth = 400)
+  tol = 1e-12, computeMode = 0, nThreads = 4, maxdepth = 400,
+  vec_output = NULL)
 }
 \arguments{
 \item{t}{time}
@@ -38,6 +39,6 @@ bbd_prob(t, a0, b0, lambda1, lambda2, mu2, gamma, A, B, nblocks = 256,
 }
 \description{
 Computes the transition pobabilities of a birth/birth-death process
-using Laplace transform and continued fraction
+using the continued fraction representation of its Laplace transform
 }
 

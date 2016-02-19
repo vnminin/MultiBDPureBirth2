@@ -4,7 +4,7 @@ template <class ParallelizationScheme>
 std::vector<double> bbd_lt_invert_Cpp_impl(double t, const int a0, const int b0, 
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
-    const int A, const int Bp1, const std::vector<int>& vec_output, const int maxdepth, 
+    const int A, const int Bp1, const int maxdepth, 
     const int nblocks, const double tol,
     ParallelizationScheme& scheme) {
   
@@ -17,15 +17,7 @@ std::vector<double> bbd_lt_invert_Cpp_impl(double t, const int a0, const int b0,
 
   std::vector<mytype::ComplexVector> ig;
   std::deque<std::vector<double>> prod_mu2, prod_lambda2, xvec, yvec_minus_s;
-  
-  int res_size;
-  if (vec_output[0] < 0) {
-    res_size = matsize;
-    } else {
-      res_size = vec_output.size()/2;      
-      }
-//  Rcpp::Rcout << "size = " << res_size << std::endl;
-  std::vector<double> res(res_size);
+  std::vector<double> res(matsize);
   
   const size_t size = scheme.private_size();  
   std::vector<mytype::ComplexVector> phi(size), yvec(size), lentz_plus_invBk1dBk(size), inv_Bk1dBk(size),BidBj(size);
@@ -69,16 +61,8 @@ ig.resize(kmax);
   bbd_lt_Cpp(s,a0,b0,lambda1,lambda2,mu2,gamma,A,Bp1,maxdepth,phi[0],prod_mu2,prod_lambda2,
       xvec,yvec_minus_s,yvec[0],lentz_plus_invBk1dBk[0],inv_Bk1dBk[0],BidBj[0],psum0);
   
-  std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(res_size),
-    [&](int ii) {
-      int i;
-      if (vec_output[0] < 0) {
-        i = ii;
-      } else {
-        i = vec_output[ii]*Bp1 + vec_output[ii + res_size];
-//        Rcpp::Rcout << "ii = " << ii << ", i = " << i << std::endl;
-//        Rcpp::Rcout << "row = " << vec_output[ii] << ", col = " << vec_output[ii + res_size] << std::endl;
-      }
+  std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(matsize),
+    [&](int i) {
       Levin levin(tol); // A struct for Levin transform
       double term = 1e16, sdiff = 1e16;
       int k = 1;
@@ -111,7 +95,7 @@ ig.resize(kmax);
         }
       }
       
-      res[ii] = sk1*exp(AA/2);
+      res[i] = sk1*exp(AA/2);
     });
     
 //  auto end = std::chrono::steady_clock::now();  
@@ -127,37 +111,37 @@ ig.resize(kmax);
 std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0, 
     const std::vector<double>& lambda1, const std::vector<double>& lambda2, const std::vector<double>& mu2, 
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
-    const int A, const int Bp1, const std::vector<int>& vec_output, const int nblocks, const double tol, const int computeMode, 
+    const int A, const int Bp1, const int nblocks, const double tol, const int computeMode, 
     const int nThreads, const int maxdepth) {
             
     switch(computeMode) {  // Run-time selection on compute_mode    
       case 1: {
         loops::C11Threads loopC11Threads(nThreads, nblocks);
-        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, vec_output,
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                     maxdepth, nblocks, tol, loopC11Threads);         
       }
             
       case 2: {
         loops::C11ThreadPool loopC11ThreadPool(nThreads, nblocks);
-        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, vec_output,
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                     maxdepth, nblocks, tol, loopC11ThreadPool);      
       }
       
       case 3: {
         loops::C11Async loopC11Async(nThreads, nblocks);
-        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, vec_output,
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                     maxdepth, nblocks, tol, loopC11Async);      
       }
       
 //      case 4: {        
 //        loops::RcppThreads loopRcppThreads(nThreads, nblocks);
-//        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, vec_output,
+//        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
 //                    maxdepth, nblocks, tol, loopRcppThreads);      
 //      }
         
       default: {
         loops::STL loopSTL; 
-        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1, vec_output,
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                     maxdepth, nblocks, tol, loopSTL);        
       }                   
     }    
