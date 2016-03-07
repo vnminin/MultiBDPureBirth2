@@ -1,4 +1,4 @@
-# MultiBD
+MultiBD
 ======
 
 `MultiBD` is an `R` package for direct likelihood-based inference of multivariate birth-death processes. 
