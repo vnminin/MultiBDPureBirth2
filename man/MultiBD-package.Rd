@@ -18,7 +18,7 @@ License: \tab GPL (>= 2)\cr
 }
 }
 \author{
-Lam Si Tung Ho, Forrest W. Crawford, Marc A. Suchard
+Lam Si Tung Ho, Forrest W. Crawford, Marc A. Suchard, Jason Xu, Vladimir N. Minin
 
 Maintainer: Lam Si Tung Ho <lamho86@gmail.com>
 }
