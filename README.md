@@ -26,6 +26,18 @@ execute_short_example() # TODO
 
 1. **NAME**
 
+## License
+`MultiBD` is licensed under Apache License 2.0
+
+## Development status
+
+[![Build Status](https://travis-ci.org/msuchard/MultiBD.svg?branch=master)](https://travis-ci.org/msuchard/MultiBD)
+
+Beta
+
+## Acknowledgements
+- This project is supported in part through the National Science Foundation grant DMS 1264153 and National Institutes of Health grant R01 AI107034.
+
 ## References
 
 1. Ho LST, Xu J, Crawford FW, Minin VN, Suchard MA.
