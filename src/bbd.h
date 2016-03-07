@@ -3,7 +3,22 @@
 #include <future>
 #include <iostream>
 #include "boost/iterator/counting_iterator.hpp"
-#include "ThreadPool.h"
+
+#include "tbb/parallel_for.h"
+
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+  #define USE_C11_THREADS
+#else
+  #undef USE_C11_THREADS
+#endif
+
+#undef USE_C11_THREADS 
+
+#ifdef USE_C11_THREADS
+  #include "ThreadPool.h"
+#endif 
+
+
 //#include "complexvec.h"
 //#include "RcppParallel.h"
 
@@ -196,7 +211,9 @@ namespace loops {
       size_t nThreads;
       int chunkSize;
     }; // AbstractC11Thread
-    
+
+#ifdef USE_C11_THREADS    
+        
     struct C11Threads : public AbstractC11Thread {
     	
     	//using AbstractC11Thread::AbstractC11Thread; // inherit constructor
@@ -279,7 +296,6 @@ namespace loops {
 		}         
     }; // C11Async
     
-    
     struct C11ThreadPool : public AbstractC11Thread {
     
     C11ThreadPool(int t, int w) : AbstractC11Thread(t,w), pool(t) {}
@@ -315,6 +331,8 @@ namespace loops {
       return function;
 		  }
     }; // C11ThreadPool
+    
+#endif // USE_C11_THREADS     
     
  //   mutex;
 //    ostream stream;
