@@ -38,6 +38,9 @@ install:
   - Rscript -e "if (!require('rmarkdown')) install.packages('rmarkdown')"
   - Rscript -e "if (!require('knitr')) install.packages('knitr')"
   - Rscript -e "if (!require('drat')) install.packages('drat')" 
+  - Rscript -e "if (!require('RcppParallel')) install.packages('RcppParallel')"
+  - Rscript -e "if (!require('BH')) install.packages('BH')"
+  - Rscript -e "if (!require('testthat')) install.packages('testthat')"  
 
 before_script:
   - export PKG_NAME=$(Rscript -e 'cat(paste0(devtools::as.package(".")$package))')
