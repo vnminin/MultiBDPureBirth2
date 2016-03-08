@@ -8,6 +8,6 @@
 #' 
 #' @docType package
 #' @name MultiBD
-#' @import Rcpp RcppParallel
+#' @import Rcpp RcppParallel BH
 #' @useDynLib MultiBD
 NULL

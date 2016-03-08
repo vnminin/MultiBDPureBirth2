@@ -2,6 +2,7 @@
 
 export(bbd_prob)
 export(dbd_prob)
+import(BH)
 import(Rcpp)
 import(RcppParallel)
 useDynLib(MultiBD)
