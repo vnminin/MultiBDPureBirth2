@@ -42,7 +42,9 @@ install:
   - Rscript -e "if (!require('RcppParallel')) install.packages('RcppParallel')"
   - Rscript -e "if (!require('BH')) install.packages('BH')"
   - Rscript -e "if (!require('testthat')) install.packages('testthat')"  
-
+  - Rscript -e "if (!require('matrixStats')) install.packages('matrixStats')"  
+  - Rscript -e "if (!require('plotrix')) install.packages('plotrix')" 
+  
 before_script:
   - export PKG_NAME=$(Rscript -e 'cat(paste0(devtools::as.package(".")$package))')
   - export PKG_TARBALL=$(Rscript -e 'pkg <- devtools::as.package("."); cat(paste0(pkg$package,"_",pkg$version,".tar.gz"))')
