@@ -3,6 +3,7 @@
 #include <future>
 #include <iostream>
 #include "boost/iterator/counting_iterator.hpp"
+#include "tbb/task_group.h"
 
 #include "tbb/parallel_for.h"
 
@@ -212,6 +213,46 @@ namespace loops {
       int chunkSize;
     }; // AbstractC11Thread
 
+    struct TbbThreads : public AbstractC11Thread {
+      
+      TbbThreads(int t, int w) : AbstractC11Thread(t, w) { }
+      
+      template <class InputIt, class UnaryFunction>
+      inline UnaryFunction for_each(InputIt begin, InputIt end, UnaryFunction function) {
+        const int minSize = 0;
+        
+        if (nThreads > 1 && std::distance(begin, end) >= minSize) {	
+          
+          tbb::task_group workers;
+          
+          size_t chunkSize = this->chunkSize;
+          
+           size_t start = 0;
+          for (int i = 0; i < nThreads - 1; ++i, start += chunkSize) {
+            
+            workers.run([begin, end, start, chunkSize, function]() {
+              std::for_each(begin + start, begin + start + chunkSize, function);
+            });
+          }
+          
+          auto rtn = std::for_each(begin + start, end, function);
+          
+          workers.wait();
+          
+          return rtn;
+        } else {				
+          return std::for_each(begin, end, function);
+        }            
+        
+        
+        
+        
+        
+        return function;
+      }
+      
+    };
+    
 #ifdef USE_C11_THREADS    
         
     struct C11Threads : public AbstractC11Thread {

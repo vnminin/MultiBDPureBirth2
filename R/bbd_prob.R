@@ -20,7 +20,7 @@
 #' @param computeMode computation mode
 #' @param nThreads number of threads
 #' @param maxdepth maximum number of iterations for Lentz algorithm
-
+#' @export
 bbd_prob <- function(t, a0, b0, lambda1, lambda2, mu2, gamma, A, B,
                      nblocks=256, tol=1e-12, computeMode=0, nThreads=4,
                      maxdepth=400) {

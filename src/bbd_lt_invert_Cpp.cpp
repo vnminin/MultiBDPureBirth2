@@ -116,7 +116,14 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
             
     switch(computeMode) {  // Run-time selection on compute_mode    
     
+      case 4: {
+        loops::TbbThreads loopTbbThreads(nThreads, nblocks);
+        return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
+                                      maxdepth, nblocks, tol, loopTbbThreads);
+      }
+    
 #ifdef USE_C11_THREADS    
+    
       case 1: {
         loops::C11Threads loopC11Threads(nThreads, nblocks);
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
