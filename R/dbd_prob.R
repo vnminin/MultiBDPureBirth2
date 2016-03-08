@@ -20,6 +20,8 @@
 #' @param computeMode computation mode
 #' @param nThreads number of threads
 #' @param maxdepth maximum number of iterations for Lentz algorithm
+#' @return a matrix of the transition probabilities
+#' @references Ho LST et al. 2015. "Birth(death)/birth-death processes and their computable transition probabilities with statistical applications". In review.
 #' @export
 dbd_prob <-function(t, a0, b0, mu1, lambda2, mu2, gamma, a=0, B,
                     nblocks=256, tol=1e-12, computeMode=0, nThreads=4,
