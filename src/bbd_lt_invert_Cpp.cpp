@@ -117,6 +117,7 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
     switch(computeMode) {  // Run-time selection on compute_mode    
     
       case 4: {
+        // std::cerr << "TbbThreads" << std::endl;
         loops::TbbThreads loopTbbThreads(nThreads, nblocks);
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                                       maxdepth, nblocks, tol, loopTbbThreads);
@@ -125,18 +126,21 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
 #ifdef USE_C11_THREADS    
     
       case 1: {
+        // std::cerr << "C11Threads" << std::endl;
         loops::C11Threads loopC11Threads(nThreads, nblocks);
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                     maxdepth, nblocks, tol, loopC11Threads);         
       }
            
       case 2: {
+        // std::cerr << "C11ThreadPool" << std::endl;        
         loops::C11ThreadPool loopC11ThreadPool(nThreads, nblocks);
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                     maxdepth, nblocks, tol, loopC11ThreadPool);      
       }
       
       case 3: {
+        // std::cerr << "C11Async" << std::endl;        
         loops::C11Async loopC11Async(nThreads, nblocks);
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                     maxdepth, nblocks, tol, loopC11Async);      
@@ -150,6 +154,7 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
 //      }
         
       default: {
+        // std::cerr << "STL" << std::endl;
         loops::STL loopSTL; 
         return bbd_lt_invert_Cpp_impl(t, a0, b0, lambda1, lambda2, mu2, gamma, x, y, A, Bp1,
                     maxdepth, nblocks, tol, loopSTL);        

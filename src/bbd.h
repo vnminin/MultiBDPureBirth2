@@ -5,16 +5,12 @@
 #include "boost/iterator/counting_iterator.hpp"
 #include "tbb/task_group.h"
 
-#include "tbb/parallel_for.h"
-
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
   #define USE_C11_THREADS
 #else
   #undef USE_C11_THREADS
 #endif
-
-#undef USE_C11_THREADS 
-
+ 
 #ifdef USE_C11_THREADS
   #include "ThreadPool.h"
 #endif 
