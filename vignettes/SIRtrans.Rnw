@@ -38,7 +38,7 @@
 
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+
 %\VignetteIndexEntry{bdsem_tutorial}
 %\VignetteEngine{knitr::knitr}
 <<setup, include=FALSE, cache=FALSE>>=
@@ -82,7 +82,7 @@ Below, I'll walk through some example code that implements the above formula. I'
 
 First, we have the relatively simple ODE solutions, and code to evaluate them over a grid of arguments (naively with nested for loops) and functions to take the Fourier transforms of these grids, yielding transition probabilities.
 
-<<ODE>>=
+<<ODE, cache=TRUE>>=
 library(matrixStats)
 # solutions to phi1 and phi2, the generating function ODES
 # phi1 is generating function starting with 1 suscep, phi2 is starting with 1 infected
