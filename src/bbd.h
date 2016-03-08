@@ -5,10 +5,14 @@
 #include "boost/iterator/counting_iterator.hpp"
 #include "tbb/task_group.h"
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
-  #define USE_C11_THREADS
-#else
+#define GCC_VERSION (__GNUC__ * 10000 \
+             + __GNUC_MINOR__ * 100   \
+             + __GNUC_PATCHLEVEL__)                            \
+             
+#if GCC_VERSION == 40603
   #undef USE_C11_THREADS
+#else         
+  #define USE_C11_THREADS
 #endif
  
 #ifdef USE_C11_THREADS
