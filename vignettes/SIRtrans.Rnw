@@ -38,12 +38,13 @@
 
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 %\VignetteIndexEntry{bdsem_tutorial}
 %\VignetteEngine{knitr::knitr}
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 # set global chunk options
-opts_chunk$set(fig.path='figure/minimal-', fig.align='center', fig.show='hold')
+opts_chunk$set(fig.path='figure/minimal-', fig.align='center', fig.show='hold', cache=TRUE)
 options(formatR.arrow=TRUE,width=90,tidy=FALSE)
 @
 

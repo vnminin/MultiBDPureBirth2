@@ -12,13 +12,18 @@ Maintainer: Lam S.T. Ho <lamho86@gmail.com>
 Description: A package for exact inference of multivariate birth-death
     processes.
 License: Apache License 2.0
-Depends:
+Depends: 
     R (>= 3.1.0)
-Imports:
+Imports: 
     Rcpp (>= 0.11.2),
     BH,
     RcppParallel
 LinkingTo: Rcpp, BH, RcppParallel
-Suggests:
-    testthat
-RoxygenNote: 5.0.0
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown,
+    matrixStats,
+    plotrix
+RoxygenNote: 5.0.1
+VignetteBuilder: knitr
