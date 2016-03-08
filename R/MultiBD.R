@@ -1,10 +1,9 @@
-#' MultiBD: Cyclic coordinate descent for logistic, Poisson and survival analysis
-#'
-#' The MultiBD package incorporates cyclic coordinate descent and
-#' majorization-minimization approaches to fit a variety of regression models
-#' found in large-scale observational healthcare data.  Implementations focus
-#' on computational optimization and fine-scale parallelization to yield
-#' efficient inference in massive datasets.
+#' Multivariate birth-death processes
+#' 
+#' The MultiBD package computes the transition probabilities 
+#' of several multivariate birth-death processes.
+#' 
+#' @references Ho LST et al. 2015. "Birth(death)/birth-death processes and their computable transition probabilities with statistical applications". In review.
 #' 
 #' @docType package
 #' @name MultiBD
