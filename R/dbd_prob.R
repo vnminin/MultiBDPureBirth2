@@ -21,7 +21,7 @@
 #' @param nThreads number of threads
 #' @param maxdepth maximum number of iterations for Lentz algorithm
 #' @return a matrix of the transition probabilities
-#' @references Ho LST et al. 2015. "Birth(death)/birth-death processes and their computable transition probabilities with statistical applications". In review.
+#' @references Ho LST et al. 2016. "Birth(death)/birth-death processes and their computable transition probabilities with statistical applications". In review.
 #' 
 #' @examples
 #' \dontrun{
@@ -46,7 +46,7 @@
 #'                    drates1, brates2, drates2, trans12,
 #'                    a = data$S[k + 1], B = data$S[k] + data$I[k] - data$S[k + 1],
 #'                    computeMode = 4, nblocks = 80         # Compute using 4 threads
-#'                  )[data$S[k + 1] + 1, data$I[k + 1] + 1]                 # To: S(t_(k+1)), I(t_(k+1))
+#'                  )[1, data$I[k + 1] + 1]                 # To: S(t_(k+1)), I(t_(k+1))
 #'                )
 #'              }))
 #' }

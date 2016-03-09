@@ -66,7 +66,7 @@ loglik_sir <- function(param, data) {
                    drates1, brates2, drates2, trans12,
                    a = data$S[k + 1], B = data$S[k] + data$I[k] - data$S[k + 1],
                    computeMode = 4, nblocks = 80         # Compute using 4 threads
-                 )[data$S[k + 1] + 1, data$I[k + 1] + 1]                 # To: S(t_(k+1)), I(t_(k+1))
+                 )[1, data$I[k + 1] + 1]                 # To: S(t_(k+1)), I(t_(k+1))
                )
              }))
 }

@@ -66,11 +66,11 @@ loglik_sir <- function(param, data) {
                log(
                  bbd_prob(  # Compute the transition probability matrix
                    t  = data$time[k + 1] - data$time[k], # Time increment
-                   a0 = data$R[k], b0 = data$I[k],       # From: S(t_k), I(t_k)
+                   a0 = data$R[k], b0 = data$I[k],       # From: R(t_k), I(t_k)
                    brates1, brates2, drates2, trans21,
                    A = data$R[k + 1], B = data$R[k + 1] + data$I[k] - data$R[k],
                    computeMode = 4, nblocks = 80         # Compute using 4 threads
-                 )[R[k + 1] + 1, data$I[k + 1] + 1]                 # To: R(t_(k+1)), I(t_(k+1))
+                 )[data$R[k + 1] - data$R[k] + 1, data$I[k + 1] + 1]                 # To: R(t_(k+1)), I(t_(k+1))
                )
              }))
 }
