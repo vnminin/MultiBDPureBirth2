@@ -31,8 +31,8 @@ std::vector<double> bbd_lt_invert_Cpp_impl(double t, const int a0, const int b0,
   }
     
   for (int a=0; a<(A-a0+1); ++a) {
-    prod_mu2.push_back(prod_mu2_Cpp(a-a0+1,A-a0,Bp1,mu2));
-    prod_lambda2.push_back(prod_lambda2_Cpp(a-a0+1,A-a0,Bp1,lambda2));
+    prod_mu2.push_back(prod_mu2_Cpp(a+1,A-a0,Bp1,mu2));
+    prod_lambda2.push_back(prod_lambda2_Cpp(a+1,A-a0,Bp1,lambda2));
     std::vector<double> tmpx(Bp1 + maxdepth), tmpy(Bp1 + maxdepth);
     std::copy_n(&x[a*(Bp1 + maxdepth)],Bp1 + maxdepth,tmpx.begin());
     std::copy_n(&y[a*(Bp1 + maxdepth)],Bp1 + maxdepth,tmpy.begin());

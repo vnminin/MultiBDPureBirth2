@@ -36,7 +36,7 @@
 #'   # Set-up SIR model with (R, I)
 #'   
 #'   brates1 <- function(a, b) { 0 }
-#'   brates2 <- function(a, b) { beta  * (N - a - b)  * b }
+#'   brates2 <- function(a, b) { beta  * max(N - a - b, 0)  * b }
 #'   drates2 <- function(a, b) { 0 }
 #'   trans21 <- function(a, b) { alpha * b }
 #'   
@@ -119,8 +119,8 @@ bbd_prob <- function(t, a0, b0, lambda1, lambda2, mu2, gamma, A, B,
   
   res = matrix(bbd_lt_invert_Cpp(t, a0, b0, l1, l2, m2, g, x, y, A, B+1,
                                  nblocks, tol, computeMode, nThreads, maxdepth),
-               nrow=(A-a0+1),byrow=T)
-  
+               nrow=(A-a0+1), byrow=T)
+    
   colnames(res) = 0:B
   rownames(res) = a0:A
   

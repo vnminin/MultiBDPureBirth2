@@ -21,7 +21,7 @@ void bbd_lt_Cpp(const mytype::ComplexNumber s, const int a0, const int b0, const
   std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(Bp1),
     [&](int j) { f[j] = phi[get_phi(0,j,b0,Bp1)];});
     
-  if (a0<A) { // resursive formulae
+  if (a0<A) { // recursive formulae
     std::for_each(boost::make_counting_iterator(0), boost::make_counting_iterator(A-a0),
       [&](int i) {
         for (int j=0; j<Bp1; ++j) {
