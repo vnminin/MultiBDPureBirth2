@@ -1,0 +1,123 @@
+---
+title: "Simple MCMC under SIR"
+author: "Lam ST Ho and Marc A Suchrd"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+We describe how to set-up and run a simple Metropolis-Hastings-based Markov chain Monte Carlo (MCMC) sampler under the susceptible-infectious-removed (SIR) model.
+
+- TODO: Write most of the document
+
+```{r}
+library(MultiBD)
+data(Eyam)
+```
+
+```{r}
+loglik_sir <- function(param, data) {
+  alpha <- exp(param[1]) # Rates must be non-negative
+  beta  <- exp(param[2])
+  
+  # Set-up SIR model
+  drates1 <- function(a, b) { 0 }
+  brates2 <- function(a, b) { 0 }
+  drates2 <- function(a, b) { alpha * b     }
+  trans12 <- function(a, b) { beta  * a * b }
+  
+  sum(sapply(1:(nrow(data) - 1), # Sum across all time steps k
+             function(k) {
+               log(
+                 dbd_prob(  # Compute the transition probability matrix
+                   t  = data$time[k + 1] - data$time[k], # Time increment
+                   a0 = data$S[k], b0 = data$I[k],       # From: S(t_k), I(t_k)                                      
+                   drates1, brates2, drates2, trans12,
+                   a = data$S[k + 1], B = data$S[k] + data$I[k] - data$S[k + 1],
+                   computeMode = 4, nblocks = 80         # Compute using 4 threads
+                 )[1, data$I[k + 1] + 1]                 # To: S(t_(k+1)), I(t_(k+1))
+               )
+             }))
+}
+```
+
+```{r}
+logprior <- function(param) {
+  log_alpha <- param[1]
+  log_beta <- param[2]
+  
+  dnorm(log_alpha, mean = 0, sd = 100, log = TRUE) +
+    dnorm(log_beta, mean = 0, sd = 100, log = TRUE)
+}
+```
+
+```{r}
+source("http://bioconductor.org/biocLite.R")
+biocLite("graph")
+biocLite("Rgraphviz")
+install.packages("MCMCpack")
+```
+
+```{r}
+library(MCMCpack)
+
+alpha0 <- 3.39
+beta0  <- 0.0212
+
+post_sample <- MCMCmetrop1R(fun = function(param) { loglik_sir(param, Eyam) + logprior(param) },
+                            theta.init = log(c(alpha0, beta0)),
+                            mcmc = 10, burnin = 0,
+                            verbose = 1)
+```
+
+
+Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+
+- Never uses retina figures
+- Has a smaller default figure size
+- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
