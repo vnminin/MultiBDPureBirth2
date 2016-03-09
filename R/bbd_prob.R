@@ -20,6 +20,42 @@
 #' @param computeMode computation mode
 #' @param nThreads number of threads
 #' @param maxdepth maximum number of iterations for Lentz algorithm
+#' @return a matrix of the transition probabilities
+#' @references Ho LST et al. 2015. "Birth(death)/birth-death processes and their computable transition probabilities with statistical applications". In review.
+#' @examples
+#' \dontrun{
+#' data(Eyam)
+#' 
+#' # (R, I) in the SIR model forms a birth/birth-death process
+#' 
+#' loglik_sir <- function(param, data) {
+#'   alpha <- exp(param[1]) # Rates must be non-negative
+#'   beta  <- exp(param[2])
+#'   N <- data$S[1] + data$I[1] + data$R[1]
+#'   
+#'   # Set-up SIR model with (R, I)
+#'   
+#'   brates1 <- function(a, b) { 0 }
+#'   brates2 <- function(a, b) { beta  * (N - a - b)  * b }
+#'   drates2 <- function(a, b) { 0     }
+#'   trans21 <- function(a, b) { alpha * b }
+#'   
+#'   sum(sapply(1:(nrow(data) - 1), # Sum across all time steps k
+#'              function(k) {
+#'                log(
+#'                  bbd_prob(  # Compute the transition probability matrix
+#'                    t  = data$time[k + 1] - data$time[k], # Time increment
+#'                    a0 = data$R[k], b0 = data$I[k],       # From: S(t_k), I(t_k)                                      
+#'                    brates1, brates2, drates2, trans21,
+#'                    A = data$R[k + 1], B = data$R[k + 1] + data$I[k] - data$R[k],
+#'                    computeMode = 4, nblocks = 80         # Compute using 4 threads
+#'                  )[R[k + 1] + 1, data$I[k + 1] + 1]                 # To: R(t_(k+1)), I(t_(k+1))
+#'                )
+#'              }))
+#' }
+#' 
+#' loglik_sir(log(c(3.204, 0.019)), Eyam) # Evaluate at mode
+#' }
 #' @export
 bbd_prob <- function(t, a0, b0, lambda1, lambda2, mu2, gamma, A, B,
                      nblocks=256, tol=1e-12, computeMode=0, nThreads=4,
