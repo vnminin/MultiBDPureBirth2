@@ -18,6 +18,7 @@ devtools::install_github("msuchard/MultiBD")
 ## Short example
 
 ```{r}
+library(MultiBD)
 data(Eyam)
 
 loglik_sir <- function(param, data) {
