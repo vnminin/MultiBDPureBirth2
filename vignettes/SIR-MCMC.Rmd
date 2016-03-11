@@ -1,6 +1,6 @@
 ---
 title: "Simple MCMC under SIR"
-author: "Lam ST Ho and Marc A Suchrd"
+author: "Lam ST Ho and Marc A Suchard"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,14 +9,20 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-We describe how to set-up and run a simple Metropolis-Hastings-based Markov chain Monte Carlo (MCMC) sampler under the susceptible-infectious-removed (SIR) model.
-
-- TODO: Write most of the document
+We describe how to set-up and run a simple Metropolis-Hastings-based Markov chain Monte Carlo (MCMC) sampler under the susceptible-infected-removed (SIR) model.
 
 ```{r}
 library(MultiBD)
-data(Eyam)
 ```
+
+This example uses the Eyam data, which consists the population of Susceptible, Infected, and Removed groups at several time points.
+
+```{r}
+data(Eyam)
+Eyam
+```
+
+The log likelihood function is the sum of the log of the transition probabilities between two consecutive observations. Note that, we will use $(\log \alpha, \log \beta)$ as parameters instead of $(\alpha, \beta)$. The rows and columns of the transition probability matrix returned by *dbd_prob()* correspond to possible values of $S$ (from $a$ to $a0$) and $I$ (from $0$ to $B$) respectively.
 
 ```{r}
 loglik_sir <- function(param, data) {
@@ -44,6 +50,8 @@ loglik_sir <- function(param, data) {
 }
 ```
 
+Here, we choose $\mathcal{N}(0, 100^2)$ as the prior for both $\log \alpha$ and $\log \beta$.
+
 ```{r}
 logprior <- function(param) {
   log_alpha <- param[1]
@@ -54,70 +62,56 @@ logprior <- function(param) {
 }
 ```
 
-```{r}
+We will use the random walk Metropolis algorithm implemented in the function *MCMCmetrop1R()* (**MCMCpack** package) to explore the posterior distribution. So, we first need to install the pacakge and its dependencies.
+
+```{r, message=FALSE, warning=FALSE}
 source("http://bioconductor.org/biocLite.R")
 biocLite("graph")
 biocLite("Rgraphviz")
-install.packages("MCMCpack")
+install.packages("MCMCpack", repos = 'http://cran.us.r-project.org')
+library(MCMCpack)
+library(ggplot2)
 ```
+
+The starting point of our Markov chain is the estimated value of $(\alpha, \beta)$ from Raggett (1982).
 
 ```{r}
-library(MCMCpack)
-
 alpha0 <- 3.39
 beta0  <- 0.0212
+```
 
+We discard the first $200$ iterations and keep the next $1000$ iterations of the chain.
+
+
+```{r longMCMCrun, cache=TRUE, cache.lazy=FALSE}
 post_sample <- MCMCmetrop1R(fun = function(param) { loglik_sir(param, Eyam) + logprior(param) },
-                            theta.init = log(c(alpha0, beta0)),
-                            mcmc = 10, burnin = 0,
-                            verbose = 1)
+                           theta.init = log(c(alpha0, beta0)),
+                           mcmc = 1000, burnin = 200)
 ```
 
+The trace plots of both $\log \alpha$ and $\log \beta$ look good.
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
-
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+```{r}
+plot(as.vector(post_sample[,1]), type = "l", xlab = "Iteration", ylab = expression(log(alpha)))
+plot(as.vector(post_sample[,2]), type = "l", xlab = "Iteration", ylab = expression(log(beta)))
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+We can visualize the joint posterior distribution of $\log \alpha$ and $\log \beta$ using **ggplot2** package.
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{r}
+x = as.vector(post_sample[,1])
+y = as.vector(post_sample[,2])
+df <- data.frame(x, y)
+ggplot(df,aes(x=x,y=y)) +
+  stat_density2d(aes(fill=..level..), geom="polygon", h = 0.26) + 
+  scale_fill_gradient(low="grey85", high="grey35", guide = FALSE) +
+  xlab(expression(log(alpha))) +
+  ylab(expression(log(beta)))
 ```
 
-Also a quote using `>`:
+We can also construct the $95\%$ credible interval for $\alpha$ and $\beta$.
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+```{r}
+quantile(exp(post_sample[,1]), probs = c(0.025,0.975))
+quantile(exp(post_sample[,2]), probs = c(0.025,0.975))
+```

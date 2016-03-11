@@ -118,7 +118,7 @@ struct Levin {
         }
         n++;
         val = std::abs(denom[0]) < small ? lastval : numer[0]/denom[0];
-        if (isnan(val)) val = 0;
+        if (std::isnan(val)) val = 0;
         //Rcpp::Rcout << "denom = " << denom[0] << ", numer = " << numer[0] << std::endl;
         lasteps = std::abs(val-lastval);
         if (lasteps <= eps) ++ncv;
