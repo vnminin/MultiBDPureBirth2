@@ -51,7 +51,7 @@ loglik_sir(log(c(3.204, 0.019)), Eyam) # Evaluate at mode
 
 ## Vignettes
 
-1. **NAME**
+1. [SIR model and proposed branching approximation](https://github.com/msuchard/MultiBD/blob/master/inst/doc/SIRtrans.pdf)
 
 ## License
 `MultiBD` is licensed under Apache License 2.0
