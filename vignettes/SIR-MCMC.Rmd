@@ -64,13 +64,21 @@ logprior <- function(param) {
 
 We will use the random walk Metropolis algorithm implemented in the function *MCMCmetrop1R()* (**MCMCpack** package) to explore the posterior distribution. So, we first need to install the package and its dependencies.
 
-```{r, message=FALSE, warning=FALSE}
+```{r loadStuff, message=FALSE, warning=FALSE, echo=TRUE, eval=FALSE}
 source("http://bioconductor.org/biocLite.R")
 biocLite("graph")
 biocLite("Rgraphviz")
 install.packages("MCMCpack", repos = 'http://cran.us.r-project.org')
 library(MCMCpack)
-library(ggplot2)
+```
+
+```{r doLoadStuff, echo=FALSE, eval=TRUE, include=FALSE}
+# Provide manual caching because knitr's caching
+# is not working in my hands
+file <- "cache/post_sample.RData"
+if (!file.exists(file)) {
+<<loadStuff>>
+} 
 ```
 
 The starting point of our Markov chain is the estimated value of $(\alpha, \beta)$ from Raggett (1982).
@@ -82,11 +90,22 @@ beta0  <- 0.0212
 
 We discard the first $200$ iterations and keep the next $1000$ iterations of the chain.
 
-
-```{r longMCMCrun, cache=TRUE, cache.lazy=FALSE}
+```{r longMCMCRun, eval=FALSE}
 post_sample <- MCMCmetrop1R(fun = function(param) { loglik_sir(param, Eyam) + logprior(param) },
                            theta.init = log(c(alpha0, beta0)),
                            mcmc = 1000, burnin = 200)
+```
+
+```{r runLongMCMCRun, echo=FALSE, eval=TRUE}
+# Provide manual caching because knitr's caching 
+# is not working in my hands
+if (file.exists(file)) {
+  load(file)
+} else {
+<<longMCMCRun>>
+    dir.create("cache", showWarnings = FALSE)
+    save(post_sample, file = file)
+}
 ```
 
 The trace plots of both $\log \alpha$ and $\log \beta$ look good.
@@ -98,7 +117,8 @@ plot(as.vector(post_sample[,2]), type = "l", xlab = "Iteration", ylab = expressi
 
 We can visualize the joint posterior distribution of $\log \alpha$ and $\log \beta$ using the **ggplot2** package.
 
-```{r}
+```{r plot, warning=FALSE}
+library(ggplot2)
 x = as.vector(post_sample[,1])
 y = as.vector(post_sample[,2])
 df <- data.frame(x, y)

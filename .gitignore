@@ -6,3 +6,4 @@ src/*.so
 src/*.dll
 vignettes/*.pdf
 vignettes/*.tex
+vignettes/cache
