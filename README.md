@@ -68,5 +68,5 @@ Beta
 ## References
 
 1. Ho LST, Xu J, Crawford FW, Minin VN, Suchard MA.
-[Birth(death)/birth-death processes and their computable transition probabilities with statistical applications](http://arxiv.org).
-*arXiv preprint arXiv*:0000.00000, 2016.
+[Birth(death)/birth-death processes and their computable transition probabilities with statistical applications](https://arxiv.org/abs/1603.03819).
+*arXiv preprint arXiv*:1603.03819, 2016.
