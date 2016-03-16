@@ -15,7 +15,7 @@ We describe how to set-up and run a simple Metropolis-Hastings-based Markov chai
 library(MultiBD)
 ```
 
-This example uses the Eyam data, which consists the population of Susceptible, Infected, and Removed groups at several time points.
+This example uses the Eyam data that consist the population counts of susceptible, infected and removed individuals across several time points.
 
 ```{r}
 data(Eyam)
@@ -50,7 +50,7 @@ loglik_sir <- function(param, data) {
 }
 ```
 
-Here, we choose $\mathcal{N}(0, 100^2)$ as the prior for both $\log \alpha$ and $\log \beta$.
+Here, we choose $\text{Normal}(0, 100^2)$ as the prior for both $\log \alpha$ and $\log \beta$.
 
 ```{r}
 logprior <- function(param) {
@@ -62,7 +62,7 @@ logprior <- function(param) {
 }
 ```
 
-We will use the random walk Metropolis algorithm implemented in the function *MCMCmetrop1R()* (**MCMCpack** package) to explore the posterior distribution. So, we first need to install the pacakge and its dependencies.
+We will use the random walk Metropolis algorithm implemented in the function *MCMCmetrop1R()* (**MCMCpack** package) to explore the posterior distribution. So, we first need to install the package and its dependencies.
 
 ```{r, message=FALSE, warning=FALSE}
 source("http://bioconductor.org/biocLite.R")
@@ -96,20 +96,20 @@ plot(as.vector(post_sample[,1]), type = "l", xlab = "Iteration", ylab = expressi
 plot(as.vector(post_sample[,2]), type = "l", xlab = "Iteration", ylab = expression(log(beta)))
 ```
 
-We can visualize the joint posterior distribution of $\log \alpha$ and $\log \beta$ using **ggplot2** package.
+We can visualize the joint posterior distribution of $\log \alpha$ and $\log \beta$ using the **ggplot2** package.
 
 ```{r}
 x = as.vector(post_sample[,1])
 y = as.vector(post_sample[,2])
 df <- data.frame(x, y)
-ggplot(df,aes(x=x,y=y)) +
-  stat_density2d(aes(fill=..level..), geom="polygon", h = 0.26) + 
-  scale_fill_gradient(low="grey85", high="grey35", guide = FALSE) +
+ggplot(df,aes(x = x,y = y)) +
+  stat_density2d(aes(fill = ..level..), geom = "polygon", h = 0.26) + 
+  scale_fill_gradient(low = "grey85", high = "grey35", guide = FALSE) +
   xlab(expression(log(alpha))) +
   ylab(expression(log(beta)))
 ```
 
-We can also construct the $95\%$ credible interval for $\alpha$ and $\beta$.
+We can also construct the $95\%$ Bayesian credible intervals for $\alpha$ and $\beta$.
 
 ```{r}
 quantile(exp(post_sample[,1]), probs = c(0.025,0.975))
