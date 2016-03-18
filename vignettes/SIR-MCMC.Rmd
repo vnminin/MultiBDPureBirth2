@@ -2,7 +2,7 @@
 title: "Simple MCMC under SIR"
 author: "Lam ST Ho and Marc A Suchard"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Simple_SIR_MCMC}
   %\VignetteEngine{knitr::rmarkdown}
