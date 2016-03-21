@@ -169,6 +169,19 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
     const std::vector<double>& gamma, const std::vector<double>& x, const std::vector<double>& y, 
     const int A, const int Bp1, const int nblocks, const double tol, const int computeMode, 
     const int nThreads, const int maxdepth);
+    
+std::vector<double> SIR_Cpp(const double t, const double alpha, const double beta,
+    const long int S0, const long int I0, const int Ap1, const int Bp1, const int direction, 
+    const int nblocks, const double tol, const int computeMode, const int nThreads);
+    
+std::vector<double> bb_lt_invert_Cpp(double t, const std::vector<double>& lambda1, 
+    const std::vector<double>& lambda2,
+    const int Ap1, const int Bp1, const int direction, const int nblocks, 
+    const double tol, const int computeMode, const int nThreads);
+    
+void bb_lt_Cpp(const mytype::ComplexNumber s, const std::vector<double>& lambda1, 
+    const std::vector<double>& lambda2, const int Ap1, const int Bp1, const int direction,
+    const std::vector<double>& yvec, mytype::ComplexVector& f);
 
 /////////////////
 // Generic loops
