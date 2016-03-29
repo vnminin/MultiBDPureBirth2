@@ -25,7 +25,8 @@
 #' loglik_sir <- function(param, data) {
 #'   alpha <- exp(param[1]) # Rates must be non-negative
 #'   beta  <- exp(param[2])
-#'   
+#'   if(length(unique(rowSums(data[, c("S", "I", "R")])))> 1) stop ("Please make sure the data conforms with a closed population")
+#'
 #'   sum(sapply(1:(nrow(data) - 1), # Sum across all time steps k
 #'              function(k) {
 #'                log(
