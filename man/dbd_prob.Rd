@@ -83,7 +83,10 @@ brates2 <- function(a, b) { lam * (a + b) }
 drates2 <- function(a, b) { mu * b }
 trans12 <- function(a, b) { v * a }
 
-p <- dbd_prob(t = 1, a0 = 10, b0 = 0, drates1, brates2, drates2, trans12, a = 0, B = 50) # transition probabilities
+# Get transition probabilities
+p <- dbd_prob(t = 1, a0 = 10, b0 = 0, 
+              drates1, brates2, drates2, trans12, 
+              a = 0, B = 50) 
 
 }
 \references{

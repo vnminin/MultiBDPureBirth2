@@ -70,7 +70,8 @@ loglik_sir <- function(param, data) {
                    brates1, brates2, drates2, trans21,
                    A = data$R[k + 1], B = data$R[k + 1] + data$I[k] - data$R[k],
                    computeMode = 4, nblocks = 80         # Compute using 4 threads
-                 )[data$R[k + 1] - data$R[k] + 1, data$I[k + 1] + 1]                 # To: R(t_(k+1)), I(t_(k+1))
+                 )[data$R[k + 1] - data$R[k] + 1, 
+                   data$I[k + 1] + 1]                    # To: R(t_(k+1)), I(t_(k+1))
                )
              }))
 }
