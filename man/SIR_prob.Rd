@@ -2,7 +2,7 @@
 % Please edit documentation in R/SIR_prob.R
 \name{SIR_prob}
 \alias{SIR_prob}
-\title{Transition probabilities of a birth/birth-death process}
+\title{Transition probabilities of an SIR process}
 \usage{
 SIR_prob(t, alpha, beta, S0, I0, nSI, nIR, direction = c("Forward",
   "Backward"), nblocks = 20, tol = 1e-12, computeMode = 0, nThreads = 4)
@@ -45,7 +45,8 @@ data(Eyam)
 loglik_sir <- function(param, data) {
   alpha <- exp(param[1]) # Rates must be non-negative
   beta  <- exp(param[2])
-  
+  if(length(unique(rowSums(data[, c("S", "I", "R")])))> 1) stop ("Please make sure the data conform with a closed population")
+
   sum(sapply(1:(nrow(data) - 1), # Sum across all time steps k
              function(k) {
                log(
