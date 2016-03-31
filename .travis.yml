@@ -42,7 +42,9 @@ install:
   - Rscript -e "if (!require('RcppParallel')) install.packages('RcppParallel')"
   - Rscript -e "if (!require('BH')) install.packages('BH')"
   - Rscript -e "if (!require('testthat')) install.packages('testthat')"  
-  - Rscript -e "if (!require('matrixStats')) install.packages('matrixStats')"  
+  - Rscript -e "if (!require('matrixStats')) install.packages('matrixStats')"
+  - Rscript -e "if (!require('ggplot2')) install.packages('ggplot2')"
+  - Rscript -e "if (!require('MCMCpack')) install.packages('MCMCpack')"  
   - Rscript -e "if (!require('plotrix')) install.packages('plotrix')" 
   
 before_script:
