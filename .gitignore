@@ -6,4 +6,8 @@ src/*.so
 src/*.dll
 vignettes/*.pdf
 vignettes/*.tex
+vignettes/*.log
+vignettes/*.md
 vignettes/cache
+vignettes/figure
+vignettes/\.build\.timestamp
