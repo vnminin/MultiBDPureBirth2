@@ -3,3 +3,8 @@
 .travis.yml
 vignettes/*.pdf
 vignettes/*.tex
+vignettes/SIR-MCMC.log
+vignettes/out.log
+vignettes/\.build\.timestamp
+vignettes/cache
+vignettes/figure
