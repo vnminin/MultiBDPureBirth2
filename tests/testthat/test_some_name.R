@@ -3,6 +3,8 @@ library(testthat)
 test_that("Sum of conditional probabilities", {
   tolerance = 1E-8
   
+  set.seed(666) # Tests should not be stochastic
+  
   a0 = 100
   b0 = 0
   A = 0
