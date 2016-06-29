@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .travis.yml
+cran-comments.md
 vignettes/*.pdf
 vignettes/*.tex
 vignettes/SIR-MCMC.log
