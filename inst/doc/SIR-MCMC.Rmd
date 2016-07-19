@@ -75,7 +75,7 @@ library(MCMCpack)
 ```{r doLoadStuff, echo=FALSE, eval=TRUE, include=FALSE}
 # Provide manual caching because knitr's caching
 # is not working in my hands
-file <- "cache/post_sample.RData"
+file <- system.file("vignetteCache", "post_sample.RData", package="MultiBD")
 if (!file.exists(file)) {
 <<loadStuff>>
 } 
@@ -103,8 +103,8 @@ if (file.exists(file)) {
   load(file)
 } else {
 <<longMCMCRun>>
-    dir.create("cache", showWarnings = FALSE)
-    save(post_sample, file = file)
+    # dir.create("cache", showWarnings = FALSE)
+    save(post_sample, file = "../inst/vignetteCache/post_sample.RData")
 }
 ```
 
