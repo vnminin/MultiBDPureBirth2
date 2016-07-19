@@ -6,7 +6,7 @@
 \alias{MultiBD-package}
 \title{Multivariate birth-death processes}
 \description{
-The MultiBD package computes the transition probabilities 
+The MultiBD package computes the transition probabilities
 of several multivariate birth-death processes.
 }
 \references{
