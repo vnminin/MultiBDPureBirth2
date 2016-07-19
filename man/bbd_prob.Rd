@@ -64,9 +64,9 @@ loglik_sir <- function(param, data) {
   sum(sapply(1:(nrow(data) - 1), # Sum across all time steps k
              function(k) {
                log(
-                 bbd_prob(  # Compute the transition probability matrix
+                 bbd_prob( # Compute the transition probability matrix
                    t  = data$time[k + 1] - data$time[k], # Time increment
-                   a0 = data$R[k], b0 = data$I[k],       # From: R(t_k), I(t_k)                                      
+                   a0 = data$R[k], b0 = data$I[k],       # From: R(t_k), I(t_k)
                    brates1, brates2, drates2, trans21,
                    A = data$R[k + 1], B = data$R[k + 1] + data$I[k] - data$R[k],
                    computeMode = 4, nblocks = 80         # Compute using 4 threads
