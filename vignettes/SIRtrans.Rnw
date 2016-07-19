@@ -336,7 +336,9 @@ if (file.exists(file)) {
   load(file)  
 } else {
 <<GenFunc>>
-    save(tpm1, tpm2, t1, t2, file = "../inst/vignetteCache/gen_func.RData")
+    save(tpm1, tpm2, t1, t2, 
+         file = "../inst/vignetteCache/gen_func.RData",
+         compression_level = 9)
 } 
 @
 
@@ -528,8 +530,8 @@ for(i in 1:length(tList)){
   tpm3 <- tpm.MC[1:(a0+1), ]
 
   #store subset of matrices containing about 99 percent of the mass:
-  tpmArray[i,1,,] <- tpm2[1:(a0+1),1:240]
-  tpmArray[i,2,,] <- tpm3[1:(a0+1),1:240]
+  tpmArray[i,1,,] <- tpm2[1:(a0+1),1:60]
+  tpmArray[i,2,,] <- tpm3[1:(a0+1),1:60]
 }
 @
 
@@ -541,18 +543,20 @@ if (file.exists(file)) {
   load(file)  
 } else {
 <<LargerPopulation>>
-    save(tpmArray, time1, file = "../inst/vignetteCache/larger_pop.RData")
+    save(tpmArray, time1, 
+         file = "../inst/vignetteCache/larger_pop.RData",
+         compression_level = 9)
 } 
 @
 
 
 The below plots are for $t=.5, 1$ respectively:
 <<>>=
-par(mfrow=(c(2,1)))
+par(mfrow = c(2,1))
 image(tpmArray[1,1,,1:60], main = "Continued Fraction approximation, t=.5")
 image(tpmArray[1,2,,1:60], main = "Monte Carlo estimates")
 
-par(mfrow=(c(2,1)))
+par(mfrow = c(2,1))
 image(tpmArray[2,1,,1:60], main = "Continued Fraction approximation, t=1")
 image(tpmArray[2,2,,1:60], main = "Monte Carlo estimates")
 @
