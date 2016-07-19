@@ -7,7 +7,6 @@
 #'
 #' @docType package
 #' @name MultiBD
-#' @import BH
 #' @importFrom RcppParallel RcppParallelLibs
 #' @importFrom Rcpp evalCpp
 #' @useDynLib MultiBD

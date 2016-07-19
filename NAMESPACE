@@ -3,7 +3,6 @@
 export(SIR_prob)
 export(bbd_prob)
 export(dbd_prob)
-import(BH)
 importFrom(Rcpp,evalCpp)
 importFrom(RcppParallel,RcppParallelLibs)
 useDynLib(MultiBD)

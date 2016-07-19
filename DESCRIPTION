@@ -2,7 +2,7 @@ Package: MultiBD
 Type: Package
 Title: Multivariate Birth-Death Processes
 Version: 0.2
-Date: 2016-03-07
+Date: 2016-07-19
 Author: Lam S.T. Ho [aut, cre],
     Marc A. Suchard [aut],
     Forrest W. Crawford [aut],
@@ -11,15 +11,14 @@ Author: Lam S.T. Ho [aut, cre],
 Maintainer: Marc A. Suchard <msuchard@ucla.edu>
 Description: Computationally efficient functions to provide direct likelihood-based
     inference for partially-observed multivariate birth-death processes.  Such processes
-    range from a simple Yule model to the complex susceptible-infectious-removed model 
-    in disease dynamics.  Efficient likelihood evaluation facilitates maximum likelihood 
+    range from a simple Yule model to the complex susceptible-infectious-removed model
+    in disease dynamics.  Efficient likelihood evaluation facilitates maximum likelihood
     estimation and Bayesian inference.
 License: Apache License 2.0
 Depends:
     R (>= 3.1.0)
 Imports:
     Rcpp (>= 0.11.2),
-    BH,
     RcppParallel
 LinkingTo: Rcpp, BH, RcppParallel
 Suggests:
