@@ -1,16 +1,19 @@
 MultiBD
 ======
 
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/MultiBD)](http://cran.r-project.org/package=MultiBD)
+
+
 `MultiBD` is an `R` package for direct likelihood-based inference of multivariate birth-death processes. 
 
 ## Installation
 
-1. Install (if necessary) package dependencies and helpers:
+1. Install `CRAN` release version:
 ```{r}
-install.packages(c("Rcpp", "RcppParallel", "BH", "devtools"))
+install.packages("MultiBD")
 ```
 
-2. Install `MultiBD` from `github` (until package becomes available via `CRAN`):
+2. Install the bleeding-edge version of `MultiBD` from `github`:
 ```{r}
 devtools::install_github("msuchard/MultiBD")
 ```
