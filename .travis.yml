@@ -12,12 +12,12 @@ addons:
     - r-recommended
     - texinfo
     - qpdf
-    
+
 cache:
   directories:
     - ~/Rlib     # R libraries
-    - ~/texlive  # LaTex 
-    - ~/bin      # pandoc 
+    - ~/texlive  # LaTex
+    - ~/bin      # pandoc
 
 # install dependencies
 install:
@@ -37,18 +37,18 @@ install:
   - Rscript -e "if (!require('covr')) devtools::install_github('jimhester/covr')"
   - Rscript -e "if (!require('rmarkdown')) install.packages('rmarkdown')"
   - Rscript -e "if (!require('knitr')) install.packages('knitr')"
-  - Rscript -e "if (!require('drat')) install.packages('drat')" 
-  - Rscript -e "if (!require('Rcpp')) install.packages('Rcpp')"  
+  - Rscript -e "if (!require('drat')) install.packages('drat')"
+  - Rscript -e "if (!require('Rcpp')) install.packages('Rcpp')"
   - Rscript -e "if (!require('RcppParallel')) install.packages('RcppParallel')"
   - Rscript -e "if (!require('BH')) install.packages('BH')"
-  - Rscript -e "if (!require('testthat')) install.packages('testthat')"  
+  - Rscript -e "if (!require('testthat')) install.packages('testthat')"
   - Rscript -e "if (!require('matrixStats')) install.packages('matrixStats')"
   - Rscript -e "if (!require('ggplot2')) install.packages('ggplot2')"
   - Rscript -e "if (!require('graph')) { source('http://bioconductor.org/biocLite.R'); biocLite('graph') }"
-  - Rscript -e "if (!require('Rgraphviz')) { source('http://bioconductor.org/biocLite.R'); biocLite('Rgraphviz') }"  
-  - Rscript -e "if (!require('MCMCpack')) install.packages('MCMCpack')"  
-  - Rscript -e "if (!require('plotrix')) install.packages('plotrix')" 
-  
+  - Rscript -e "if (!require('Rgraphviz')) { source('http://bioconductor.org/biocLite.R'); biocLite('Rgraphviz') }"
+  - Rscript -e "if (!require('MCMCpack')) install.packages('MCMCpack')"
+  - Rscript -e "if (!require('plotrix')) install.packages('plotrix')"
+
 before_script:
   - export PKG_NAME=$(Rscript -e 'cat(paste0(devtools::as.package(".")$package))')
   - export PKG_TARBALL=$(Rscript -e 'pkg <- devtools::as.package("."); cat(paste0(pkg$package,"_",pkg$version,".tar.gz"))')
@@ -57,13 +57,13 @@ before_script:
 script:
   - R CMD build . --no-build-vignettes
   - _R_CHECK_CRAN_INCOMING_=FALSE R CMD check "${PKG_TARBALL}" --as-cran --no-build-vignettes
-  - cat ${PKG_NAME}.Rcheck/00install.out # Print out install / compile log 
+  - cat ${PKG_NAME}.Rcheck/00install.out # Print out install / compile log
 
 after_success:
-  - Rscript -e 'covr::codecov()'
-  # Rebuild drat repo   
+  # - Rscript -e 'covr::codecov()'
+  # Rebuild drat repo
 #  - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash deploy.sh
-  
+
 notifications:
   recipients:
     - msuchard@gmail.com
@@ -71,9 +71,9 @@ notifications:
   email:
     on_success: change
     on_failure: change
-    
+
 env:
   global:
-#     - R_BUILD_ARGS=" " 
-#     - R_CHECK_ARGS="--as-cran"  
+#     - R_BUILD_ARGS=" "
+#     - R_CHECK_ARGS="--as-cran"
 #    secure: clBIB1ryoj28wttYw5YQClr4wTNw/s2rqs0OzjnvdnD3NAONxMz+8CXR7cmHow5nQ211J/zKP/+wnd8x0oCId2cJT2a8Kp99bjAMs6q0hvjAUBxmYQgQAJ3VQ8PNTXB4WglDimXPSJfYdExo3mqbQozWnqx9pu7Z+029/M7+h+M=
