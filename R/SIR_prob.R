@@ -73,8 +73,6 @@ SIR_prob <- function(t, alpha, beta, S0, I0, nSI, nIR, direction = c("Forward","
                        Lmax, computeMode, nThreads),
                nrow = nSI + 1, byrow = T)
 
-  print(paste("L =",Lmax))
-
   rownames(res) = 0:nSI # Infection events
   colnames(res) = 0:nIR # Removal events
 

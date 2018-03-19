@@ -21,4 +21,3 @@ individuals during the Eyam plague from June 18 to October 20, 1666.
 \references{
 Ragget G (1982). A stochastic model of the Eyam plague. Journal of Applied Statistics 9, 212-226.
 }
-

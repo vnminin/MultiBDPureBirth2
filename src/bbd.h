@@ -183,6 +183,21 @@ void bb_lt_Cpp(const mytype::ComplexNumber s, const std::vector<double>& lambda1
     const std::vector<double>& lambda2, const int Ap1, const int Bp1, const int direction,
     const std::vector<double>& yvec, mytype::ComplexVector& f);
 
+std::vector<double> SEIR_Cpp(const double t, const double alpha, const double beta, const double kappa,
+                             const long int S0, const long int E0, const long int I0,
+                             const int Ap1, const int Bp1, const int Cp1, const int direction,
+                             const int nblocks, const double tol, int& Lmax, const int computeMode, const int nThreads);
+
+std::vector<double> tb_lt_invert_Cpp(double t, const std::vector<double>& lambda1,
+                                     const std::vector<double>& lambda2, const std::vector<double>& lambda3,
+                                     const int Ap1, const int Bp1, const int Cp1, const int direction, const int nblocks,
+                                     const double tol, int& Lmax, const int computeMode, const int nThreads);
+
+void tb_lt_Cpp(const mytype::ComplexNumber s, const std::vector<double>& lambda1,
+               const std::vector<double>& lambda2, const std::vector<double>& lambda3,
+               const int Ap1, const int Bp1, const int Cp1, const int direction,
+               const std::vector<double>& yvec, mytype::ComplexVector& f);
+
 /////////////////
 // Generic loops
 /////////////////

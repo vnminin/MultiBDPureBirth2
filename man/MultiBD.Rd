@@ -12,4 +12,3 @@ of several multivariate birth-death processes.
 \references{
 Ho LST et al. 2016. "Birth(death)/birth-death processes and their computable transition probabilities with statistical applications". In review.
 }
-

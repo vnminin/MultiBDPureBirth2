@@ -1,8 +1,8 @@
 Package: MultiBD
 Type: Package
 Title: Multivariate Birth-Death Processes
-Version: 0.2.0
-Date: 2016-07-19
+Version: 0.2.1
+Date: 2018-03-19
 Author: Lam S.T. Ho [aut, cre],
     Marc A. Suchard [aut],
     Forrest W. Crawford [aut],
@@ -29,5 +29,5 @@ Suggests:
     ggplot2,
     matrixStats,
     plotrix
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 VignetteBuilder: knitr

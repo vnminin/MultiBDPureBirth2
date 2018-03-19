@@ -92,4 +92,3 @@ p <- dbd_prob(t = 1, a0 = 10, b0 = 0,
 \references{
 Ho LST et al. 2016. "Birth(death)/birth-death processes and their computable transition probabilities with statistical applications". In review.
 }
-

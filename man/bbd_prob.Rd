@@ -82,4 +82,3 @@ loglik_sir(log(c(3.204, 0.019)), Eyam) # Evaluate at mode
 \references{
 Ho LST et al. 2015. "Birth(death)/birth-death processes and their computable transition probabilities with statistical applications". In review.
 }
-
