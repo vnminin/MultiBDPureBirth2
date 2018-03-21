@@ -44,7 +44,7 @@ using the bivariate birth process representation
 }
 \note{
 The infection rate and the removal rate of a general SIR model
-are \code{beta*S^{powS}*I^{powI_inf}} and \code{alpha*I^{powI_rem}} respectively.
+are \eqn{\beta*S^{powS}*I^{powI_inf}} and \eqn{\alpha*I^{powI_rem}} respectively.
 The parameter \code{power} is a list of \code{powS, powI_inf, powI_rem}.
 Their default values are \code{powS = powI_inf = pwoI_rem = 1}, which correspond to the classic SIR model.
 }
