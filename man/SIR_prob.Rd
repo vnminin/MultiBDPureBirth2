@@ -5,7 +5,8 @@
 \title{Transition probabilities of an SIR process}
 \usage{
 SIR_prob(t, alpha, beta, S0, I0, nSI, nIR, direction = c("Forward",
-  "Backward"), nblocks = 20, tol = 1e-12, computeMode = 0, nThreads = 4)
+  "Backward"), power = NULL, nblocks = 20, tol = 1e-12, computeMode = 0,
+  nThreads = 4)
 }
 \arguments{
 \item{t}{time}
@@ -24,6 +25,8 @@ SIR_prob(t, alpha, beta, S0, I0, nSI, nIR, direction = c("Forward",
 
 \item{direction}{direction of the transition probabilities (either \code{Forward} or \code{Backward})}
 
+\item{power}{the power of the general SIR model (see Note for more details)}
+
 \item{nblocks}{number of blocks}
 
 \item{tol}{tolerance}
@@ -38,6 +41,12 @@ a matrix of the transition probabilities
 \description{
 Computes the transition pobabilities of an SIR process
 using the bivariate birth process representation
+}
+\note{
+The infection rate and the removal rate of a general SIR model
+are \code{beta*S^{powS}*I^{powI_inf}} and \code{alpha*I^{powI_rem}} respectively.
+The parameter \code{power} is a list of \code{powS, powI_inf, powI_rem}.
+Their default values are \code{powS = powI_inf = pwoI_rem = 1}, which correspond to the classic SIR model.
 }
 \examples{
 data(Eyam)

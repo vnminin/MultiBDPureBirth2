@@ -172,6 +172,7 @@ std::vector<double> bbd_lt_invert_Cpp(double t, const int a0, const int b0,
 
 std::vector<double> SIR_Cpp(const double t, const double alpha, const double beta,
     const long int S0, const long int I0, const int Ap1, const int Bp1, const int direction,
+    const double powS, const double powI_inf, const double powI_rem,
     const int nblocks, const double tol, int& Lmax, const int computeMode, const int nThreads);
 
 std::vector<double> bb_lt_invert_Cpp(double t, const std::vector<double>& lambda1,

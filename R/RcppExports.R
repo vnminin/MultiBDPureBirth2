@@ -13,8 +13,8 @@ SEIR_Cpp <- function(t, alpha, beta, kappa, S0, E0, I0, Ap1, Bp1, Cp1, direction
     .Call('_MultiBD_SEIR_Cpp', PACKAGE = 'MultiBD', t, alpha, beta, kappa, S0, E0, I0, Ap1, Bp1, Cp1, direction, nblocks, tol, Lmax, computeMode, nThreads)
 }
 
-SIR_Cpp <- function(t, alpha, beta, S0, I0, Ap1, Bp1, direction, nblocks, tol, Lmax, computeMode, nThreads) {
-    .Call('_MultiBD_SIR_Cpp', PACKAGE = 'MultiBD', t, alpha, beta, S0, I0, Ap1, Bp1, direction, nblocks, tol, Lmax, computeMode, nThreads)
+SIR_Cpp <- function(t, alpha, beta, S0, I0, Ap1, Bp1, direction, powS, powI_inf, powI_rem, nblocks, tol, Lmax, computeMode, nThreads) {
+    .Call('_MultiBD_SIR_Cpp', PACKAGE = 'MultiBD', t, alpha, beta, S0, I0, Ap1, Bp1, direction, powS, powI_inf, powI_rem, nblocks, tol, Lmax, computeMode, nThreads)
 }
 
 tb_lt_invert_Cpp <- function(t, lambda1, lambda2, lambda3, Ap1, Bp1, Cp1, direction, nblocks, tol, Lmax, computeMode, nThreads) {
