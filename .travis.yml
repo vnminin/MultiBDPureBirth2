@@ -13,12 +13,12 @@ addons:
     - texinfo
     - qpdf
 
-cache: packages
-
-directories:
+cache:
+  directories:
     - ~/Rlib     # R libraries
     - ~/texlive  # LaTex
     - ~/bin      # pandoc
+  packages: true
 
 # install dependencies
 install:
@@ -35,7 +35,7 @@ install:
   - PATH=$HOME/texlive/bin/x86_64-linux:$PATH
   # Install R packages
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
-  - Rscript -e "if (!require('covr')) install.packages('covr')"
+  - Rscript -e "if (!require('covr')) devtools::install_github('jimhester/covr')"
   - Rscript -e "if (!require('rmarkdown')) install.packages('rmarkdown')"
   - Rscript -e "if (!require('knitr')) install.packages('knitr')"
   - Rscript -e "if (!require('drat')) install.packages('drat')"
