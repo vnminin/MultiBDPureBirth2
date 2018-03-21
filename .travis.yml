@@ -1,7 +1,10 @@
 # Use container-based Travis with caching
 
-languague: c
+languague: r
 sudo: false
+
+before_install:
+  - tlmgr install index
 
 addons:
   apt:
