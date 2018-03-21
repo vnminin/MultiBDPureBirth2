@@ -13,8 +13,9 @@ addons:
     - texinfo
     - qpdf
 
-cache:
-  directories:
+cache: packages
+
+directories:
     - ~/Rlib     # R libraries
     - ~/texlive  # LaTex
     - ~/bin      # pandoc
