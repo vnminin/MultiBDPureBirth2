@@ -19,6 +19,8 @@ cache:
     - ~/texlive  # LaTex
     - ~/bin      # pandoc
 
+before_install: sudo texconfig rehash
+
 # install dependencies
 install:
   # Save R packages in Rlib
@@ -33,7 +35,6 @@ install:
   - wget -q -O - https://github.com/yihui/crandalf/raw/master/inst/scripts/install-pandoc | bash
   - PATH=$HOME/texlive/bin/x86_64-linux:$PATH
   # Install R packages
-  - Rscript install_texlive.R
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
   - Rscript -e "if (!require('covr')) devtools::install_github('jimhester/covr')"
   - Rscript -e "if (!require('rmarkdown')) install.packages('rmarkdown')"
