@@ -19,9 +19,6 @@ cache:
     - ~/texlive  # LaTex
     - ~/bin      # pandoc
 
-before_install:
-    - sudo rehash
-
 # install dependencies
 install:
   # Save R packages in Rlib
