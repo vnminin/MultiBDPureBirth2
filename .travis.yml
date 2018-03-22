@@ -20,7 +20,7 @@ cache:
     - ~/bin      # pandoc
 
 before_install:
-    - sudo texconfig rehash
+    - sudo rehash
 
 # install dependencies
 install:
