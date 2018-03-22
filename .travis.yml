@@ -19,7 +19,8 @@ cache:
     - ~/texlive  # LaTex
     - ~/bin      # pandoc
 
-before_install: sudo texconfig rehash
+before_install:
+    - sudo texconfig rehash
 
 # install dependencies
 install:
