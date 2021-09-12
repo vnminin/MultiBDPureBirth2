@@ -8,7 +8,7 @@ MultiBDPureBirth2
 ```
 1. Install  `MultiBDPureBirth2` from `github`:
 ```{r}
-devtools::install_github("msuchard/MultiBDPureBirth2")
+devtools::install_github("vnminin/MultiBDPureBirth2")
 ```
 
 ## Short example
