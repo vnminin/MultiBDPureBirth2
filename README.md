@@ -1,7 +1,7 @@
 MultiBDPureBirth2
 ======
 
-`MultiBDPureBirth` is a slight extention of the `MultiBD`  `R` package for direct likelihood-based inference of multivariate birth-death processes.  
+`MultiBDPureBirth2` is a slight extention of the `MultiBD`  `R` package for direct likelihood-based inference of multivariate birth-death processes.  
 
 ## Installation
 
