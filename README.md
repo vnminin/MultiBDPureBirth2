@@ -16,6 +16,9 @@ devtools::install_github("msuchard/MultiBDPureBirth2")
 ```{r}
 library(MultiBDPureBirth2)
 
+power_list = list(0.9,1,1)
+names(power) = c("powS", "powI_inf",  "powI_rem")
+
 SIR_prob_pure_birth(0.5, 0.1, 0.2, S0=1000, I0=10, nSI=4, nIR=0, direction = c("Forward","Backward"), power = power, nblocks = 20, tol = 1e-12, computeMode = 0, nThreads = 1)
 ```
 
