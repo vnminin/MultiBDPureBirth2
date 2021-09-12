@@ -2,8 +2,9 @@
 
 export(SEIR_prob)
 export(SIR_prob)
+export(SIR_prob_pure_birth)
 export(bbd_prob)
 export(dbd_prob)
 importFrom(Rcpp,evalCpp)
 importFrom(RcppParallel,RcppParallelLibs)
-useDynLib(MultiBD)
+useDynLib(MultiBDPureBirth2)
